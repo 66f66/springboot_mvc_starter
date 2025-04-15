@@ -1,18 +1,18 @@
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${POSTGRES_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/dev_springboot_mvc_starter
+    username: postgres
+    password: postgres
     driver-class-name: org.postgresql.Driver
     hikari:
       connection-timeout: 30000
       maximum-pool-size: 10
 
   liquibase:
-    enabled: true
-    url: ${SPRING_DATASOURCE_URL}
-    user: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    enabled: false
+    url: jdbc:postgresql://localhost:5432/dev_springboot_mvc_starter
+    user: postgres
+    password: postgres
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 mybatis:

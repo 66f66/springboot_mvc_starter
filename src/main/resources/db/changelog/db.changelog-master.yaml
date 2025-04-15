@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-article-categories-table
+      author: master
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: users
+      changes:
+        - sqlFile:
+            path: classpath:db/changelog/sql/schema.sql

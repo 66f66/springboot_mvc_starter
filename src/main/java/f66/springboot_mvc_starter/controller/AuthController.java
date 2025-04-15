@@ -31,7 +31,7 @@ public class AuthController {
 
         model.addAttribute("userDTO", userDTO);
 
-        return "/auth/sign-up";
+        return "auth/sign-up";
     }
 
     @PreAuthorize("isAnonymous()")
@@ -69,7 +69,7 @@ public class AuthController {
 
         model.addAttribute("redirectUrl", redirectUrl);
 
-        return "/auth/sign-in";
+        return "auth/sign-in";
     }
 
     @PreAuthorize("isAnonymous()")
