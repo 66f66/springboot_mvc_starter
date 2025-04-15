@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org"
+>
+
+<!--필드 오류 메시지-->
+<div class="invalid-feedback" th:fragment="field-error(field)" th:if="${#fields.hasErrors(field)}">
+	<p th:each="err : ${#fields.errors(field)}" th:text="${err}"></p>
+</div>
+
+<!-- 전역 오류 메시지 -->
+<div th:fragment="global-errors" th:if="${#fields.hasErrors('global')}">
+	<div class="alert alert-danger mt-3" th:each="err : ${#fields.errors('global')}"
+	     th:text="${err}">
+	</div>
+</div>
+</html>

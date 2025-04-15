@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ko"
+      layout:decorate="~{_layout.html}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+	<style>
+		.comment-item:hover {
+			background-color: #f8f9fa;
+		}
+	</style>
+	<title th:text="${articleDTO.title}"></title>
+</head>
+<div class="container my-5" layout:fragment="content">
+	
+	<div class="row">
+		<!--		category name-->
+		<a
+				class="text-decoration-none"
+				th:href="@{/article(categoryId=${articleDTO.articleCategory.id})}"
+				th:text="${articleDTO.articleCategory.name}"
+		></a>
+		<!--	article title-->
+		<p class="text-break" style="white-space: pre-line;" th:text="${articleDTO.title}"></p>
+	</div>
+	
+	<div class="card my-3">
+		<div class="card-body">
+			
+			<div class="mb-2 d-flex gap-2 align-items-center justify-content-between">
+				<!--				article user info-->
+				<a class="text-decoration-none"
+				   th:href="@{/article(userId=${articleDTO.user.id})}"
+				   th:text="${articleDTO.user.nickname}">
+				</a>
+				
+				<!--				article date info-->
+				<div class="text-muted fw-lighter d-flex flex-column">
+					<span
+							th:text="${#temporals.format(articleDTO.createdAt, 'yyyy-MM-dd HH:mm', 'Asia/Seoul')}">
+					</span>
+					<span th:if="${articleDTO.updatedAt != null}"
+					      th:text="|${#temporals.format(articleDTO.updatedAt, 'yyyy-MM-dd HH:mm', 'Asia/Seoul')}(수정됨)|">
+					</span>
+				</div>
+			</div>
+			
+			<!--			article content-->
+			<div class="card-text" th:utext="${@markdownUtil.markdownToHtml(articleDTO.content)}"></div>
+			
+			<div class="my-3 d-flex gap-1">
+				<!--				article vote button-->
+				<a id="article-vote-btn"
+				   th:class="${articleDTO.voted} ? 'btn btn-success btn-sm' : 'btn btn-outline-secondary btn-sm'"
+				   th:data-id="${articleDTO.id}">
+					추천
+					<span class="badge rounded-pill bg-success" th:text="${articleDTO.voteCount}"></span>
+				</a>
+				
+				<!--				article update button-->
+				<a class="btn btn-outline-secondary btn-sm"
+				   sec:authorize="isAuthenticated()"
+				   th:href="@{/article/form(id=${articleDTO.id})}"
+				   th:if="${articleDTO.user.id} == ${#authentication.principal.id}">
+					편집
+				</a>
+				
+				<!--				article delete button-->
+				<form method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');" sec:authorize="isAuthenticated()"
+				      th:action="@{/article/{id}/delete(id=${articleDTO.id})}">
+					<button class="btn btn-outline-secondary btn-sm"
+					        th:if="${articleDTO.user.id} == ${#authentication.principal.id}"
+					        type="submit">
+						삭제
+					</button>
+				</form>
+				
+				<form method="post" onsubmit="return confirm('정말 삭제하시겠습니까?')"
+				      sec:authorize="hasRole('ADMIN')"
+				      th:action="@{/admin/article/{id}/delete(id=${articleDTO.id})}"
+				>
+					<input name="articleCategoryId" th:value="${articleDTO.articleCategory.id}" type="hidden"/>
+					<button class="btn btn-outline-danger btn-sm" type="submit">
+						관리자 삭제
+					</button>
+				</form>
+			</div>
+		</div>
+	</div>
+	
+	<!--	comment stat-->
+	<div class="my-3">
+		<p th:if="${commentDTOs.size() == 0}">아직 댓글이 없습니다.</p>
+		<p th:text="|${commentDTOs.size()}개의 댓글이 있습니다.|"
+		   th:unless="${commentDTOs.size() == 0}"></p>
+	</div>
+	
+	<!--		comment list-->
+	<div class="card" th:each="c : ${commentDTOs}" th:style="'margin-left: ' + ${c.depth * 20} + 'px;'">
+		<div class="card-body comment-item">
+			<!--			reply to-->
+			<div class="text-muted small mb-2" th:if="${c.depth > 0}">
+				<span th:text="${c.parent.nickname} + '님에게 답글'"></span>
+			</div>
+			
+			<div class="row">
+				<!--				comment user info-->
+				<a class="text-decoration-none"
+				   th:href="@{/article(userId=${articleDTO.user.id})}"
+				   th:text="${articleDTO.user.nickname}">
+				</a>
+				
+				<!--				comment content-->
+				<div class="card-text mb-2" style="white-space: pre-line;" th:text="${c.content}"></div>
+				
+				<!--				comment time info-->
+				<div class="fw-lighter fs-6">
+					<span th:if="${c.updatedAt == null}"
+					      th:text="${#temporals.format(c.createdAt, 'yyyy-MM-dd HH:mm', 'Asia/Seoul')}"></span>
+					<span th:if="${c.updatedAt != null}"
+					      th:text="|${#temporals.format(c.updatedAt, 'yyyy-MM-dd HH:mm', 'Asia/Seoul')}|"></span>
+					<span class="text-muted" th:if="${c.updatedAt != null}">(수정됨)</span>
+				</div>
+			</div>
+			
+			<div class="my-3 d-flex gap-1">
+				
+				<!--				edit comment button-->
+				<button class="btn btn-outline-secondary btn-sm"
+				        sec:authorize="isAuthenticated()"
+				        th:if="${c.userId} == ${#authentication.principal.id}"
+				        th:onclick="|toggleUpdateForm(${c.id})|">
+					수정
+				</button>
+				
+				<!--				delete comment button-->
+				<form class="comment-delete-form" method="post"
+				      th:action="@{/comment/{id}/delete(id=${c.id})}">
+					<input name="articleId" th:value="${c.articleId}" type="hidden"/>
+					<button class="btn btn-outline-secondary btn-sm" sec:authorize="isAuthenticated()"
+					        th:if="${c.userId} == ${#authentication.principal.id}"
+					        type="submit">
+						삭제
+					</button>
+				</form>
+				
+				<!--				comment on comment button-->
+				<button class="btn btn-outline-secondary btn-sm"
+				        sec:authorize="isAuthenticated()"
+				        th:onclick="|toggleReplyForm(${c.id})|">
+					답글
+				</button>
+				
+				<!--				admin comment delete-->
+				<form method="post" onsubmit="return confirm('정말 삭제하시겠습니까?')"
+				      sec:authorize="hasRole('ADMIN')"
+				      th:action="@{/admin/comment/{id}/delete(id=${c.id})}"
+				>
+					<input name="articleId" th:value="${c.articleId}" type="hidden"/>
+					<button class="btn btn-outline-danger btn-sm" type="submit">
+						관리자 삭제
+					</button>
+				</form>
+			</div>
+			
+			<div class="mt-4">
+				<!--			comment update form-->
+				<div style="display: none;" th:id="|comment_update_form_${c.id}|">
+					<form class="comment-update-form" method="post" th:action="@{/comment/{id}/update(id=${c.id})}">
+						<input name="id" th:value="${c.id}" type="hidden"/>
+						<input name="articleId" th:value="${c.articleId}" type="hidden"/>
+						<textarea class="form-control mb-2" name="content" rows="5" th:text="${c.content}"></textarea>
+						<div class="invalid-feedback"></div>
+						<button class="btn btn-primary btn-sm" type="submit">저장</button>
+						<button class="btn btn-secondary btn-sm ms-1 my-2" th:onclick="|toggleUpdateForm(${c.id})|"
+						        type="button">취소
+						</button>
+					</form>
+				</div>
+				
+				<!--comment reply form-->
+				<div style="display: none;" th:id="|comment_reply_form_${c.id}|">
+					<form class="comment-reply-form" method="post" th:action="@{/comment/create}">
+						<input name="articleId" th:value="${c.articleId}" type="hidden">
+						<input name="parentId" th:value="${c.id}" type="hidden">
+						<textarea class="form-control mb-2" name="content" placeholder="답글을 작성하세요" rows="5"></textarea>
+						<div class="invalid-feedback"></div>
+						<button class="btn btn-primary btn-sm" type="submit">저장</button>
+						<button class="btn btn-secondary btn-sm ms-1 my-2" th:onclick="|toggleReplyForm(${c.id})|"
+						        type="button">취소
+						</button>
+					</form>
+				</div>
+			</div>
+		
+		</div>
+	</div>
+	
+	<!--	comment create form-->
+	<div class="text-center py-3" sec:authorize="isAnonymous()">
+		<a th:href="@{/auth/sign-in(redirect_url='/article/' + ${articleDTO.id})}">로그인</a> 후에 댓글을 작성할 수 있습니다.
+	</div>
+	<div class="mt-3 mb-5" sec:authorize="isAuthenticated()">
+		<form class="comment-create-form" method="post" th:action="@{/comment/create}">
+			<input name="articleId" th:value="${articleDTO.id}" type="hidden"/>
+			<label for="comment-content"></label>
+			<textarea class="form-control" id="comment-content" name="content" placeholder="답글을 작성하세요"
+			          rows="5"></textarea>
+			<div class="invalid-feedback"></div>
+			<button class="btn btn-primary my-2" sec:authorize="isAuthenticated()" type="submit">저장</button>
+		</form>
+	</div>
+
+</div>
+<th:block layout:fragment="script">
+	<script src="/js/vote.js"></script>
+	<script src="/js/comment.js"></script>
+</th:block>
+</html>

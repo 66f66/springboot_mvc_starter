@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ko"
+      layout:decorate="~{_layout.html}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+	<style>
+		.article-item:hover {
+			background-color: #f8f9fa;
+		}
+	</style>
+	<title>글 목록</title>
+</head>
+<div class="container my-5" layout:fragment="content">
+	
+	<div class="row my-4">
+		<!--		sort dropdown-->
+		<div class="col-6 dropdown">
+			<button aria-expanded="false" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown"
+			        id="sortDropdown"
+			        type="button"
+			>
+				<span th:if="${articlePageRequest.order != null && articlePageRequest.order == 'id_desc'}">최신순</span>
+				<span th:if="${articlePageRequest.order != null && articlePageRequest.order == 'id_asc'}">오래된순</span>
+				<span th:if="${articlePageRequest.order != null && articlePageRequest.order == 'vote_count_asc'}">추천순</span>
+				<span th:if="${articlePageRequest.order != null && articlePageRequest.order == 'comment_count_asc'}">댓글순</span>
+			</button>
+			<ul aria-labelledby="sortDropdown" class="dropdown-menu">
+				<li>
+					<a class="dropdown-item"
+					   th:classappend="${articlePageRequest.order == 'id_desc'} ? 'active' : ''"
+					   th:href="${@httpUtil.setQueryParam(requestURIWithQuery, 'order', 'id_desc')}">
+						최신순
+					</a>
+				</li>
+				<li>
+					<a class="dropdown-item"
+					   th:classappend="${articlePageRequest.order == 'id_asc'} ? 'active' : ''"
+					   th:href="${@httpUtil.setQueryParam(requestURIWithQuery, 'order', 'id_asc')}">
+						오래된순
+					</a>
+				</li>
+				<li>
+					<a class="dropdown-item"
+					   th:classappend="${articlePageRequest.order == 'vote_count_asc'} ? 'active' : ''"
+					   th:href="${@httpUtil.setQueryParam(requestURIWithQuery, 'order', 'vote_count_asc')}">
+						추천순
+					</a>
+				</li>
+				<li>
+					<a class="dropdown-item"
+					   th:classappend="${articlePageRequest.order == 'comment_count_asc'} ? 'active' : ''"
+					   th:href="${@httpUtil.setQueryParam(requestURIWithQuery, 'order', 'comment_count_asc')}">
+						댓글순
+					</a>
+				</li>
+			</ul>
+		</div>
+		
+		<!--		page size dropdown-->
+		<div class="col-6 dropdown-center text-end">
+			<button aria-expanded="false" class="btn btn-outline-secondary dropdown-toggle"
+			        data-bs-toggle="dropdown" type="button">
+				[[${articlePageRequest.size}]]개씩 보기
+			</button>
+			<ul class="dropdown-menu">
+				<li><a class="dropdown-item"
+				       th:classappend="${articlePageRequest.size == 10} ? 'active' : ''"
+				       th:href="${@httpUtil.setQueryParam(requestURIWithQuery, 'size', 10)}">10개씩</a>
+				</li>
+				<li><a class="dropdown-item"
+				       th:classappend="${articlePageRequest.size == 20} ? 'active' : ''"
+				       th:href="${@httpUtil.setQueryParam(requestURIWithQuery, 'size', 20)}">20개씩</a>
+				</li>
+				<li><a class="dropdown-item"
+				       th:classappend="${articlePageRequest.size == 50} ? 'active' : ''"
+				       th:href="${@httpUtil.setQueryParam(requestURIWithQuery, 'size', 50)}">50개씩</a>
+				</li>
+				<li><a class="dropdown-item"
+				       th:classappend="${articlePageRequest.size == 100} ? 'active' : ''"
+				       th:href="${@httpUtil.setQueryParam(requestURIWithQuery, 'size', 100)}">100개씩</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+	
+	<!--	category list-->
+	<div class="row mb-3" th:if="${articlePageRequest.userId == null}">
+		<div class="col-12 d-flex gap-2 align-items-center">
+			<a class="fw-semibold text-decoration-none link-underline link-underline-opacity-0 link-underline-opacity-75-hover"
+			   th:each="c : ${categoryDTOs}"
+			   th:href="${@httpUtil.setQueryParam(requestURIWithQuery, 'categoryId', c.id)}"
+			   th:text="|${c.name}(${c.articleCount})|"
+			></a>
+		</div>
+	</div>
+	
+	<!--	article list-->
+	<div class="card shadow-sm">
+		<div class="card-body p-0">
+			<!--			article list header(desktop only)-->
+			<div class="d-none d-md-flex bg-light p-3 border-bottom">
+				<div class="col-md-1 fw-bold text-center">번호</div>
+				<div class="col-md-6 fw-bold">제목</div>
+				<div class="col-md-2 fw-bold text-center">작성자</div>
+				<div class="col-md-2 fw-bold text-center mobile-hidden">작성일</div>
+				<div class="col-md-1 fw-bold text-center mobile-hidden">추천</div>
+			</div>
+			
+			<!--			article list item-->
+			<div class="board-list-item border-bottom p-3 article-item"
+			     th:each="article : ${articleDTOs}">
+				<div class="row align-items-center">
+					<!--					article number-->
+					<div class="col-2 col-md-1 text-center">
+						<span class="text-muted" th:text="${article.id}"></span>
+					</div>
+					
+					<div class="col-10 col-md-6">
+						<!--						article title-->
+						<a class="text-decoration-none"
+						   th:href="${@httpUtil.setQueryParam(requestURIWithQuery, 'categoryId', article.articleCategory.id)}">
+							<span th:text="|[${article.articleCategory.name}]|"></span>
+						</a>
+						<a class="link-underline link-underline-opacity-0 link-underline-opacity-75-hover"
+						   th:href="@{/article/{id}(id=${article.id})}">
+							<span class="fw-bold fs-5 text-secondary-emphasis" th:text="${article.title}"></span>
+							<span class="text-secondary ms-1" th:if="${article.commentCount > 0}">
+                                [<span th:text="${article.commentCount}"></span>]
+                            </span>
+						</a>
+						
+						<!--						article writer, date, vote count(mobile only)-->
+						<div class="d-block d-md-none mt-1">
+							<small class="text-muted">
+								<a class="text-decoration-none"
+								   th:href="@{/article(userId=${article.user.id})}"
+								   th:text="${article.user.nickname}">
+								</a>
+								<span th:text="${#temporals.format(article.createdAt, 'yyyy-MM-dd', 'Asia/Seoul')}"></span>
+								<span th:if="${article.voteCount != 0}" th:text="| 추천 ${article.voteCount}|"></span>
+							</small>
+						</div>
+					</div>
+					
+					<!--					article writer(desktop only)-->
+					<div class="col-md-2 text-center d-none d-md-block">
+						<a class="text-decoration-none"
+						   th:href="@{/article(userId=${article.user.id})}"
+						   th:text="${article.user.nickname}">
+						</a>
+					</div>
+					
+					<!--					article date(desktop only)-->
+					<div class="col-md-2 text-center d-none d-md-block">
+						<span th:text="${#temporals.format(article.createdAt, 'yyyy-MM-dd', 'Asia/Seoul')}"></span>
+					</div>
+					
+					<!--					article vote count(desktop only)-->
+					<div class="col-md-1 text-center d-none d-md-block">
+						<span th:if="${article.voteCount != 0}" th:text="${article.voteCount}"></span>
+					</div>
+				</div>
+			</div>
+			
+			<!--			search result-->
+			<div class="p-5 text-center text-muted fs-5" th:if="${#lists.isEmpty(articleDTOs)}">
+				<span th:if="${articlePageRequest.searchKey == null}">작성된 글이 없습니다.</span>
+				<span th:if="${articlePageRequest.searchKey != null}">검색 결과가 없습니다.</span>
+			</div>
+		</div>
+	</div>
+	
+	<div class="row my-4">
+		<!--			new article button-->
+		<div class="col-2 col-md-6 col-lg-8">
+			<a class="btn btn-primary" th:href="@{/article/form}">
+				<span class="d-none d-md-inline">새글 쓰기</span>
+				<i class="fas fa-pen"></i>
+			</a>
+		</div>
+		
+		<!--		search bar-->
+		<div class="col-10 col-md-6 col-lg-4">
+			<form class="d-flex gap-1" method="get" th:action="@{/article}">
+				<select aria-label="Search Key" class="form-select w-auto" name="searchKey"
+				        th:classappend="flex-shrink-0">
+					<option th:selected="${articlePageRequest.searchKey != null && articlePageRequest.searchKey == 'title'}"
+					        value="title">제목
+					</option>
+					<option th:selected="${articlePageRequest.searchKey != null && articlePageRequest.searchKey == 'content'}"
+					        value="content">내용
+					</option>
+					<option th:selected="${articlePageRequest.searchKey != null && articlePageRequest.searchKey == 'nickname'}"
+					        value="nickname">작성자
+					</option>
+				</select>
+				
+				<input aria-label="Search" class="form-control" name="searchValue" placeholder="검색어"
+				       th:value="${articlePageRequest.searchValue}"
+				       type="search">
+				
+				<button class="btn btn-outline-success" style="white-space: nowrap;" type="submit">
+					<span class="d-none d-md-inline">검색</span>
+					<span class="fa fa-magnifying-glass"></span>
+				</button>
+			</form>
+		</div>
+	</div>
+	
+	<!--	pagination-->
+	<div th:if="${paging.totalPages > 1}">
+		<nav aria-label="Page navigation">
+			<ul class="pagination justify-content-center" th:with="currentPage = ${paging.number}">
+				<!--				first page-->
+				<li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+					<a class="page-link"
+					   th:href="${@httpUtil.setQueryParam(requestURIWithQuery, 'page', 0)}"
+					>
+						첫
+					</a>
+				</li>
+				
+				<!--				10 prev page-->
+				<li class="page-item" th:classappend="${currentPage < 10} ? 'disabled'">
+					<a class="page-link"
+					   th:href="${@httpUtil.setQueryParam(requestURIWithQuery, 'page', currentPage - 10)}">
+						-10</a>
+				</li>
+				
+				<!--				page numbers-->
+				<li class="page-item" th:classappend="${i == currentPage} ? 'active'" th:each="i : ${#numbers.sequence(
+                    T(java.lang.Math).max(0, currentPage - 5),
+                    T(java.lang.Math).min(paging.totalPages - 1, currentPage + 5)
+                )}">
+					<a class="page-link"
+					   th:href="${@httpUtil.setQueryParam(requestURIWithQuery, 'page', i)}"
+					   th:text="${i + 1}">
+					</a>
+				</li>
+				
+				<!--				10 next page-->
+				<li class="page-item"
+				    th:classappend="${currentPage + 10 >= paging.totalPages} ? 'disabled'">
+					<a class="page-link"
+					   th:href="${@httpUtil.setQueryParam(requestURIWithQuery, 'page', currentPage + 10)}"
+					>+10</a>
+				</li>
+				
+				<!--				last page-->
+				<li class="page-item" th:classappend="${currentPage == paging.totalPages - 1} ? 'disabled'">
+					<a class="page-link"
+					   th:href="${@httpUtil.setQueryParam(requestURIWithQuery, 'page', paging.totalPages - 1)}"
+					>끝</a>
+				</li>
+			</ul>
+		</nav>
+	</div>
+
+</div>
+<script layout:fragment="script"></script>
+</html>

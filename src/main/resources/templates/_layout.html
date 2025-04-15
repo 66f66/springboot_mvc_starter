@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+	<meta charset="UTF-8">
+	<meta content="width=device-width, initial-scale=1" name="viewport">
+	<!--	csrf tokens-->
+	<meta name="_csrf" th:content="${_csrf.token}"/>
+	<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+	<!--	bootstrap CSS-->
+	<link href="/css/bootstrap.min.css" rel="stylesheet">
+	<!--	fontawesome-->
+	<link rel="stylesheet" th:href="@{/webjars/font-awesome/6.7.2/css/all.min.css}"/>
+	<!--	global CSS-->
+	<link href="/css/styles.css" rel="stylesheet">
+	<!--	page css-->
+	<style layout:fragment="style"></style>
+	<title>_layout</title>
+</head>
+<body>
+
+<!--nav bar-->
+<div th:replace="~{fragments/navbar}"></div>
+
+<!--page content-->
+<div layout:fragment="content"></div>
+
+<!--toast-->
+<div class="toast-container position-fixed start-50 translate-middle-x p-3" style="bottom: 50px;">
+	<div th:replace="~{fragments/toast :: toast-notification}"></div>
+</div>
+
+<!--bootstrap-->
+<script src="/js/bootstrap.bundle.min.js"></script>
+<!--toast-->
+<script th:replace="~{fragments/toast :: toast-script}"></script>
+<!--global script-->
+<script src="/js/scripts.js"></script>
+<!--page script-->
+<th:block layout:fragment="script"></th:block>
+</body>
+</html>

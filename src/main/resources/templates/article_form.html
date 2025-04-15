@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko"
+      layout:decorate="~{_layout.html}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+	<style layout:fragment="style"></style>
+	<title th:text="${articleDTO.id == null ? '새글 작성' : '글 편집'}"></title>
+</head>
+<div class="container my-3" layout:fragment="content">
+	<div class="my-3 pb-2 border-bottom">
+		<h3 th:if="${articleDTO.id == null}">새글 작성</h3>
+		<h3 th:unless="${articleDTO.id == null}">글 편집</h3>
+	</div>
+	
+	<form id="article-create-form" method="post" th:action="@{/article}">
+		<div class="row mb-3">
+			
+			<!--			category-->
+			<div class="col-4 col-md-2 flex-shrink-0">
+				<label class="form-label" for="article-category">말머리</label>
+				<select class="form-select" id="article-category" name="articleCategoryId">
+					<option th:each="articleCategory : ${articleCategoryDTOs}"
+					        th:selected="${articleDTO.articleCategory?.id == articleCategory.id}"
+					        th:text="${articleCategory.name}"
+					        th:value="${articleCategory.id}"></option>
+				</select>
+			</div>
+			
+			<!--		title-->
+			<div class="col-8 col-md-10">
+				<label class="form-label" for="title">제목</label>
+				<input class="form-control" id="title"
+				       name="title"
+				       placeholder="제목을 입력하세요."
+				       th:value="${articleDTO.title}">
+				<div class="invalid-feedback"></div>
+			</div>
+		</div>
+		
+		<!--		content-->
+		<div class="mb-3">
+			<label class="form-label" for="content">내용</label>
+			<textarea class="form-control" id="content" name="content"
+			          placeholder="내용을 입력하세요. 마크다운 문법을 지원합니다."
+			          rows="10"
+			          th:text="${articleDTO.content}"></textarea>
+			<div class="invalid-feedback"></div>
+		</div>
+		
+		<!--		article id-->
+		<input name="articleId" th:if="${articleDTO.id != null}" th:value="${articleDTO.id}" type="hidden"/>
+		
+		<div class="my-2">
+			<button class="btn btn-primary" type="submit">저장</button>
+			<a class="btn btn-outline-secondary" th:href="@{/article}" th:if="${articleDTO.id == null}">취소</a>
+			<a class="btn btn-outline-secondary" th:href="@{/article/{id}(id=${articleDTO.id})}"
+			   th:unless="${articleDTO.id == null}">취소</a>
+		</div>
+	</form>
+</div>
+<th:block layout:fragment="script">
+	<script src="/js/article-submit.js"></script>
+</th:block>
+</html>

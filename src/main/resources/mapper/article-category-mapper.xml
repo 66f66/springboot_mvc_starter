@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="f66.springboot_mvc_starter.repository.ArticleCategoryRepository">
+
+    <update id="updateArticleCount" parameterType="map">
+        UPDATE article_categories
+        SET article_count = article_count + #{delta}
+        WHERE id = #{articleCategoryId}
+    </update>
+
+    <select id="selectCategories" resultType="ArticleCategoryDTO">
+        select *
+        from article_categories
+        order by article_count desc, id
+    </select>
+
+</mapper>

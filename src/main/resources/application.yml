@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 10
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: f66.springboot_mvc_starter.dto
+  configuration:
+    map-underscore-to-camel-case: true
+    default-statement-timeout: 30
+
+logging:
+  level:
+    root: ERROR
+    f66.springboot_mvc_starter: ERROR
+    org.springframework.web: ERROR

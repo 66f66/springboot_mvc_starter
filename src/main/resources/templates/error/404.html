@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ko"
+      layout:decorate="~{_layout.html}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+	<title layout:fragment="title">HTTP 404 ERROR</title>
+</head>
+<div class="container d-flex justify-content-center align-items-center min-vh-100" layout:fragment="content">
+	<div class="text-balance text-center d-flex flex-column">
+		이 페이지를 로드할 수 없습니다. 주소가 변경되었거나 잘못된 요청입니다.
+		<a href="javascript:history.back()">뒤로가기</a>
+	</div>
+</div>
+</html>

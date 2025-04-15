@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="f66.springboot_mvc_starter.repository.ArticleRepository">
+
+    <insert id="insertArticle" parameterType="ArticleDTO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO articles (title, content, user_id, article_category_id)
+        VALUES (#{title}, #{content}, #{userId}, #{articleCategoryId})
+    </insert>
+
+    <update id="updateArticle" parameterType="ArticleDTO">
+        UPDATE articles
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="articleCategoryId != null">article_category_id = #{articleCategoryId},</if>
+            updated_at = now()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateCommentCount" parameterType="map">
+        UPDATE articles
+        SET comment_count = comment_count + #{delta}
+        WHERE id = #{articleId}
+    </update>
+
+    <delete id="deleteArticle" parameterType="ArticleDTO">
+        DELETE
+        FROM articles
+        WHERE id = #{id}
+    </delete>
+
+    <select id="selectArticleByIdAndUserId" parameterType="map" resultType="ArticleDTO">
+        SELECT *
+        FROM articles
+        WHERE id = #{articleId}
+          AND user_id = #{userId}
+    </select>
+
+    <select id="selectArticleById" parameterType="long" resultType="ArticleDTO">
+        select *
+        from articles
+        where id = #{id}
+    </select>
+
+    <select id="selectArticleByIdWithVote" parameterType="ArticleDTO" resultType="ArticleDTO">
+        SELECT
+        a.id,
+        a.title,
+        a.content,
+        a.created_at,
+        a.updated_at,
+        a.user_id,
+        a.comment_count,
+        a.vote_count,
+        u.id as "user.id",
+        u.nickname as "user.nickname",
+        ac.id as "articleCategory.id",
+        ac.name as "articleCategory.name",
+        <if test="userId != null">
+            av.active
+        </if>
+        <if test="userId == null">
+            false
+        </if>
+        AS voted
+        FROM articles a
+        JOIN users u ON a.user_id = u.id
+        JOIN article_categories ac ON a.article_category_id = ac.id
+        <if test="userId != null">
+            LEFT JOIN article_votes av ON a.id = av.article_id AND av.user_id = #{userId}
+        </if>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="count" parameterType="ArticlePageRequest"
+            resultType="long">
+        SELECT COUNT(*)
+        FROM articles a
+        <if test="searchKey == 'nickname'">
+            JOIN users u ON a.user_id = u.id
+        </if>
+        <where>
+            <trim prefixOverrides="AND |OR">
+
+                <if test="userId != null">
+                    a.user_id = #{userId}
+                </if>
+
+                <if test="userId == null">
+                    <if test="searchKey != null and searchValue != null">
+                        AND (
+                        <choose>
+                            <when test="searchKey == 'title'">
+                                a.title LIKE CONCAT('%', #{searchValue}, '%')
+                            </when>
+                            <when test="searchKey == 'content'">
+                                a.content LIKE CONCAT('%', #{searchValue}, '%')
+                            </when>
+                            <when test="searchKey == 'nickname'">
+                                u.nickname LIKE CONCAT('%', #{searchValue}, '%')
+                            </when>
+                        </choose>
+                        )
+                    </if>
+
+                    <if test="categoryId != null and categoryId != 0">
+                        AND a.article_category_id = #{categoryId}
+                    </if>
+                </if>
+            </trim>
+        </where>
+    </select>
+
+    <select id="selectList" parameterType="ArticlePageRequest"
+            resultType="ArticleDTO">
+        SELECT
+        a.id,
+        a.title,
+        a.content,
+        a.created_at,
+        a.updated_at,
+        a.user_id,
+        a.article_category_id,
+        a.vote_count,
+        a.comment_count,
+        u.id as "user.id",
+        u.nickname as "user.nickname",
+        ac.id as "articleCategory.id",
+        ac.name as "articleCategory.name"
+        FROM articles a
+        JOIN users u ON a.user_id = u.id
+        JOIN article_categories ac ON a.article_category_id = ac.id
+        <where>
+            <trim prefixOverrides="AND |OR">
+
+                <if test="userId != null">
+                    a.user_id = #{userId}
+                </if>
+
+                <if test="userId == null">
+                    <if test="searchKey != null and searchValue != null">
+                        AND (
+                        <choose>
+                            <when test="searchKey == 'title'">
+                                a.title LIKE CONCAT('%', #{searchValue}, '%')
+                            </when>
+                            <when test="searchKey == 'content'">
+                                a.content LIKE CONCAT('%', #{searchValue}, '%')
+                            </when>
+                            <when test="searchKey == 'nickname'">
+                                u.nickname LIKE CONCAT('%', #{searchValue}, '%')
+                            </when>
+                        </choose>
+                        )
+                    </if>
+
+                    <if test="categoryId != null and categoryId != 0">
+                        AND a.article_category_id = #{categoryId}
+                    </if>
+                </if>
+            </trim>
+        </where>
+        ORDER BY
+        <choose>
+            <when test="order == 'id_desc'">a.id DESC</when>
+            <when test="order == 'id_asc'">a.id ASC</when>
+            <when test="order == 'comment_count_asc'">
+                a.comment_count DESC,
+                a.id ASC
+            </when>
+            <when test="order == 'vote_count_asc'">
+                a.vote_count DESC,
+                a.id ASC
+            </when>
+            <otherwise>a.id DESC</otherwise>
+        </choose>
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+</mapper>
