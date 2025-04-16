@@ -3,15 +3,16 @@ package f66.springboot_mvc_starter.controller;
 import f66.springboot_mvc_starter.dto.ApiResponse;
 import f66.springboot_mvc_starter.dto.ToastDTO;
 import f66.springboot_mvc_starter.dto.UserDTO;
+import f66.springboot_mvc_starter.dto.ValidationGroups;
 import f66.springboot_mvc_starter.exception.UniqueConstraintException;
 import f66.springboot_mvc_starter.exception.UserBadInputException;
 import f66.springboot_mvc_starter.exception.WrongUsernameOrPasswordException;
 import f66.springboot_mvc_starter.service.UserService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -36,7 +37,7 @@ public class AuthController {
 
     @PreAuthorize("isAnonymous()")
     @PostMapping("/sign-up")
-    public String signUp(@Valid UserDTO userDTO,
+    public String signUp(@Validated(ValidationGroups.Create.class) UserDTO userDTO,
                          RedirectAttributes redirectAttributes) {
 
         try {

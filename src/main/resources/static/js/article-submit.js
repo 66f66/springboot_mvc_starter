@@ -59,8 +59,8 @@ async function articleSubmit(e) {
   }
   
   // category id
-  const articleCategoryId = form.articleCategoryId
-  const articleCategoryIdVal = articleCategoryId.value
+  const categoryId = form.categoryId
+  const categoryIdVal = categoryId.value
   
   if (!isValid) {
     
@@ -76,13 +76,13 @@ async function articleSubmit(e) {
     const body = {
       title: titleVal,
       content: contentVal,
-      articleCategoryId: articleCategoryIdVal,
+      categoryId: categoryIdVal,
       id: form.articleId?.value,
     }
     
     const response = await fetch(form.action, {
       method: 'POST',
-      headers: window.customHeaders,
+      headers: window.customJsonHeaders,
       body: JSON.stringify(body),
     })
     

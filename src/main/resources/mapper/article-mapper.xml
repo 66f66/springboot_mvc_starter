@@ -3,8 +3,8 @@
 <mapper namespace="f66.springboot_mvc_starter.repository.ArticleRepository">
 
     <insert id="insertArticle" parameterType="ArticleDTO" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO articles (title, content, user_id, article_category_id)
-        VALUES (#{title}, #{content}, #{userId}, #{articleCategoryId})
+        INSERT INTO articles (title, content, user_id, category_id)
+        VALUES (#{title}, #{content}, #{userId}, #{categoryId})
     </insert>
 
     <update id="updateArticle" parameterType="ArticleDTO">
@@ -12,7 +12,7 @@
         <set>
             <if test="title != null">title = #{title},</if>
             <if test="content != null">content = #{content},</if>
-            <if test="articleCategoryId != null">article_category_id = #{articleCategoryId},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
             updated_at = now()
         </set>
         WHERE id = #{id}
@@ -55,8 +55,8 @@
         a.vote_count,
         u.id as "user.id",
         u.nickname as "user.nickname",
-        ac.id as "articleCategory.id",
-        ac.name as "articleCategory.name",
+        ac.id as "category.id",
+        ac.name as "category.name",
         <if test="userId != null">
             av.active
         </if>
@@ -66,7 +66,7 @@
         AS voted
         FROM articles a
         JOIN users u ON a.user_id = u.id
-        JOIN article_categories ac ON a.article_category_id = ac.id
+        JOIN article_categories ac ON a.category_id = ac.id
         <if test="userId != null">
             LEFT JOIN article_votes av ON a.id = av.article_id AND av.user_id = #{userId}
         </if>
@@ -105,7 +105,7 @@
                     </if>
 
                     <if test="categoryId != null and categoryId != 0">
-                        AND a.article_category_id = #{categoryId}
+                        AND a.category_id = #{categoryId}
                     </if>
                 </if>
             </trim>
@@ -121,16 +121,16 @@
         a.created_at,
         a.updated_at,
         a.user_id,
-        a.article_category_id,
+        a.category_id,
         a.vote_count,
         a.comment_count,
         u.id as "user.id",
         u.nickname as "user.nickname",
-        ac.id as "articleCategory.id",
-        ac.name as "articleCategory.name"
+        ac.id as "category.id",
+        ac.name as "category.name"
         FROM articles a
         JOIN users u ON a.user_id = u.id
-        JOIN article_categories ac ON a.article_category_id = ac.id
+        JOIN article_categories ac ON a.category_id = ac.id
         <where>
             <trim prefixOverrides="AND |OR">
 
@@ -156,7 +156,7 @@
                     </if>
 
                     <if test="categoryId != null and categoryId != 0">
-                        AND a.article_category_id = #{categoryId}
+                        AND a.category_id = #{categoryId}
                     </if>
                 </if>
             </trim>

@@ -121,8 +121,8 @@
 					<div class="col-10 col-md-6">
 						<!--						article title-->
 						<a class="text-decoration-none"
-						   th:href="${@httpUtil.setQueryParam(requestURIWithQuery, 'categoryId', article.articleCategory.id)}">
-							<span th:text="|[${article.articleCategory.name}]|"></span>
+						   th:href="${@httpUtil.setQueryParam(requestURIWithQuery, 'categoryId', article.category.id)}">
+							<span th:text="|[${article.category.name}]|"></span>
 						</a>
 						<a class="link-underline link-underline-opacity-0 link-underline-opacity-75-hover"
 						   th:href="@{/article/{id}(id=${article.id})}">

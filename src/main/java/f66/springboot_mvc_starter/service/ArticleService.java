@@ -30,18 +30,18 @@ public class ArticleService {
 
         articleRepository.insertArticle(articleDTO);
 
-        articleCategoryRepository.updateArticleCount(articleDTO.getArticleCategoryId(), 1);
+        articleCategoryRepository.updateArticleCount(articleDTO.getCategoryId(), 1);
     }
 
     @Transactional
     public void updateArticle(ArticleDTO oldArticleDTO,
                               ArticleDTO articleDTO) {
 
-        if (!Objects.equals(oldArticleDTO.getArticleCategoryId(), articleDTO.getArticleCategoryId())) {
+        if (!Objects.equals(oldArticleDTO.getCategoryId(), articleDTO.getCategoryId())) {
 
-            articleCategoryRepository.updateArticleCount(oldArticleDTO.getArticleCategoryId(), -1);
+            articleCategoryRepository.updateArticleCount(oldArticleDTO.getCategoryId(), -1);
 
-            articleCategoryRepository.updateArticleCount(articleDTO.getArticleCategoryId(), 1);
+            articleCategoryRepository.updateArticleCount(articleDTO.getCategoryId(), 1);
         }
 
         articleRepository.updateArticle(articleDTO);
@@ -49,11 +49,11 @@ public class ArticleService {
 
     @Transactional
     public void deleteArticle(Long id,
-                              int articleCategoryId) {
+                              int categoryId) {
 
         articleRepository.deleteArticle(id);
 
-        articleCategoryRepository.updateArticleCount(articleCategoryId, -1);
+        articleCategoryRepository.updateArticleCount(categoryId, -1);
     }
 
     @Transactional(readOnly = true)

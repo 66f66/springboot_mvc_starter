@@ -40,7 +40,7 @@ async function onSignInSubmit(e) {
     
     const response = await fetch('/auth/sign-in/pre-process', {
       method: 'POST',
-      headers: window.customHeaders,
+      headers: window.customJsonHeaders,
       body: JSON.stringify(body),
     })
     

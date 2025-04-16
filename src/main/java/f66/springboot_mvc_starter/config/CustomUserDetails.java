@@ -1,6 +1,5 @@
 package f66.springboot_mvc_starter.config;
 
-import f66.springboot_mvc_starter.dto.UserRoleConstants;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,18 +26,6 @@ public class CustomUserDetails implements UserDetails {
         this.username = username;
         this.password = password;
         this.authorities = authorities;
-    }
-
-    public boolean isAdmin() {
-
-        if (this.admin == null) {
-
-            this.admin = authorities.stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .anyMatch(UserRoleConstants.ROLE_ADMIN::equals);
-        }
-
-        return this.admin;
     }
 
     public boolean hasAuthority(String authority) {

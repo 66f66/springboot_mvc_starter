@@ -21,11 +21,11 @@
 			<!--			category-->
 			<div class="col-4 col-md-2 flex-shrink-0">
 				<label class="form-label" for="article-category">말머리</label>
-				<select class="form-select" id="article-category" name="articleCategoryId">
-					<option th:each="articleCategory : ${articleCategoryDTOs}"
-					        th:selected="${articleDTO.articleCategory?.id == articleCategory.id}"
-					        th:text="${articleCategory.name}"
-					        th:value="${articleCategory.id}"></option>
+				<select class="form-select" id="article-category" name="categoryId">
+					<option th:each="c : ${categoryDTOs}"
+					        th:selected="${articleDTO?.categoryId == c.id}"
+					        th:text="${c.name}"
+					        th:value="${c.id}"></option>
 				</select>
 			</div>
 			

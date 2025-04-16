@@ -68,7 +68,7 @@ async function onCommentDelete(e) {
     
     const response = await fetch(form.action, {
       method: 'post',
-      headers: window.customHeaders,
+      headers: window.customJsonHeaders,
       body: JSON.stringify(body),
     })
     
@@ -149,7 +149,7 @@ async function onCommentSubmit(e) {
     
     const response = await fetch(form.action, {
       method: 'post',
-      headers: window.customHeaders,
+      headers: window.customJsonHeaders,
       body: JSON.stringify(body),
     })
     

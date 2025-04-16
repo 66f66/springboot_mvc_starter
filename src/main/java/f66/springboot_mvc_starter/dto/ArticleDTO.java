@@ -29,19 +29,17 @@ public class ArticleDTO {
 
     private OffsetDateTime updatedAt;
 
+    private int categoryId;
+
+    private ArticleCategoryDTO category;
+
     private Long userId;
 
     private UserDTO user;
-
-    private int articleCategoryId;
-
-    private ArticleCategoryDTO articleCategory;
 
     private Boolean voted;
 
     private int voteCount;
 
     private int commentCount;
-
-    private Long viewCount;
 }

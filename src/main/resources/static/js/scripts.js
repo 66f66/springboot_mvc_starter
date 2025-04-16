@@ -10,8 +10,12 @@ const springSecurityHeaders = {
   [springSecurityCsrfHeader]: springSecurityCsrfToken,
 }
 
-window.customHeaders = {
+window.customJsonHeaders = {
   ...commonJsonHeaders,
+  ...springSecurityHeaders,
+}
+
+window.customHeaders = {
   ...springSecurityHeaders,
 }
 
@@ -36,3 +40,7 @@ window.formattedErrors = function formattedErrors(errors) {
     .map(error => `• ${error}`)
     .join('\n')
 }
+
+// global variables
+window.nicknameRegex = /^[가-힣a-zA-Z0-9]{2,10}$/
+window.passwordRegex = /^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':",./<>?]{8,12}$/

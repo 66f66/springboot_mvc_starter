@@ -44,11 +44,17 @@ dependencies {
     //    https://mvnrepository.com/artifact/nz.net.ultraq.thymeleaf/thymeleaf-layout-dialect
     implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
 
-    // https://mvnrepository.com/artifact/org.webjars/font-awesome
+    //    https://mvnrepository.com/artifact/org.webjars/font-awesome
     implementation 'org.webjars:font-awesome:6.7.2'
 
     //    https://github.com/commonmark/commonmark-java
     implementation 'org.commonmark:commonmark:0.24.0'
+
+    //    https://mvnrepository.com/artifact/me.paulschwarz/spring-dotenv/4.0.0
+    implementation 'me.paulschwarz:spring-dotenv:4.0.0'
+
+    //    https://cloudinary.com/documentation/java_quickstart
+    implementation 'com.cloudinary:cloudinary-http5:2.0.0'
 }
 
 tasks.named('test') {

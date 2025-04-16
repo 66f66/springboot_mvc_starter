@@ -69,7 +69,7 @@ public class ArticleController {
 
         List<ArticleCategoryDTO> articleCategoryDTOs = articleCategoryService.getCategories();
 
-        model.addAttribute("articleCategoryDTOs", articleCategoryDTOs);
+        model.addAttribute("categoryDTOs", articleCategoryDTOs);
 
         return "article_form";
     }
@@ -104,7 +104,7 @@ public class ArticleController {
         ArticleDTO articleDTO = articleService.getArticleByIdAndUserId(id, user.getId())
                 .orElseThrow(ForbiddenException::new);
 
-        articleService.deleteArticle(id, articleDTO.getArticleCategoryId());
+        articleService.deleteArticle(id, articleDTO.getCategoryId());
 
         redirectAttributes.addFlashAttribute("toast",
                 ToastDTO.createToast("게시물을 삭제했습니다."));

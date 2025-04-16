@@ -20,9 +20,9 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/article/{id}/delete")
     public String deleteArticle(@PathVariable Long id,
-                                @RequestParam int articleCategoryId) {
+                                @RequestParam int categoryId) {
 
-        articleService.deleteArticle(id, articleCategoryId);
+        articleService.deleteArticle(id, categoryId);
 
         return "redirect:/article";
     }

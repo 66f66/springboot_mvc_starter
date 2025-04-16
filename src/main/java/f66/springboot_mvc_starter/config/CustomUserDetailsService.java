@@ -27,7 +27,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("username not found"));
 
         Set<SimpleGrantedAuthority> authorities = Collections
-                .singleton(new SimpleGrantedAuthority(userDTO.getRole()));
+                .singleton(new SimpleGrantedAuthority(userDTO.getRole().getName()));
 
         return new CustomUserDetails(
                 userDTO.getId(),

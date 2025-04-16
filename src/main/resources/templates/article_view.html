@@ -19,8 +19,8 @@
 		<!--		category name-->
 		<a
 				class="text-decoration-none"
-				th:href="@{/article(categoryId=${articleDTO.articleCategory.id})}"
-				th:text="${articleDTO.articleCategory.name}"
+				th:href="@{/article(categoryId=${articleDTO.category.id})}"
+				th:text="${articleDTO.category.name}"
 		></a>
 		<!--	article title-->
 		<p class="text-break" style="white-space: pre-line;" th:text="${articleDTO.title}"></p>
@@ -77,11 +77,12 @@
 					</button>
 				</form>
 				
+				<!--				admin article delete-->
 				<form method="post" onsubmit="return confirm('정말 삭제하시겠습니까?')"
 				      sec:authorize="hasRole('ADMIN')"
 				      th:action="@{/admin/article/{id}/delete(id=${articleDTO.id})}"
 				>
-					<input name="articleCategoryId" th:value="${articleDTO.articleCategory.id}" type="hidden"/>
+					<input name="categoryId" th:value="${articleDTO.category.id}" type="hidden"/>
 					<button class="btn btn-outline-danger btn-sm" type="submit">
 						관리자 삭제
 					</button>

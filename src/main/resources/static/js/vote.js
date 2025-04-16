@@ -14,7 +14,7 @@ async function onVote(e) {
     
     const response = await fetch(`/article/${articleId}/vote`, {
       method: 'get',
-      headers: window.customHeaders,
+      headers: window.customJsonHeaders,
     })
     
     if (!response.ok) {

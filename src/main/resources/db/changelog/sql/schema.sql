@@ -1,4 +1,9 @@
--- auto-generated definition
+create table user_roles
+(
+    id   int                             not null,
+    name varchar(25) default 'ROLE_USER' not null
+);
+
 create table users
 (
     id         bigint generated always as identity
@@ -14,9 +19,6 @@ create table users
     updated_at timestamp with time zone
 );
 
-alter table users
-    owner to postgres;
-
 create table article_categories
 (
     id            integer generated always as identity
@@ -28,11 +30,6 @@ create table article_categories
     article_count bigint default 0 not null
 );
 
-alter table article_categories
-    owner to postgres;
-
-
--- auto-generated definition
 create table articles
 (
     id                  bigint generated always as identity
@@ -42,20 +39,17 @@ create table articles
     content             text                                   not null,
     created_at          timestamp with time zone default now() not null,
     updated_at          timestamp with time zone,
+    comment_count       integer                  default 0     not null,
+    vote_count          integer                  default 0     not null,
     user_id             bigint
         constraint articles_users_id_fk
             references users
             on delete set null,
-    comment_count       integer                  default 0     not null,
-    vote_count          integer                  default 0     not null,
     article_category_id integer                  default 1
         constraint articles__id_fk
             references article_categories
             on delete set null
 );
-
-alter table articles
-    owner to postgres;
 
 create index articles_title_index
     on articles (title);
@@ -63,7 +57,12 @@ create index articles_title_index
 create index articles_user_id_index
     on articles (user_id);
 
--- auto-generated definition
+create index articles_vote_count_index
+    on articles (vote_count desc);
+
+create index articles_vote_count_index
+    on articles (comment_count desc);
+
 create table article_votes
 (
     article_id bigint                                 not null
@@ -74,16 +73,12 @@ create table article_votes
         constraint article_voters_users_id_fk
             references users
             on delete set null,
-    created_at timestamp with time zone default now() not null,
     active     boolean                  default true  not null,
     constraint article_voters_pk
-        primary key (user_id, article_id)
+        primary key (user_id, article_id),
+    created_at timestamp with time zone default now() not null
 );
 
-alter table article_votes
-    owner to postgres;
-
--- auto-generated definition
 create table comments
 (
     id         bigint generated always as identity
@@ -106,6 +101,3 @@ create table comments
             on delete set null,
     depth      integer                  default 0     not null
 );
-
-alter table comments
-    owner to postgres;

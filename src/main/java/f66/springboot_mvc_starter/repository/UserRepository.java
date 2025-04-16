@@ -10,7 +10,11 @@ public interface UserRepository {
 
     void insertLocalUser(UserDTO userDTO);
 
-    Optional<UserDTO> selectByUsername(String username);
+    void updateUser(UserDTO userDTO);
 
     boolean existsByUsername(String username);
+
+    Optional<UserDTO> selectById(Long id);
+
+    Optional<UserDTO> selectByUsername(String username);
 }

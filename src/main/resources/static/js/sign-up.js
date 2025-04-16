@@ -35,7 +35,7 @@ async function onSignUpSubmit(e) {
   // validate nickname
   const nickname = form.querySelector('input[name="nickname"]')
   const nicknameVal = nickname.value.trim()
-  const nicknameRegex = /^[가-힣a-zA-Z0-9]{2,10}$/
+  const nicknameRegex = window.nicknameRegex
   const nicknameFeedback = form.querySelector('#nickname-invalid-feedback')
   
   if (!nicknameRegex.test(nicknameVal)) {
@@ -52,7 +52,7 @@ async function onSignUpSubmit(e) {
   // validate password
   const password = form.querySelector('input[name="password"]')
   const passwordVal = password.value.trim()
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\-=\[\]{};':",./<>?])\S{8,32}$/
+  const passwordRegex = window.passwordRegex
   const passwordFeedback = form.querySelector('#password-invalid-feedback')
   
   if (!passwordRegex.test(passwordVal)) {
@@ -92,7 +92,7 @@ async function onSignUpSubmit(e) {
     
     try {
       const response = await fetch(`/auth/exists-by-username?username=${usernameVal}`, {
-        headers: customHeaders,
+        headers: customJsonHeaders,
         method: 'GET',
       })
       
