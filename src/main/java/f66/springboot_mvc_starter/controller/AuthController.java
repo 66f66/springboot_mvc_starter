@@ -1,6 +1,5 @@
 package f66.springboot_mvc_starter.controller;
 
-import f66.springboot_mvc_starter.dto.ApiResponse;
 import f66.springboot_mvc_starter.dto.ToastDTO;
 import f66.springboot_mvc_starter.dto.UserDTO;
 import f66.springboot_mvc_starter.dto.ValidationGroups;
@@ -9,6 +8,7 @@ import f66.springboot_mvc_starter.exception.UserBadInputException;
 import f66.springboot_mvc_starter.exception.WrongUsernameOrPasswordException;
 import f66.springboot_mvc_starter.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -58,9 +58,9 @@ public class AuthController {
 
     @PreAuthorize("isAnonymous()")
     @GetMapping("/exists-by-username")
-    public ApiResponse existsByUsername(@RequestParam String username) {
+    public ResponseEntity<Map<String, Boolean>> existsByUsername(@RequestParam String username) {
 
-        return ApiResponse.bodyOk(Map.of("existsByUsername", userService.existsByUsername(username)));
+        return ResponseEntity.ok(Map.of("existsByUsername", userService.existsByUsername(username)));
     }
 
     @PreAuthorize("isAnonymous()")
@@ -75,16 +75,16 @@ public class AuthController {
 
     @PreAuthorize("isAnonymous()")
     @PostMapping("/sign-in/pre-process")
-    public ApiResponse signInPreProcess(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<Void> signInPreProcess(@RequestBody UserDTO userDTO) {
 
         try {
 
             userService.signInPreProcess(userDTO);
-
-            return ApiResponse.statusOk();
         } catch (WrongUsernameOrPasswordException e) {
 
-            return ApiResponse.statusBadRequest();
+            return ResponseEntity.badRequest().build();
         }
+
+        return ResponseEntity.ok().build();
     }
 }

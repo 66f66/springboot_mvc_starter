@@ -1,19 +1,23 @@
 package f66.springboot_mvc_starter.controller;
 
 import f66.springboot_mvc_starter.config.CustomUserDetails;
-import f66.springboot_mvc_starter.dto.ApiResponse;
 import f66.springboot_mvc_starter.dto.UserDTO;
 import f66.springboot_mvc_starter.dto.UserImageDTO;
 import f66.springboot_mvc_starter.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/user")
@@ -36,29 +40,37 @@ public class UserController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/update")
-    public ApiResponse updateUser(@AuthenticationPrincipal CustomUserDetails user,
-                                  @RequestBody @Valid UserDTO userDTO) {
+    public ResponseEntity<Void> updateUser(@AuthenticationPrincipal CustomUserDetails user,
+                                           @RequestBody @Valid UserDTO userDTO) {
 
         userDTO.setId(user.getId());
 
         userService.updateUser(userDTO);
 
-        return ApiResponse.statusOk();
+        return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/update/image")
-    public ApiResponse updateImage(@AuthenticationPrincipal CustomUserDetails user,
-                                   @ModelAttribute UserImageDTO userImageDTO) {
+    public ResponseEntity<Map<String, String>> updateImage(@AuthenticationPrincipal CustomUserDetails user,
+                                                           @ModelAttribute UserImageDTO userImageDTO,
+                                                           Authentication authentication) {
 
+        UserDTO userDTO;
         try {
 
-            userService.updateUserProfileImage(user.getId(), userImageDTO);
+            userDTO = userService.updateUserProfileImage(user.getId(), userImageDTO);
         } catch (IOException e) {
 
-            return ApiResponse.statusInternalServerError();
+            return ResponseEntity.internalServerError().build();
         }
 
-        return ApiResponse.statusOk();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        userDetails.setImageUrl(userDTO.getImage().getUrl());
+
+        SecurityContext context = SecurityContextHolder.getContext();
+        context.setAuthentication(authentication);
+
+        return ResponseEntity.ok().body(Map.of("imageUrl", userDTO.getImage().getUrl()));
     }
 }

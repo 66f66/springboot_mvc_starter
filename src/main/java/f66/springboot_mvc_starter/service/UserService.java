@@ -112,8 +112,8 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUserProfileImage(Long userId,
-                                       UserImageDTO userImageDTO) throws IOException {
+    public UserDTO updateUserProfileImage(Long userId,
+                                          UserImageDTO userImageDTO) throws IOException {
 
         MultipartFile file = userImageDTO.getFile();
 
@@ -149,5 +149,7 @@ public class UserService {
         userDTO.setImageId(userImageDTO.getId());
 
         userRepository.updateUser(userDTO);
+
+        return userDTO;
     }
 }

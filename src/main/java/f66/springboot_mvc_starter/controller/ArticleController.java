@@ -12,6 +12,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -36,12 +38,12 @@ public class ArticleController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}/vote")
-    public ApiResponse vote(@AuthenticationPrincipal CustomUserDetails user,
-                            @PathVariable Long id) {
+    public ResponseEntity<Map<String, VoteResult>> vote(@AuthenticationPrincipal CustomUserDetails user,
+                                                        @PathVariable Long id) {
 
         VoteResult result = articleVoteService.voteArticle(id, user.getId());
 
-        return ApiResponse.bodyOk(Map.of("result", result));
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("result", result));
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -76,8 +78,8 @@ public class ArticleController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping
-    public ApiResponse createOrUpdateArticle(@AuthenticationPrincipal CustomUserDetails user,
-                                             @RequestBody @Valid ArticleDTO articleDTO) {
+    public ResponseEntity<Map<String, Long>> createOrUpdateArticle(@AuthenticationPrincipal CustomUserDetails user,
+                                                                   @RequestBody @Valid ArticleDTO articleDTO) {
 
         if (articleDTO.getId() != null) {
 
@@ -87,12 +89,12 @@ public class ArticleController {
 
             articleService.updateArticle(oldArticleDTO, articleDTO);
 
-            return ApiResponse.bodyOk(Map.of("id", articleDTO.getId()));
+            return ResponseEntity.ok(Map.of("id", articleDTO.getId()));
         }
 
         articleService.createArticle(user.getId(), articleDTO);
 
-        return ApiResponse.bodyCreated(Map.of("id", articleDTO.getId()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id", articleDTO.getId()));
     }
 
     @PreAuthorize("isAuthenticated()")

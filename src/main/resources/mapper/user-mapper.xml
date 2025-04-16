@@ -39,7 +39,9 @@
         SELECT u.*,
                ur.name         as "role.name",
                ur.display_name as "role.displayName",
-               ui.url          as "image.url"
+               ui.id           as "image.id",
+               ui.url          as "image.url",
+               ui.public_id    as "image.publicId"
         FROM users u
                  join user_roles ur on u.role_id = ur.id
                  LEFT JOIN user_images ui ON u.image_id = ui.id

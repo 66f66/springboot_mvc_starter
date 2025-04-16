@@ -1,14 +1,16 @@
 package f66.springboot_mvc_starter.controller;
 
-import f66.springboot_mvc_starter.dto.ApiResponse;
 import f66.springboot_mvc_starter.exception.ForbiddenException;
 import f66.springboot_mvc_starter.exception.ResourceNotFoundException;
+import f66.springboot_mvc_starter.exception.UserBadInputException;
 import f66.springboot_mvc_starter.util.AuthUtil;
 import f66.springboot_mvc_starter.util.HttpUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -34,7 +36,7 @@ public class GlobalExceptionHandler {
     private final AuthUtil authUtil;
 
     @ExceptionHandler({ResourceNotFoundException.class})
-    public Object handleNotFoundException(Exception ignoredEx,
+    public Object handleNotFoundException(Exception ex,
                                           HttpServletRequest request,
                                           HttpServletResponse response) throws IOException {
 
@@ -46,11 +48,14 @@ public class GlobalExceptionHandler {
             response.sendRedirect("/error/404");
         }
 
-        return ApiResponse.statusNotFound();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
     }
 
-    @ExceptionHandler({MethodNotAllowedException.class, HttpRequestMethodNotSupportedException.class, UnsupportedOperationException.class})
-    public Object handleMethodNotAllowed(Exception ignoredEx,
+    @ExceptionHandler({MethodNotAllowedException.class,
+            HttpRequestMethodNotSupportedException.class,
+            UnsupportedOperationException.class
+    })
+    public Object handleMethodNotAllowed(Exception ex,
                                          HttpServletRequest request,
                                          HttpServletResponse response) throws IOException {
 
@@ -62,7 +67,23 @@ public class GlobalExceptionHandler {
             response.sendRedirect("/error/400");
         }
 
-        return ApiResponse.statusNotFound();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(UserBadInputException.class)
+    public Object handleUserBadInputException(UserBadInputException ex,
+                                              HttpServletRequest request,
+                                              HttpServletResponse response) throws IOException {
+
+        boolean isJsonRequest = httpUtil.isJsonRequest(request);
+
+        if (!isJsonRequest) {
+
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.sendRedirect("/error/400");
+        }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -85,7 +106,12 @@ public class GlobalExceptionHandler {
                 .map(FieldError::getDefaultMessage)
                 .toList();
 
-        return ApiResponse.bodyBadRequest(Map.of("message", "입력 값에 오류가 있습니다.", "errors", errors));
+        Map<String, Object> body = Map.of(
+                "message", ex.getMessage(),
+                "errors", errors
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
     @ExceptionHandler({ForbiddenException.class, AccessDeniedException.class, AuthenticationException.class})
@@ -117,9 +143,9 @@ public class GlobalExceptionHandler {
 
         if (isAnonymousUser) {
 
-            return ApiResponse.statusUnauthorized();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return ApiResponse.statusForbidden();
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 }

@@ -63,5 +63,5 @@ public class UserDTO {
 
     private Long imageId;
 
-    private UserImageDTO image;
+    private UserImageDTO image = new UserImageDTO();
 }

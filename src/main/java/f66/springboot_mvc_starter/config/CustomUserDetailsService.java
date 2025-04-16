@@ -32,7 +32,9 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new CustomUserDetails(
                 userDTO.getId(),
                 userDTO.getUsername(),
+                userDTO.getNickname(),
                 userDTO.getPassword(),
+                userDTO.getImage().getUrl(),
                 authorities
         );
     }
