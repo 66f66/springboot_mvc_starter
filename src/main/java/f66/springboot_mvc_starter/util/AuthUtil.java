@@ -2,6 +2,7 @@ package f66.springboot_mvc_starter.util;
 
 import f66.springboot_mvc_starter.config.CustomUserDetails;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -35,5 +36,19 @@ public class AuthUtil {
         }
 
         return Optional.empty();
+    }
+
+    /**
+     * @param authentication java spring security Authentication 객체
+     * @param newImageUrl    업데이트된 이미지의 url
+     */
+    public void updateContextUserImageUrl(Authentication authentication,
+                                          String newImageUrl) {
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        userDetails.setImageUrl(newImageUrl);
+
+        SecurityContext context = SecurityContextHolder.getContext();
+        context.setAuthentication(authentication);
     }
 }

@@ -132,20 +132,26 @@
                             </span>
 						</a>
 						
-						<!--						article writer, date, vote count(mobile only)-->
+						<!--						article user, date, vote count(mobile only)-->
 						<div class="d-block d-md-none mt-1">
-							<small class="text-muted">
+							<div class="d-flex align-items-center gap-2"
+							     th:with="fallbackUrl = 'https://avatar.iran.liara.run/username?username=' + ${article.user.nickname}">
+								<img alt=""
+								     class="avatar"
+								     th:src="${article.user.image?.id != null ? article.user.image.id : fallbackUrl}">
 								<a class="text-decoration-none"
 								   th:href="@{/article(userId=${article.user.id})}"
 								   th:text="${article.user.nickname}">
 								</a>
+							</div>
+							<small class="text-muted">
 								<span th:text="${#temporals.format(article.createdAt, 'yyyy-MM-dd', 'Asia/Seoul')}"></span>
 								<span th:if="${article.voteCount != 0}" th:text="| 추천 ${article.voteCount}|"></span>
 							</small>
 						</div>
 					</div>
 					
-					<!--					article writer(desktop only)-->
+					<!--					article user(desktop only)-->
 					<div class="col-md-2 text-center d-none d-md-block">
 						<a class="text-decoration-none"
 						   th:href="@{/article(userId=${article.user.id})}"

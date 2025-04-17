@@ -4,14 +4,13 @@ import f66.springboot_mvc_starter.config.CustomUserDetails;
 import f66.springboot_mvc_starter.dto.UserDTO;
 import f66.springboot_mvc_starter.dto.UserImageDTO;
 import f66.springboot_mvc_starter.service.UserService;
+import f66.springboot_mvc_starter.util.AuthUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +24,7 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final AuthUtil authUtil;
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/settings")
@@ -40,14 +40,17 @@ public class UserController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/update")
-    public ResponseEntity<Void> updateUser(@AuthenticationPrincipal CustomUserDetails user,
-                                           @RequestBody @Valid UserDTO userDTO) {
+    public ResponseEntity<Map<String, UserDTO>> updateUser(@AuthenticationPrincipal CustomUserDetails user,
+                                                           @RequestBody @Valid UserDTO userDTO,
+                                                           Authentication authentication) {
 
         userDTO.setId(user.getId());
 
-        userService.updateUser(userDTO);
+        UserDTO updatedUserDTO = userService.updateUser(userDTO);
 
-        return ResponseEntity.ok().build();
+        authUtil.updateContextUserImageUrl(authentication, updatedUserDTO.getImage().getUrl());
+
+        return ResponseEntity.ok().body(Map.of("user", updatedUserDTO));
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -57,6 +60,7 @@ public class UserController {
                                                            Authentication authentication) {
 
         String imageUrl;
+
         try {
 
             imageUrl = userService.updateUserProfileImage(user.getId(), userImageDTO).getUrl();
@@ -65,11 +69,7 @@ public class UserController {
             return ResponseEntity.internalServerError().build();
         }
 
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        userDetails.setImageUrl(imageUrl);
-
-        SecurityContext context = SecurityContextHolder.getContext();
-        context.setAuthentication(authentication);
+        authUtil.updateContextUserImageUrl(authentication, imageUrl);
 
         return ResponseEntity.ok().body(Map.of("imageUrl", imageUrl));
     }

@@ -1,8 +1,10 @@
 package f66.springboot_mvc_starter.config;
 
 import f66.springboot_mvc_starter.dto.UserDTO;
+import f66.springboot_mvc_starter.dto.UserImageDTO;
 import f66.springboot_mvc_starter.dto.UserRoleDTO;
 import f66.springboot_mvc_starter.exception.ResourceNotFoundException;
+import f66.springboot_mvc_starter.repository.UserImageRepository;
 import f66.springboot_mvc_starter.repository.UserRepository;
 import f66.springboot_mvc_starter.repository.UserRoleRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +24,11 @@ public class DefaultInitializer {
 
     private final UserRoleRepository userRoleRepository;
     private final UserRepository userRepository;
+    private final UserImageRepository userImageRepository;
     private final PasswordEncoder passwordEncoder;
-    private final String ROLE_ADMIN = "ROLE_ADMIN";
+
+    @Value("${config.default-image-url}")
+    private String defaultImageUrl;
 
     @Value("${config.admin-password}")
     private String adminPassword;
@@ -33,6 +38,8 @@ public class DefaultInitializer {
     @Profile("seed")
     public CommandLineRunner init() {
         return args -> {
+
+            final String ROLE_ADMIN = "ROLE_ADMIN";
 
             if (userRoleRepository.count() == 0) {
 
@@ -60,6 +67,13 @@ public class DefaultInitializer {
                         .build();
 
                 userRepository.insertLocalUser(user);
+
+                UserImageDTO userImageDTO = UserImageDTO.builder()
+                        .userId(user.getId())
+                        .url(defaultImageUrl + user.getNickname())
+                        .build();
+
+                userImageRepository.insertUserImage(userImageDTO);
             }
         };
     }

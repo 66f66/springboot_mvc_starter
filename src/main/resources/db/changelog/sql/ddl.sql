@@ -22,7 +22,7 @@ create table users
     role_id    integer                  default 1
         constraint users_user_roles_id_fk
             references user_roles
-            on delete set null
+            on delete cascade
 );
 
 create table user_images
@@ -30,8 +30,8 @@ create table user_images
     id                 bigint generated always as identity
         constraint user_images_pk
             primary key,
-    public_id          varchar(50)                            not null,
-    original_file_name varchar(500)                           not null,
+    public_id          varchar(50),
+    original_file_name varchar(500),
     url                varchar(500)                           not null,
     created_at         timestamp with time zone default now() not null,
     updated_at         timestamp with time zone default now(),

@@ -1,5 +1,6 @@
 package f66.springboot_mvc_starter.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,7 @@ public class UserDTO {
     )
     private String nickname;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotBlank(message = "비밀번호는 필수 입력값입니다", groups = ValidationGroups.Create.class)
     @Pattern(
             regexp = "^[A-Za-z0-9!@#$%^&*()_+\\-=\\[\\]{};':\",./<>?]{8,12}$",
@@ -61,5 +63,5 @@ public class UserDTO {
 
     private UserRoleDTO role;
 
-    private UserImageDTO image = new UserImageDTO();
+    private UserImageDTO image;
 }

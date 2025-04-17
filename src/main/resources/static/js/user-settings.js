@@ -96,7 +96,6 @@ async function onUserUpdate(e) {
       const imageUrl = data.imageUrl
       
       navbarUserImage.src = imageUrl
-      
     } catch (err) {
       
       alert('이미지를 저장하지 못했습니다.')
@@ -179,6 +178,11 @@ async function onUserUpdate(e) {
       
       throw new Error()
     }
+    
+    const data = await response.json()
+    const user = data.user
+    
+    navbarUserImage.src = user.image.url
     
     alert('변경사항을 저장했습니다.')
     

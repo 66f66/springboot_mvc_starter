@@ -12,6 +12,7 @@ import f66.springboot_mvc_starter.repository.UserRepository;
 import f66.springboot_mvc_starter.util.CloudinaryUtil;
 import f66.springboot_mvc_starter.util.FileUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +31,9 @@ public class UserService {
     private final UserImageRepository userImageRepository;
     private final FileUtil fileUtil;
     private final CloudinaryUtil cloudinaryUtil;
+
+    @Value("${config.default-image-url}")
+    private String defaultImageUrl;
 
     @Transactional
     public void createLocalUser(UserDTO userDTO) {
@@ -61,6 +64,12 @@ public class UserService {
                 throw new UniqueConstraintException("이미 사용중인 아이디입니다.");
             }
         }
+
+        UserImageDTO userImageDTO = UserImageDTO.builder()
+                .url(defaultImageUrl + userDTO.getNickname())
+                .build();
+
+        userImageRepository.insertUserImage(userImageDTO);
     }
 
     @Transactional(readOnly = true)
@@ -89,14 +98,27 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUser(UserDTO userDTO) {
+    public UserDTO updateUser(UserDTO userDTO) {
 
         UserDTO oldUser = userRepository.selectById(userDTO.getId())
                 .orElseThrow(ResourceNotFoundException::new);
 
-        if (oldUser.getUsername().equals(userDTO.getUsername())) {
+        if (oldUser.getNickname().equals(userDTO.getNickname())) {
 
             userDTO.setUsername(null);
+        }
+
+        if (userDTO.getNickname() != null) {
+
+            UserImageDTO userImageDTO = userImageRepository.selectByUserId(userDTO.getId())
+                    .orElseThrow(ResourceNotFoundException::new);
+
+            if (userImageDTO.getPublicId() == null) {
+
+                userImageDTO.setUrl(defaultImageUrl + userDTO.getNickname());
+
+                userImageRepository.updateUserImage(userImageDTO);
+            }
         }
 
         if (userDTO.getNewPassword() != null && userDTO.getOldPassword() != null) {
@@ -110,6 +132,9 @@ public class UserService {
         }
 
         userRepository.updateUser(userDTO);
+
+        return userRepository.selectById(userDTO.getId())
+                .orElseThrow(ResourceNotFoundException::new);
     }
 
     @Transactional
@@ -132,22 +157,21 @@ public class UserService {
         userImageDTO.setUrl(result.getUrl());
         userImageDTO.setOriginalFileName(file.getOriginalFilename());
 
-        Optional<UserImageDTO> optionalOldUserImageDTO = userImageRepository.selectByUserId(userId);
+        UserImageDTO oldImageDTO = userImageRepository.selectByUserId(userId)
+                .orElseThrow(ResourceNotFoundException::new);
 
-        if (optionalOldUserImageDTO.isPresent()) {
+        if (oldImageDTO.getPublicId() != null) {
 
-            UserImageDTO oldUserImageDTO = optionalOldUserImageDTO.get();
-
-            userImageDTO.setId(oldUserImageDTO.getId());
+            userImageDTO.setId(oldImageDTO.getId());
 
             userImageRepository.updateUserImage(userImageDTO);
 
-            cloudinaryUtil.deleteFile(oldUserImageDTO.getPublicId());
+            cloudinaryUtil.deleteFile(oldImageDTO.getPublicId());
         } else {
 
             userImageDTO.setUserId(userId);
 
-            userImageRepository.insertUserImage(userImageDTO);
+            userImageRepository.updateUserImage(userImageDTO);
         }
 
         return userImageDTO;
