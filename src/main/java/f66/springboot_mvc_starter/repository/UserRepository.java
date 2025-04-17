@@ -14,6 +14,8 @@ public interface UserRepository {
 
     boolean existsByUsername(String username);
 
+    long count();
+
     Optional<UserDTO> selectById(Long id);
 
     Optional<UserDTO> selectByUsername(String username);

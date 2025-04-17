@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: prod
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
@@ -34,3 +36,6 @@ logging:
 
 cloudinary:
   url: ${CLOUDINARY_URL}
+
+config:
+  admin-password: ${ADMIN_PASSWORD}

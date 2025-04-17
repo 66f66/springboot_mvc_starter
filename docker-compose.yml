@@ -22,6 +22,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/dev_springboot_mvc_starter
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+        - SPRING_PROFILES_ACTIVE=dev
 
 volumes:
   postgres_data:

@@ -21,6 +21,11 @@
         SELECT EXISTS (SELECT 1 FROM users WHERE username = #{value})
     </select>
 
+    <select id="count" resultType="Long">
+        select COUNT(*)
+        from users
+    </select>
+
     <select id="selectById" parameterType="Long" resultType="UserDTO">
         select u.*,
                ur.name         as "role.name",

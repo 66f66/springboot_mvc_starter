@@ -13,7 +13,7 @@ spring:
       max-request-size: 10MB
       enabled: true
   liquibase:
-    enabled: true
+    enabled: false
     url: jdbc:postgresql://localhost:5432/dev_springboot_mvc_starter
     user: postgres
     password: postgres
@@ -29,8 +29,11 @@ mybatis:
 logging:
   level:
     root: ERROR
-    f66.springboot_mvc_starter: ERROR
+    f66.springboot_mvc_starter: INFO
     org.springframework.web: ERROR
 
 cloudinary:
   url: ${CLOUDINARY_URL}
+
+config:
+  admin-password: ${ADMIN_PASSWORD}
