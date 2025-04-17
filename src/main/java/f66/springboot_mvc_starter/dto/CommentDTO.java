@@ -33,9 +33,9 @@ public class CommentDTO {
 
     private ArticleDTO article;
 
-    private Long parentId;
+    private Long parentCommentId;
 
-    private UserDTO parent;
+    private String parentCommentUserNickname;
 
     private int depth;
 }

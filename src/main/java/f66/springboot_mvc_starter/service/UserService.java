@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -112,8 +113,8 @@ public class UserService {
     }
 
     @Transactional
-    public UserDTO updateUserProfileImage(Long userId,
-                                          UserImageDTO userImageDTO) throws IOException {
+    public UserImageDTO updateUserProfileImage(Long userId,
+                                               UserImageDTO userImageDTO) throws IOException {
 
         MultipartFile file = userImageDTO.getFile();
 
@@ -131,25 +132,24 @@ public class UserService {
         userImageDTO.setUrl(result.getUrl());
         userImageDTO.setOriginalFileName(file.getOriginalFilename());
 
-        UserDTO userDTO = userRepository.selectById(userId)
-                .orElseThrow(ResourceNotFoundException::new);
+        Optional<UserImageDTO> optionalOldUserImageDTO = userImageRepository.selectByUserId(userId);
 
-        if (userDTO.getImageId() != null) {
+        if (optionalOldUserImageDTO.isPresent()) {
 
-            userImageDTO.setId(userDTO.getImageId());
+            UserImageDTO oldUserImageDTO = optionalOldUserImageDTO.get();
+
+            userImageDTO.setId(oldUserImageDTO.getId());
 
             userImageRepository.updateUserImage(userImageDTO);
 
-            cloudinaryUtil.deleteFile(userDTO.getImage().getPublicId());
+            cloudinaryUtil.deleteFile(oldUserImageDTO.getPublicId());
         } else {
+
+            userImageDTO.setUserId(userId);
 
             userImageRepository.insertUserImage(userImageDTO);
         }
 
-        userDTO.setImageId(userImageDTO.getId());
-
-        userRepository.updateUser(userDTO);
-
-        return userDTO;
+        return userImageDTO;
     }
 }

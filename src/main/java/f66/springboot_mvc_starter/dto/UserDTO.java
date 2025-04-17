@@ -61,7 +61,5 @@ public class UserDTO {
 
     private UserRoleDTO role;
 
-    private Long imageId;
-
     private UserImageDTO image = new UserImageDTO();
 }

@@ -29,7 +29,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
             response.setContentType("application/json");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{\"status\": \"UNAUTHORIZED\", \"message\": \"Authentication required\"}");
+            response.getWriter().write("{\"status\": \"UNAUTHORIZED\", \"message\": \"인증이 필요합니다.\"}");
         } else {
 
             String redirect = "/auth/sign-in?redirect_url=" + URLEncoder.encode(httpUtil.getRequestURIWithQuery(request), StandardCharsets.UTF_8);

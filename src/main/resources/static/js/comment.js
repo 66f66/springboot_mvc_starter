@@ -141,7 +141,7 @@ async function onCommentSubmit(e) {
   const body = {
     content: contentValue,
     articleId: form.articleId?.value,
-    parentId: form.parentId?.value,
+    parentCommentId: form.parentCommentId?.value,
     id: form.id?.value,
   }
   

@@ -56,21 +56,21 @@ public class UserController {
                                                            @ModelAttribute UserImageDTO userImageDTO,
                                                            Authentication authentication) {
 
-        UserDTO userDTO;
+        String imageUrl;
         try {
 
-            userDTO = userService.updateUserProfileImage(user.getId(), userImageDTO);
+            imageUrl = userService.updateUserProfileImage(user.getId(), userImageDTO).getUrl();
         } catch (IOException e) {
 
             return ResponseEntity.internalServerError().build();
         }
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        userDetails.setImageUrl(userDTO.getImage().getUrl());
+        userDetails.setImageUrl(imageUrl);
 
         SecurityContext context = SecurityContextHolder.getContext();
         context.setAuthentication(authentication);
 
-        return ResponseEntity.ok().body(Map.of("imageUrl", userDTO.getImage().getUrl()));
+        return ResponseEntity.ok().body(Map.of("imageUrl", imageUrl));
     }
 }

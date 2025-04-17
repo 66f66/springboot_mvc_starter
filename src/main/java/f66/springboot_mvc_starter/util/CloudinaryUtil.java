@@ -16,14 +16,12 @@ import java.util.Map;
 public class CloudinaryUtil {
 
     private final Cloudinary cloudinary;
+    private final ObjectMapper objectMapper;
 
     public CloudinaryUploadResult uploadFile(MultipartFile file, Map<String, String> options) throws IOException {
 
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        Map cloudinaryUploadResult = cloudinary.uploader().upload(file.getBytes(), options);
-
-        return objectMapper.convertValue(cloudinaryUploadResult, CloudinaryUploadResult.class);
+        return objectMapper
+                .convertValue(cloudinary.uploader().upload(file.getBytes(), options), CloudinaryUploadResult.class);
     }
 
     public void deleteFile(String publicId) throws IOException {

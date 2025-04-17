@@ -103,14 +103,14 @@
 		<div class="card-body comment-item">
 			<!--			reply to-->
 			<div class="text-muted small mb-2" th:if="${c.depth > 0}">
-				<span th:text="${c.parent.nickname} + '님에게 답글'"></span>
+				<span th:text="${c.parentCommentUserNickname} + '님에게 답글'"></span>
 			</div>
 			
 			<div class="row">
 				<!--				comment user info-->
 				<a class="text-decoration-none"
 				   th:href="@{/article(userId=${articleDTO.user.id})}"
-				   th:text="${articleDTO.user.nickname}">
+				   th:text="${c.user.nickname}">
 				</a>
 				
 				<!--				comment content-->
@@ -185,7 +185,7 @@
 				<div style="display: none;" th:id="|comment_reply_form_${c.id}|">
 					<form class="comment-reply-form" method="post" th:action="@{/comment/create}">
 						<input name="articleId" th:value="${c.articleId}" type="hidden">
-						<input name="parentId" th:value="${c.id}" type="hidden">
+						<input name="parentCommentId" th:value="${c.id}" type="hidden">
 						<textarea class="form-control mb-2" name="content" placeholder="답글을 작성하세요" rows="5"></textarea>
 						<div class="invalid-feedback"></div>
 						<button class="btn btn-primary btn-sm" type="submit">저장</button>

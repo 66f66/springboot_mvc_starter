@@ -12,7 +12,6 @@
         <set>
             <if test="nickname != null">nickname = #{nickname},</if>
             <if test="password != null">password = #{password},</if>
-            <if test="imageId != null">image_id = #{imageId},</if>
             updated_at = now()
         </set>
         WHERE id = #{id}
@@ -31,7 +30,7 @@
                ui.public_id    as "image.publicId"
         from users u
                  join user_roles ur on u.role_id = ur.id
-                 left join user_images ui on u.image_id = ui.id
+                 left join user_images ui on u.id = ui.user_id
         where u.id = #{id}
     </select>
 
@@ -44,7 +43,7 @@
                ui.public_id    as "image.publicId"
         FROM users u
                  join user_roles ur on u.role_id = ur.id
-                 LEFT JOIN user_images ui ON u.image_id = ui.id
+                 left join user_images ui ON u.id = ui.user_id
         WHERE u.username = #{username}
     </select>
 </mapper>

@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.mybatis.spring.MyBatisSystemException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
@@ -114,6 +115,23 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
+    @ExceptionHandler(MyBatisSystemException.class)
+    public Object handleMyBatisSystemException(MyBatisSystemException ex,
+                                               HttpServletRequest request,
+                                               HttpServletResponse response) throws IOException {
+
+        boolean isJsonRequest = httpUtil.isJsonRequest(request);
+
+        if (!isJsonRequest) {
+
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.sendRedirect("/error/500");
+        }
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("message", ex.getMessage()));
+    }
+
     @ExceptionHandler({ForbiddenException.class, AccessDeniedException.class, AuthenticationException.class})
     public Object handleAuthorizationDeniedException(Exception ignoredE,
                                                      HttpServletRequest request,
@@ -125,16 +143,13 @@ public class GlobalExceptionHandler {
         if (!isJsonRequest) {
 
             String redirect;
-
             if (isAnonymousUser) {
 
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
                 redirect = "/auth/sign-in?redirect_url" + URLEncoder.encode(httpUtil.getRequestURIWithQuery(request), StandardCharsets.UTF_8);
             } else {
 
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-
                 redirect = "/error/403";
             }
 

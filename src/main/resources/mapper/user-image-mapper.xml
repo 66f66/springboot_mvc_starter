@@ -3,8 +3,8 @@
 <mapper namespace="f66.springboot_mvc_starter.repository.UserImageRepository">
 
     <insert id="insertUserImage" parameterType="UserImageDTO" useGeneratedKeys="true" keyProperty="id">
-        insert into user_images (public_id, original_file_name, url)
-        values (#{publicId}, #{originalFileName}, #{url})
+        insert into user_images (public_id, original_file_name, url, user_id)
+        values (#{publicId}, #{originalFileName}, #{url}, #{userId})
     </insert>
 
     <update id="updateUserImage" parameterType="Long">
@@ -17,5 +17,11 @@
         </set>
         WHERE id = #{id}
     </update>
+
+    <select id="selectByUserId" parameterType="Long" resultType="UserImageDTO">
+        select *
+        from user_images
+        where user_id = #{userId}
+    </select>
 
 </mapper>

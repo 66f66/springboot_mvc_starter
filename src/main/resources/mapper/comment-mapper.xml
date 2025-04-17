@@ -3,14 +3,16 @@
 <mapper namespace="f66.springboot_mvc_starter.repository.CommentRepository">
 
     <insert id="insertComment" parameterType="CommentDTO" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO comments (content, user_id, article_id, parent_id, depth)
+        INSERT INTO comments (content, user_id, article_id, parent_comment_id, depth)
         VALUES (#{content},
                 #{userId},
                 #{articleId},
-                #{parentId, jdbcType=BIGINT},
+                #{parentCommentId, jdbcType=BIGINT},
                 CASE
-                    WHEN #{parentId, jdbcType=BIGINT} IS NULL THEN 0
-                    ELSE (SELECT depth + 1 FROM comments WHERE id = #{parentId, jdbcType=BIGINT})
+                    WHEN #{parentCommentId, jdbcType=BIGINT} IS NULL THEN 0
+                    ELSE (SELECT depth + 1
+                          FROM comments
+                          WHERE id = #{parentCommentId, jdbcType=BIGINT})
                     END)
     </insert>
 
@@ -41,40 +43,42 @@
     </select>
 
     <select id="selectCommentsByArticleId" parameterType="long" resultType="CommentDTO">
-        WITH RECURSIVE comment_tree AS (SELECT c.id,
-                                               c.content,
-                                               c.created_at,
-                                               c.updated_at,
-                                               c.user_id,
-                                               u.nickname            as "user.nickname",
-                                               c.article_id,
-                                               c.parent_id,
-                                               CAST(NULL AS varchar) as "parent.nickname",
-                                               c.depth,
-                                               ARRAY [c.id]          AS path
-                                        FROM comments c
-                                                 JOIN users u ON c.user_id = u.id
-                                        WHERE c.parent_id IS NULL
-                                          AND c.article_id = #{articleId}
+        WITH RECURSIVE comment_tree
+                           AS
+                           (SELECT c.id,
+                                   c.content,
+                                   c.created_at,
+                                   c.updated_at,
+                                   c.user_id,
+                                   u.nickname            as "user.nickname",
+                                   c.article_id,
+                                   c.parent_comment_id,
+                                   CAST(NULL AS varchar) as "parentCommentUserNickname",
+                                   c.depth,
+                                   ARRAY [c.id]          AS path
+                            FROM comments c
+                                     JOIN users u ON c.user_id = u.id
+                            WHERE c.parent_comment_id IS NULL
+                              AND c.article_id = #{articleId}
 
-                                        UNION ALL
+                            UNION ALL
 
-                                        SELECT c.id,
-                                               c.content,
-                                               c.created_at,
-                                               c.updated_at,
-                                               c.user_id,
-                                               u.nickname        as "user.nickname",
-                                               c.article_id,
-                                               c.parent_id,
-                                               parent_u.nickname as "parent.nickname",
-                                               ct.depth + 1,
-                                               ct.path || c.id
-                                        FROM comments c
-                                                 JOIN comment_tree ct ON c.parent_id = ct.id
-                                                 JOIN users u ON c.user_id = u.id
-                                                 JOIN comments parent_comment ON c.parent_id = parent_comment.id
-                                                 JOIN users parent_u ON parent_comment.user_id = parent_u.id)
+                            SELECT c.id,
+                                   c.content,
+                                   c.created_at,
+                                   c.updated_at,
+                                   c.user_id,
+                                   u.nickname        as "user.nickname",
+                                   c.article_id,
+                                   c.parent_comment_id,
+                                   parent_u.nickname as "parentCommentUserNickname",
+                                   ct.depth + 1,
+                                   ct.path || c.id
+                            FROM comments c
+                                     JOIN comment_tree ct ON c.parent_comment_id = ct.id
+                                     JOIN users u ON c.user_id = u.id
+                                     JOIN comments parent_comment ON c.parent_comment_id = parent_comment.id
+                                     JOIN users parent_u ON parent_comment.user_id = parent_u.id)
         SELECT *
         FROM comment_tree
         ORDER BY path;

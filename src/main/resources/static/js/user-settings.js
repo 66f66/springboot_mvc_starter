@@ -180,6 +180,8 @@ async function onUserUpdate(e) {
       throw new Error()
     }
     
+    alert('변경사항을 저장했습니다.')
+    
     window.location.reload()
   } catch (err) {
     
