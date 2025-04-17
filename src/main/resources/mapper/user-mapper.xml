@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="f66.springboot_mvc_starter.repository.UserRepository">
 
-    <insert id="insertLocalUser" parameterType="UserDTO" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertUser" parameterType="UserDTO" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO users (username, nickname, password)
         VALUES (#{username}, #{nickname}, #{password})
     </insert>
@@ -19,11 +19,6 @@
 
     <select id="existsByUsername" parameterType="String" resultType="boolean">
         SELECT EXISTS (SELECT 1 FROM users WHERE username = #{value})
-    </select>
-
-    <select id="count" resultType="Long">
-        select COUNT(*)
-        from users
     </select>
 
     <select id="selectById" parameterType="Long" resultType="UserDTO">
@@ -50,5 +45,10 @@
                  join user_roles ur on u.role_id = ur.id
                  join user_images ui ON u.id = ui.user_id
         WHERE u.username = #{username}
+    </select>
+
+    <select id="count" resultType="Long">
+        select COUNT(*)
+        from users
     </select>
 </mapper>

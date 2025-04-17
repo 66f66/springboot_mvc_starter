@@ -2,6 +2,24 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="f66.springboot_mvc_starter.repository.ArticleRepository">
 
+    <resultMap id="ArticleResultMap" type="ArticleDTO" autoMapping="true">
+        <id property="id" column="id"/>
+
+        <association property="user" javaType="UserDTO">
+            <id property="id" column="user_id"/>
+            <result property="nickname" column="user_nickname"/>
+
+            <association property="image" javaType="UserImageDTO">
+                <result property="url" column="user_image_url"/>
+            </association>
+        </association>
+
+        <association property="category" javaType="ArticleCategoryDTO">
+            <id property="id" column="category_id"/>
+            <result property="name" column="category_name"/>
+        </association>
+    </resultMap>
+
     <insert id="insertArticle" parameterType="ArticleDTO" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO articles (title, content, user_id, category_id)
         VALUES (#{title}, #{content}, #{userId}, #{categoryId})
@@ -24,11 +42,12 @@
         WHERE id = #{articleId}
     </update>
 
-    <delete id="deleteArticle" parameterType="ArticleDTO">
-        DELETE
-        FROM articles
-        WHERE id = #{id}
-    </delete>
+    <update id="updateIsDeleted" parameterType="map">
+        UPDATE articles
+        SET is_deleted = #{isDeleted},
+            updated_at = now()
+        WHERE id = #{articleId}
+    </update>
 
     <select id="selectArticleByIdAndUserId" parameterType="map" resultType="ArticleDTO">
         SELECT *
@@ -37,28 +56,16 @@
           AND user_id = #{userId}
     </select>
 
-    <select id="selectArticleById" parameterType="long" resultType="ArticleDTO">
-        select *
-        from articles
-        where id = #{id}
-    </select>
-
-    <select id="selectArticleByIdWithVote" parameterType="ArticleDTO" resultType="ArticleDTO">
+    <select id="selectArticleWithRelationsById" parameterType="ArticleDTO" resultMap="ArticleResultMap">
         SELECT
-        a.id,
-        a.title,
-        a.content,
-        a.created_at,
-        a.updated_at,
-        a.user_id,
-        a.comment_count,
-        a.vote_count,
-        u.id as "user.id",
-        u.nickname as "user.nickname",
-        ac.id as "category.id",
-        ac.name as "category.name",
+        a.*,
+        u.id as "user_id",
+        u.nickname as "user_nickname",
+        ui.url as "user_image_url",
+        ac.id as "category_id",
+        ac.name as "category_name",
         <if test="userId != null">
-            av.active
+            av.is_active
         </if>
         <if test="userId == null">
             false
@@ -67,75 +74,33 @@
         FROM articles a
         JOIN users u ON a.user_id = u.id
         JOIN article_categories ac ON a.category_id = ac.id
+        JOIN user_images ui ON a.user_id = ui.user_id
         <if test="userId != null">
             LEFT JOIN article_votes av ON a.id = av.article_id AND av.user_id = #{userId}
         </if>
         WHERE a.id = #{id}
+        and a.is_deleted = false
     </select>
 
-    <select id="count" parameterType="ArticlePageRequest"
-            resultType="long">
-        SELECT COUNT(*)
-        FROM articles a
-        <if test="searchKey == 'nickname'">
-            JOIN users u ON a.user_id = u.id
-        </if>
-        <where>
-            <trim prefixOverrides="AND |OR">
-
-                <if test="userId != null">
-                    a.user_id = #{userId}
-                </if>
-
-                <if test="userId == null">
-                    <if test="searchKey != null and searchValue != null">
-                        AND (
-                        <choose>
-                            <when test="searchKey == 'title'">
-                                a.title LIKE CONCAT('%', #{searchValue}, '%')
-                            </when>
-                            <when test="searchKey == 'content'">
-                                a.content LIKE CONCAT('%', #{searchValue}, '%')
-                            </when>
-                            <when test="searchKey == 'nickname'">
-                                u.nickname LIKE CONCAT('%', #{searchValue}, '%')
-                            </when>
-                        </choose>
-                        )
-                    </if>
-
-                    <if test="categoryId != null and categoryId != 0">
-                        AND a.category_id = #{categoryId}
-                    </if>
-                </if>
-            </trim>
-        </where>
-    </select>
-
-    <select id="selectList" parameterType="ArticlePageRequest"
-            resultType="ArticleDTO">
+    <select id="selectArticlesWithRelationsByRequest" parameterType="ArticlePageRequest"
+            resultMap="ArticleResultMap">
         SELECT
-        a.id,
-        a.title,
-        a.content,
-        a.created_at,
-        a.updated_at,
-        a.user_id,
-        a.category_id,
-        a.vote_count,
-        a.comment_count,
-        u.id as "user.id",
-        u.nickname as "user.nickname",
-        ac.id as "category.id",
-        ac.name as "category.name"
+        a.*,
+        u.id as "user_id",
+        u.nickname as "user_nickname",
+        ui.url as "user_image_url",
+        ac.id as "category_id",
+        ac.name as "category_name"
         FROM articles a
         JOIN users u ON a.user_id = u.id
         JOIN article_categories ac ON a.category_id = ac.id
+        JOIN user_images ui ON a.user_id = ui.user_id
         <where>
+            a.is_deleted = false
             <trim prefixOverrides="AND |OR">
 
                 <if test="userId != null">
-                    a.user_id = #{userId}
+                    and a.user_id = #{userId}
                 </if>
 
                 <if test="userId == null">
@@ -177,4 +142,45 @@
         </choose>
         LIMIT #{size} OFFSET #{offset}
     </select>
+
+    <select id="countByRequest" parameterType="ArticlePageRequest"
+            resultType="long">
+        SELECT COUNT(*)
+        FROM articles a
+        <if test="searchKey == 'nickname'">
+            JOIN users u ON a.user_id = u.id
+        </if>
+        <where>
+            a.is_deleted = false
+            <trim prefixOverrides="AND |OR">
+
+                <if test="userId != null">
+                    and a.user_id = #{userId}
+                </if>
+
+                <if test="userId == null">
+                    <if test="searchKey != null and searchValue != null">
+                        AND (
+                        <choose>
+                            <when test="searchKey == 'title'">
+                                a.title LIKE CONCAT('%', #{searchValue}, '%')
+                            </when>
+                            <when test="searchKey == 'content'">
+                                a.content LIKE CONCAT('%', #{searchValue}, '%')
+                            </when>
+                            <when test="searchKey == 'nickname'">
+                                u.nickname LIKE CONCAT('%', #{searchValue}, '%')
+                            </when>
+                        </choose>
+                        )
+                    </if>
+
+                    <if test="categoryId != null and categoryId != 0">
+                        AND a.category_id = #{categoryId}
+                    </if>
+                </if>
+            </trim>
+        </where>
+    </select>
+
 </mapper>

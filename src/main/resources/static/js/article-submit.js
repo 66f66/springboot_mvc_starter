@@ -77,11 +77,18 @@ async function articleSubmit(e) {
       title: titleVal,
       content: contentVal,
       categoryId: categoryIdVal,
-      id: form.articleId?.value,
     }
     
-    const response = await fetch(form.action, {
-      method: 'POST',
+    const articleIdVal = form.articleId?.value
+    if (articleIdVal) {
+      body.id = form.articleId.value
+    }
+    
+    const action = !articleIdVal ? '/article' : `/article/${articleIdVal}`
+    const method = !articleIdVal ? 'POST' : 'PATCH'
+    
+    const response = await fetch(action, {
+      method,
       headers: window.customJsonHeaders,
       body: JSON.stringify(body),
     })
@@ -90,9 +97,9 @@ async function articleSubmit(e) {
     
     if (!response.ok) {
       
-      if (response.status === 400 && body.errors) {
+      if (response.status === 400 && data.errors) {
         
-        alert(window.formattedErrors(body.errors))
+        alert(window.formattedErrors(data.errors))
       }
       
       throw new Error()
@@ -100,6 +107,8 @@ async function articleSubmit(e) {
     
     window.location.replace(`/article/${data.id}`)
   } catch (err) {
+    
+    console.log(err)
     
     alert('게시물을 저장하지 못했습니다.')
     

@@ -169,6 +169,7 @@ public class UserService {
             cloudinaryUtil.deleteFile(oldImageDTO.getPublicId());
         } else {
 
+            userImageDTO.setId(oldImageDTO.getId());
             userImageDTO.setUserId(userId);
 
             userImageRepository.updateUserImage(userImageDTO);

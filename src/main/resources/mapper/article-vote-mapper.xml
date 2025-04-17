@@ -3,14 +3,14 @@
 <mapper namespace="f66.springboot_mvc_starter.repository.ArticleVoteRepository">
 
     <insert id="toggleVote" parameterType="map">
-        INSERT INTO article_votes (article_id, user_id, active)
+        INSERT INTO article_votes (article_id, user_id, is_active)
         VALUES (#{articleId}, #{userId}, true)
         ON CONFLICT (article_id, user_id)
-            DO UPDATE SET active = NOT article_votes.active
+            DO UPDATE SET is_active = NOT article_votes.is_active
     </insert>
 
     <select id="updateVoteCountAndGetResult" parameterType="map" resultType="VoteResult">
-        WITH vote_status AS (SELECT active
+        WITH vote_status AS (SELECT is_active
                              FROM article_votes
                              WHERE article_id = #{articleId}
                                AND user_id = #{userId}),
@@ -18,12 +18,12 @@
                  UPDATE articles a
                      SET vote_count = a.vote_count +
                                       CASE
-                                          WHEN (SELECT active FROM vote_status) = true THEN 1
+                                          WHEN (SELECT is_active FROM vote_status) = true THEN 1
                                           ELSE -1
                                           END
                      WHERE a.id = #{articleId}
                      RETURNING a.vote_count)
-        SELECT (SELECT active FROM vote_status)         AS voted,
+        SELECT (SELECT is_active FROM vote_status)      AS voted,
                (SELECT vote_count FROM updated_article) AS voteCount
     </select>
 

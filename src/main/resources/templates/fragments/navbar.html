@@ -27,12 +27,11 @@
 		</div>
 		
 		<div class="d-flex gap-2 justify-content-start align-items-center"
-		     sec:authorize="isAuthenticated()"
-		     th:with="fallbackUrl = 'https://avatar.iran.liara.run/username?username=' + ${#authentication.principal.nickname}">
+		     sec:authorize="isAuthenticated()">
 			<img alt=""
 			     class="avatar"
 			     id="navbar-user-image"
-			     th:src="${#authentication.principal.imageUrl != null ? #authentication.principal.imageUrl : fallbackUrl}">
+			     th:src="${#authentication.principal.imageUrl}">
 			<a class="btn btn-outline-secondary" th:href="@{/user/settings}">프로필 설정</a>
 		</div>
 	</div>

@@ -24,8 +24,6 @@ public class AdminController {
     public String deleteArticle(@PathVariable Long id,
                                 @RequestParam int categoryId) {
 
-        articleService.deleteArticle(id, categoryId);
-
         return "redirect:/article";
     }
 
@@ -34,8 +32,6 @@ public class AdminController {
     public String deleteComment(@PathVariable Long id,
                                 @RequestParam Long articleId,
                                 RedirectAttributes redirectAttributes) {
-
-        commentService.deleteComment(id, articleId);
 
         redirectAttributes.addAttribute("articleId", articleId);
 

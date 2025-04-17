@@ -7,7 +7,7 @@
         values (#{publicId}, #{originalFileName}, #{url}, #{userId})
     </insert>
 
-    <update id="updateUserImage" parameterType="Long">
+    <update id="updateUserImage" parameterType="UserImageDTO">
         update user_images
         <set>
             <if test="publicId != null">public_id = #{publicId},</if>

@@ -54,28 +54,22 @@ async function onCommentDelete(e) {
   if (window.isSubmitting) return
   window.isSubmitting = true
   
-  const form = e.target
-  
   const confirmed = confirm('댓글을 정말 삭제하시겠습니까?')
-  
   if (!confirmed) return
   
-  const body = {
-    articleId: form.articleId.value,
-  }
+  const form = e.target
   
   try {
     
-    const response = await fetch(form.action, {
-      method: 'post',
+    const commentIdVal = form.commentId?.value
+    if (!commentIdVal) throw new Error()
+    
+    const response = await fetch(`/comment/${commentIdVal}`, {
+      method: 'delete',
       headers: window.customJsonHeaders,
-      body: JSON.stringify(body),
     })
     
-    if (!response.ok) {
-      
-      throw new Error()
-    }
+    if (!response.ok) throw new Error()
     
     window.location.reload()
   } catch (err) {
@@ -129,37 +123,44 @@ async function onCommentSubmit(e) {
     contentFeedback.textContent = ''
   }
   
-  if (!isValid) {
-    
-    submitButton.disabled = false
-    submitButton.innerHTML = '저장'
-    window.isSubmitting = false
-    
-    return
-  }
-  
-  const body = {
-    content: contentValue,
-    articleId: form.articleId?.value,
-    parentCommentId: form.parentCommentId?.value,
-    id: form.id?.value,
-  }
-  
   try {
     
-    const response = await fetch(form.action, {
-      method: 'post',
+    if (!isValid) throw new Error()
+    
+    const body = {
+      content: contentValue,
+    }
+    
+    const commentIdVal = form.commentId?.value
+    if (commentIdVal) {
+      body.id = form.id.value
+    }
+    
+    if (form.articleId?.value) {
+      body.articleId = form.articleId.value
+    }
+    
+    if (form.parentCommentId?.value) {
+      body.parentCommentId = form.parentCommentId.value
+    }
+    
+    const action = !commentIdVal ? '/comment' : `/comment/${commentIdVal}`
+    const method = !commentIdVal ? 'POST' : 'PATCH'
+    
+    console.log(action, method)
+    
+    const response = await fetch(action, {
+      method,
       headers: window.customJsonHeaders,
       body: JSON.stringify(body),
     })
     
-    if (!response.ok) {
-      
-      throw new Error()
-    }
+    if (!response.ok) throw new Error()
     
     window.location.reload()
   } catch (err) {
+    
+    console.log(err)
     
     submitButton.disabled = false
     submitButton.innerHTML = '저장'

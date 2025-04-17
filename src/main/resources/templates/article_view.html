@@ -62,14 +62,14 @@
 				<!--				article update button-->
 				<a class="btn btn-outline-secondary btn-sm"
 				   sec:authorize="isAuthenticated()"
-				   th:href="@{/article/form(id=${articleDTO.id})}"
+				   th:href="@{/article/form(articleId=${articleDTO.id})}"
 				   th:if="${articleDTO.user.id} == ${#authentication.principal.id}">
 					편집
 				</a>
 				
 				<!--				article delete button-->
 				<form method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');" sec:authorize="isAuthenticated()"
-				      th:action="@{/article/{id}/delete(id=${articleDTO.id})}">
+				      th:action="@{/article/{id}(id=${articleDTO.id})}">
 					<button class="btn btn-outline-secondary btn-sm"
 					        th:if="${articleDTO.user.id} == ${#authentication.principal.id}"
 					        type="submit">
@@ -103,14 +103,14 @@
 		<div class="card-body comment-item">
 			<!--			reply to-->
 			<div class="text-muted small mb-2" th:if="${c.depth > 0}">
-				<span th:text="${c.parentCommentUserNickname} + '님에게 답글'"></span>
+				<span th:if="${c.parentComment != null}" th:text="${c.parentComment?.user.nickname} + '님에게 답글'"></span>
 			</div>
 			
 			<div class="row">
 				<!--				comment user info-->
 				<a class="text-decoration-none"
 				   th:href="@{/article(userId=${articleDTO.user.id})}"
-				   th:text="${c.user.nickname}">
+				   th:text="${c.user?.nickname}">
 				</a>
 				
 				<!--				comment content-->
@@ -131,17 +131,17 @@
 				<!--				edit comment button-->
 				<button class="btn btn-outline-secondary btn-sm"
 				        sec:authorize="isAuthenticated()"
-				        th:if="${c.userId} == ${#authentication.principal.id}"
+				        th:if="${c.user?.id} == ${#authentication.principal.id}"
 				        th:onclick="|toggleUpdateForm(${c.id})|">
 					수정
 				</button>
 				
 				<!--				delete comment button-->
-				<form class="comment-delete-form" method="post"
-				      th:action="@{/comment/{id}/delete(id=${c.id})}">
-					<input name="articleId" th:value="${c.articleId}" type="hidden"/>
-					<button class="btn btn-outline-secondary btn-sm" sec:authorize="isAuthenticated()"
-					        th:if="${c.userId} == ${#authentication.principal.id}"
+				<form class="comment-delete-form">
+					<input name="commentId" th:value="${c.id}" type="hidden"/>
+					<button class="btn btn-outline-secondary btn-sm"
+					        sec:authorize="isAuthenticated()"
+					        th:if="${c.user?.id} == ${#authentication.principal.id}"
 					        type="submit">
 						삭제
 					</button>
@@ -169,9 +169,9 @@
 			<div class="mt-4">
 				<!--			comment update form-->
 				<div style="display: none;" th:id="|comment_update_form_${c.id}|">
-					<form class="comment-update-form" method="post" th:action="@{/comment/{id}/update(id=${c.id})}">
-						<input name="id" th:value="${c.id}" type="hidden"/>
+					<form class="comment-update-form">
 						<input name="articleId" th:value="${c.articleId}" type="hidden"/>
+						<input name="commentId" th:value="${c.id}" type="hidden"/>
 						<textarea class="form-control mb-2" name="content" rows="5" th:text="${c.content}"></textarea>
 						<div class="invalid-feedback"></div>
 						<button class="btn btn-primary btn-sm" type="submit">저장</button>
@@ -183,7 +183,7 @@
 				
 				<!--comment reply form-->
 				<div style="display: none;" th:id="|comment_reply_form_${c.id}|">
-					<form class="comment-reply-form" method="post" th:action="@{/comment/create}">
+					<form class="comment-reply-form">
 						<input name="articleId" th:value="${c.articleId}" type="hidden">
 						<input name="parentCommentId" th:value="${c.id}" type="hidden">
 						<textarea class="form-control mb-2" name="content" placeholder="답글을 작성하세요" rows="5"></textarea>

@@ -17,13 +17,12 @@
 			
 			<form id="user-update-form">
 				<div class="my-4" th:action="@{/user/upddate/image}">
-					<div class="text-center"
-					     th:with="fallbackUrl = 'https://avatar.iran.liara.run/username?username=' + ${userDTO.nickname}">
+					<div class="text-center">
 						<img alt=""
 						     class="avatar"
 						     id="image"
-						     th:src="${userDTO.image?.url == null
-						     ? fallbackUrl : userDTO.image.url}">
+						     th:src="${userDTO.image.url}"
+						>
 					</div>
 					<label>프로필 사진</label>
 					<input class="form-control" id="user-file-input" name="file" type="file">

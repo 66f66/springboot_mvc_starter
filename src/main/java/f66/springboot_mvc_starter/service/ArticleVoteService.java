@@ -14,16 +14,16 @@ public class ArticleVoteService {
     private final ArticleVoteRepository articleVoteRepository;
 
     @Transactional
-    public VoteResult voteArticle(Long id,
+    public VoteResult voteArticle(Long articleId,
                                   Long currentUserId) {
 
-        int voted = articleVoteRepository.toggleVote(id, currentUserId);
+        int voted = articleVoteRepository.toggleVote(articleId, currentUserId);
 
         if (voted == 0) {
 
             throw new ForbiddenException();
         }
 
-        return articleVoteRepository.updateVoteCountAndGetResult(id, currentUserId);
+        return articleVoteRepository.updateVoteCountAndGetResult(articleId, currentUserId);
     }
 }

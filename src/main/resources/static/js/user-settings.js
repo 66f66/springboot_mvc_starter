@@ -83,7 +83,7 @@ async function onUserUpdate(e) {
       formData.append('file', form.file.files[0])
       
       const response = await fetch('/user/update/image', {
-        method: 'post',
+        method: 'POST',
         headers: window.customHeaders,
         body: formData,
       })
@@ -165,7 +165,7 @@ async function onUserUpdate(e) {
     }
     
     const response = await fetch('/user/update', {
-      method: 'post',
+      method: 'POST',
       headers: window.customJsonHeaders,
       body: JSON.stringify(body),
     })

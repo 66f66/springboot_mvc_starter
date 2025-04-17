@@ -2,6 +2,7 @@ package f66.springboot_mvc_starter.service;
 
 import f66.springboot_mvc_starter.dto.ArticleDTO;
 import f66.springboot_mvc_starter.dto.ArticlePageRequest;
+import f66.springboot_mvc_starter.exception.ForbiddenException;
 import f66.springboot_mvc_starter.exception.ResourceNotFoundException;
 import f66.springboot_mvc_starter.repository.ArticleCategoryRepository;
 import f66.springboot_mvc_starter.repository.ArticleRepository;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,8 +34,15 @@ public class ArticleService {
     }
 
     @Transactional
-    public void updateArticle(ArticleDTO oldArticleDTO,
+    public void updateArticle(Long articleId,
+                              Long currentUserId,
                               ArticleDTO articleDTO) {
+
+        ArticleDTO oldArticleDTO = articleRepository
+                .selectArticleByIdAndUserId(articleId, currentUserId)
+                .orElseThrow(ForbiddenException::new);
+
+        articleRepository.updateArticle(articleDTO);
 
         if (!Objects.equals(oldArticleDTO.getCategoryId(), articleDTO.getCategoryId())) {
 
@@ -43,48 +50,45 @@ public class ArticleService {
 
             articleCategoryRepository.updateArticleCount(articleDTO.getCategoryId(), 1);
         }
-
-        articleRepository.updateArticle(articleDTO);
     }
 
     @Transactional
-    public void deleteArticle(Long id,
-                              int categoryId) {
+    public void deleteArticle(Long articleId,
+                              Long currentUserId) {
 
-        articleRepository.deleteArticle(id);
+        int categoryId = articleRepository
+                .selectArticleByIdAndUserId(articleId, currentUserId)
+                .orElseThrow(ForbiddenException::new).getCategoryId();
+
+        articleRepository.updateIsDeleted(articleId, true);
 
         articleCategoryRepository.updateArticleCount(categoryId, -1);
     }
 
     @Transactional(readOnly = true)
-    public Optional<ArticleDTO> getArticleById(Long articleId) {
+    public ArticleDTO getArticleByOwner(Long articleId,
+                                        Long currentUserId) {
 
-        return articleRepository.selectArticleById(articleId);
+        return articleRepository.selectArticleByIdAndUserId(articleId, currentUserId)
+                .orElseThrow(ForbiddenException::new);
     }
 
     @Transactional(readOnly = true)
-    public Optional<ArticleDTO> getArticleByIdAndUserId(Long id,
-                                                        Long currentUserId) {
-
-        return articleRepository.selectArticleByIdAndUserId(id, currentUserId);
-    }
-
-    @Transactional(readOnly = true)
-    public ArticleDTO getArticleByIdWithVote(Long id) {
+    public ArticleDTO getArticleDetail(Long articleId) {
 
         ArticleDTO articleDTO = ArticleDTO.builder()
-                .id(id)
+                .id(articleId)
                 .build();
 
         authUtil.currentUserId().ifPresent(articleDTO::setUserId);
 
-        return articleRepository.selectArticleByIdWithVote(articleDTO)
+        return articleRepository.selectArticleWithRelationsById(articleDTO)
                 .orElseThrow(ResourceNotFoundException::new);
     }
 
     @Transactional(readOnly = true)
     public Page<ArticleDTO> getArticlePage(ArticlePageRequest request) {
 
-        return articleRepository.getPage(request);
+        return articleRepository.selectPageByRequest(request);
     }
 }

@@ -2,6 +2,26 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="f66.springboot_mvc_starter.repository.CommentRepository">
 
+    <resultMap id="CommentResultMap" type="CommentDTO" autoMapping="true">
+        <id property="id" column="id"/>
+
+        <association property="user" javaType="UserDTO">
+            <id property="id" column="user_id"/>
+            <result property="nickname" column="user_nickname"/>
+
+            <association property="image" javaType="UserImageDTO">
+                <result property="url" column="user_image_url"/>
+            </association>
+        </association>
+
+        <association property="parentComment" javaType="CommentDTO">
+            <id property="id" column="parent_comment_id"/>
+            <association property="user" javaType="UserDTO">
+                <result property="nickname" column="parent_comment_user_nickname"/>
+            </association>
+        </association>
+    </resultMap>
+
     <insert id="insertComment" parameterType="CommentDTO" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO comments (content, user_id, article_id, parent_comment_id, depth)
         VALUES (#{content},
@@ -10,9 +30,10 @@
                 #{parentCommentId, jdbcType=BIGINT},
                 CASE
                     WHEN #{parentCommentId, jdbcType=BIGINT} IS NULL THEN 0
-                    ELSE (SELECT depth + 1
-                          FROM comments
-                          WHERE id = #{parentCommentId, jdbcType=BIGINT})
+                    ELSE
+                        (SELECT depth + 1
+                         FROM comments
+                         WHERE id = #{parentCommentId, jdbcType=BIGINT})
                     END)
     </insert>
 
@@ -23,11 +44,18 @@
         WHERE id = #{id}
     </update>
 
-    <delete id="deleteComment" parameterType="Long">
-        DELETE
+    <update id="updateIsDeleted" parameterType="map">
+        UPDATE comments
+        SET is_deleted = #{isDeleted},
+            updated_at = now()
+        WHERE id = #{commentId}
+    </update>
+
+    <select id="selectById" parameterType="map" resultType="CommentDTO">
+        SELECT *
         FROM comments
         WHERE id = #{id}
-    </delete>
+    </select>
 
     <select id="selectByIdAndUserId" parameterType="map" resultType="CommentDTO">
         SELECT *
@@ -36,13 +64,7 @@
           AND user_id = #{userId}
     </select>
 
-    <select id="selectById" parameterType="map" resultType="CommentDTO">
-        SELECT *
-        FROM comments
-        WHERE id = #{commentId}
-    </select>
-
-    <select id="selectCommentsByArticleId" parameterType="long" resultType="CommentDTO">
+    <select id="selectCommentsWithRelationsByArticleId" parameterType="Long" resultMap="CommentResultMap">
         WITH RECURSIVE comment_tree
                            AS
                            (SELECT c.id,
@@ -50,14 +72,16 @@
                                    c.created_at,
                                    c.updated_at,
                                    c.user_id,
-                                   u.nickname            as "user.nickname",
+                                   u.nickname            as "user_nickname",
+                                   ui.url                as "user_image_url",
                                    c.article_id,
                                    c.parent_comment_id,
-                                   CAST(NULL AS varchar) as "parentCommentUserNickname",
+                                   CAST(NULL AS varchar) as "parent_comment_user_nickname",
                                    c.depth,
                                    ARRAY [c.id]          AS path
                             FROM comments c
-                                     JOIN users u ON c.user_id = u.id
+                                     left JOIN users u ON c.user_id = u.id
+                                     left join user_images ui on c.user_id = ui.user_id
                             WHERE c.parent_comment_id IS NULL
                               AND c.article_id = #{articleId}
 
@@ -68,17 +92,21 @@
                                    c.created_at,
                                    c.updated_at,
                                    c.user_id,
-                                   u.nickname        as "user.nickname",
+                                   u.nickname        as "user_nickname",
+                                   ui.url            as "user_image_url",
                                    c.article_id,
                                    c.parent_comment_id,
-                                   parent_u.nickname as "parentCommentUserNickname",
+                                   parent_u.nickname as "parent_comment_user_nickname",
                                    ct.depth + 1,
                                    ct.path || c.id
                             FROM comments c
                                      JOIN comment_tree ct ON c.parent_comment_id = ct.id
-                                     JOIN users u ON c.user_id = u.id
-                                     JOIN comments parent_comment ON c.parent_comment_id = parent_comment.id
-                                     JOIN users parent_u ON parent_comment.user_id = parent_u.id)
+                                     left JOIN users u ON c.user_id = u.id
+                                     left join user_images ui on c.user_id = ui.user_id
+                                     left JOIN comments parent_comment ON c.parent_comment_id = parent_comment.id
+                                     left JOIN users parent_u ON parent_comment.user_id = parent_u.id
+                            WHERE (c.parent_comment_id IS NULL OR parent_comment.id IS NOT NULL OR
+                                   (c.parent_comment_id IS NOT NULL AND parent_comment.id IS NULL)))
         SELECT *
         FROM comment_tree
         ORDER BY path;

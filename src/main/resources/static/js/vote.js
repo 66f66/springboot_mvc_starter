@@ -13,7 +13,7 @@ async function onVote(e) {
   try {
     
     const response = await fetch(`/article/${articleId}/vote`, {
-      method: 'get',
+      method: 'POST',
       headers: window.customJsonHeaders,
     })
     

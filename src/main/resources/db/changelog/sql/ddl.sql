@@ -55,6 +55,7 @@ create table articles
     id            bigint generated always as identity
         constraint articles_pk
             primary key,
+    is_deleted    boolean                  default false not null,
     title         text                                   not null,
     content       text                                   not null,
     created_at    timestamp with time zone default now() not null,
@@ -93,8 +94,8 @@ create table article_votes
         constraint article_voters_users_id_fk
             references users
             on delete set null,
+    is_active  boolean                  default true  not null,
     created_at timestamp with time zone default now() not null,
-    active     boolean                  default true  not null,
     constraint article_voters_pk
         primary key (user_id, article_id)
 );
@@ -104,6 +105,7 @@ create table comments
     id                bigint generated always as identity
         constraint comments_pk
             primary key,
+    is_deleted        boolean                  default false not null,
     content           text                                   not null,
     depth             integer                  default 0     not null,
     created_at        timestamp with time zone default now() not null,

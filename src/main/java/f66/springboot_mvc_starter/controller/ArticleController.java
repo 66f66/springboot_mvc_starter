@@ -2,7 +2,6 @@ package f66.springboot_mvc_starter.controller;
 
 import f66.springboot_mvc_starter.config.CustomUserDetails;
 import f66.springboot_mvc_starter.dto.*;
-import f66.springboot_mvc_starter.exception.ForbiddenException;
 import f66.springboot_mvc_starter.service.ArticleCategoryService;
 import f66.springboot_mvc_starter.service.ArticleService;
 import f66.springboot_mvc_starter.service.ArticleVoteService;
@@ -23,7 +22,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Controller
 @RequestMapping("/article")
@@ -37,60 +35,19 @@ public class ArticleController {
     private final CommentService commentService;
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/{id}/vote")
+    @PostMapping("/{articleId}/vote")
     public ResponseEntity<Map<String, VoteResult>> vote(@AuthenticationPrincipal CustomUserDetails user,
-                                                        @PathVariable Long id) {
+                                                        @PathVariable Long articleId) {
 
-        VoteResult result = articleVoteService.voteArticle(id, user.getId());
+        VoteResult result = articleVoteService.voteArticle(articleId, user.getId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("result", result));
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/form")
-    public String articleForm(@AuthenticationPrincipal CustomUserDetails user,
-                              @RequestParam(required = false) Long id,
-                              Model model) {
-
-        if (id == null) {
-
-            model.addAttribute("articleDTO", new ArticleDTO());
-        } else {
-
-            ArticleDTO articleDTO = articleService
-                    .getArticleByIdAndUserId(id, user.getId())
-                    .orElseThrow(ForbiddenException::new);
-
-            if (!Objects.equals(articleDTO.getUserId(), user.getId())) {
-
-                throw new ForbiddenException();
-            }
-
-            model.addAttribute("articleDTO", articleDTO);
-        }
-
-        List<ArticleCategoryDTO> articleCategoryDTOs = articleCategoryService.getCategories();
-
-        model.addAttribute("categoryDTOs", articleCategoryDTOs);
-
-        return "article_form";
-    }
-
-    @PreAuthorize("isAuthenticated()")
     @PostMapping
-    public ResponseEntity<Map<String, Long>> createOrUpdateArticle(@AuthenticationPrincipal CustomUserDetails user,
-                                                                   @RequestBody @Valid ArticleDTO articleDTO) {
-
-        if (articleDTO.getId() != null) {
-
-            ArticleDTO oldArticleDTO = articleService
-                    .getArticleByIdAndUserId(articleDTO.getId(), user.getId())
-                    .orElseThrow(ForbiddenException::new);
-
-            articleService.updateArticle(oldArticleDTO, articleDTO);
-
-            return ResponseEntity.ok(Map.of("id", articleDTO.getId()));
-        }
+    public ResponseEntity<Map<String, Long>> createArticle(@AuthenticationPrincipal CustomUserDetails user,
+                                                           @RequestBody @Valid ArticleDTO articleDTO) {
 
         articleService.createArticle(user.getId(), articleDTO);
 
@@ -98,15 +55,23 @@ public class ArticleController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/{id}/delete")
+    @PatchMapping("/{articleId}")
+    public ResponseEntity<Map<String, Long>> updateArticle(@AuthenticationPrincipal CustomUserDetails user,
+                                                           @PathVariable Long articleId,
+                                                           @RequestBody @Valid ArticleDTO articleDTO) {
+
+        articleService.updateArticle(articleId, user.getId(), articleDTO);
+
+        return ResponseEntity.ok(Map.of("id", articleDTO.getId()));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/{articleId}")
     public String deleteArticle(@AuthenticationPrincipal CustomUserDetails user,
-                                @PathVariable Long id,
+                                @PathVariable Long articleId,
                                 RedirectAttributes redirectAttributes) {
 
-        ArticleDTO articleDTO = articleService.getArticleByIdAndUserId(id, user.getId())
-                .orElseThrow(ForbiddenException::new);
-
-        articleService.deleteArticle(id, articleDTO.getCategoryId());
+        articleService.deleteArticle(articleId, user.getId());
 
         redirectAttributes.addFlashAttribute("toast",
                 ToastDTO.createToast("게시물을 삭제했습니다."));
@@ -114,12 +79,40 @@ public class ArticleController {
         return "redirect:/article";
     }
 
-    @GetMapping("/{id}")
-    public String view(@PathVariable Long id,
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/form")
+    public String articleForm(@AuthenticationPrincipal CustomUserDetails user,
+                              @RequestParam(required = false) Long articleId,
+                              Model model) {
+
+        ArticleDTO articleDTO;
+
+        if (articleId != null) {
+
+            articleDTO = articleService.getArticleByOwner(articleId, user.getId());
+        } else {
+
+            articleDTO = new ArticleDTO();
+        }
+
+        System.out.println("TEST^");
+
+        List<ArticleCategoryDTO> articleCategoryDTOs = articleCategoryService.getCategories();
+
+        System.out.println("TEST#");
+
+        model.addAttribute("articleDTO", articleDTO);
+        model.addAttribute("categoryDTOs", articleCategoryDTOs);
+
+        return "article_form";
+    }
+
+    @GetMapping("/{articleId}")
+    public String view(@PathVariable Long articleId,
                        Model model) {
 
-        model.addAttribute("articleDTO", articleService.getArticleByIdWithVote(id));
-        model.addAttribute("commentDTOs", commentService.getComments(id));
+        model.addAttribute("articleDTO", articleService.getArticleDetail(articleId));
+        model.addAttribute("commentDTOs", commentService.getComments(articleId));
         model.addAttribute("commentDTO", new CommentDTO());
 
         return "article_view";

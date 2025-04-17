@@ -134,11 +134,10 @@
 						
 						<!--						article user, date, vote count(mobile only)-->
 						<div class="d-block d-md-none mt-1">
-							<div class="d-flex align-items-center gap-2"
-							     th:with="fallbackUrl = 'https://avatar.iran.liara.run/username?username=' + ${article.user.nickname}">
+							<div class="d-flex align-items-center gap-2">
 								<img alt=""
 								     class="avatar"
-								     th:src="${article.user.image?.id != null ? article.user.image.id : fallbackUrl}">
+								     th:src="${article.user.image.url}">
 								<a class="text-decoration-none"
 								   th:href="@{/article(userId=${article.user.id})}"
 								   th:text="${article.user.nickname}">
