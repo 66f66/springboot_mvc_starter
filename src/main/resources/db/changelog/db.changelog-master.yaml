@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: schema
+      id: ddl
       author: master
       preConditions:
         - onFail: MARK_RAN
@@ -9,4 +9,4 @@ databaseChangeLog:
               tableName: users
       changes:
         - sqlFile:
-            path: classpath:db/changelog/sql/schema.sql
+            path: classpath:db/changelog/sql/ddl.sql
