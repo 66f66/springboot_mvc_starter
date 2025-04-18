@@ -20,7 +20,7 @@
 
     <select id="countRoles"
             resultType="long">
-        select count(*)
+        select count(id)
         from user_roles
     </select>
 </mapper>

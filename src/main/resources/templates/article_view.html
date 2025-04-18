@@ -30,13 +30,20 @@
 		<div class="card-body">
 			
 			<div class="mb-2 d-flex gap-2 align-items-center justify-content-between">
-				<!--				article user info-->
-				<a class="text-decoration-none"
-				   th:href="@{/article(userId=${articleDTO.user.id})}"
-				   th:text="${articleDTO.user.nickname}">
-				</a>
+				<!--				article user image, nickname-->
+				<div>
+					<th:block
+							th:replace="~{fragments/user_image :: func(${articleDTO.user.image.url}, '')}">
+					</th:block>
+					<a class="text-decoration-none"
+					   th:href="@{/article(userId=${articleDTO.user.id})}"
+					   th:text="${articleDTO.user.nickname}">
+					</a>
+					<th:block
+							th:replace="~{fragments/admin_badge :: roleBadge(${articleDTO.user.role.name})}"></th:block>
+				</div>
 				
-				<!--				article date info-->
+				<!--				article timestamp-->
 				<div class="text-muted fw-lighter d-flex flex-column">
 					<span
 							th:text="${#temporals.format(articleDTO.createdAt, 'yyyy-MM-dd HH:mm', 'Asia/Seoul')}">
@@ -51,7 +58,7 @@
 			<div class="card-text" th:utext="${@markdownUtil.markdownToHtml(articleDTO.content)}"></div>
 			
 			<div class="my-3 d-flex gap-1">
-				<!--				article vote button-->
+				<!--				article vote-->
 				<a id="article-vote-btn"
 				   th:class="${articleDTO.voted} ? 'btn btn-success btn-sm' : 'btn btn-outline-secondary btn-sm'"
 				   th:data-id="${articleDTO.id}">
@@ -59,7 +66,7 @@
 					<span class="badge rounded-pill bg-success" th:text="${articleDTO.voteCount}"></span>
 				</a>
 				
-				<!--				article update button-->
+				<!--				article update-->
 				<a class="btn btn-outline-secondary btn-sm"
 				   sec:authorize="isAuthenticated()"
 				   th:href="@{/article/form(id=${articleDTO.id})}"
@@ -67,7 +74,7 @@
 					편집
 				</a>
 				
-				<!--				article delete button-->
+				<!--				article delete-->
 				<form method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');" sec:authorize="isAuthenticated()"
 				      th:action="@{/article/{id}(id=${articleDTO.id})}">
 					<button class="btn btn-outline-secondary btn-sm"
@@ -82,7 +89,6 @@
 				      sec:authorize="hasRole('ADMIN')"
 				      th:action="@{/admin/article/{id}/delete(id=${articleDTO.id})}"
 				>
-					<input name="categoryId" th:value="${articleDTO.category.id}" type="hidden"/>
 					<button class="btn btn-outline-danger btn-sm" type="submit">
 						관리자 삭제
 					</button>
@@ -91,32 +97,40 @@
 		</div>
 	</div>
 	
-	<!--	comment stat-->
-	<div class="my-3">
-		<p th:if="${commentDTOs.size() == 0}">아직 댓글이 없습니다.</p>
-		<p th:text="|${commentDTOs.size()}개의 댓글이 있습니다.|"
-		   th:unless="${commentDTOs.size() == 0}"></p>
+	<!--	comment count-->
+	<div class="my-3" th:with="count = ${articleDTO.commentCount}">
+		<p th:if="${count == 0}">아직 댓글이 없습니다.</p>
+		<p th:text="|${count}개의 댓글이 있습니다.|"
+		   th:unless="${count == 0}"></p>
 	</div>
 	
 	<!--		comment list-->
 	<div class="card" th:each="c : ${commentDTOs}" th:style="'margin-left: ' + ${c.depth * 20} + 'px;'">
 		<div class="card-body comment-item">
-			<!--			reply to-->
+			<!--			comment reply to-->
 			<div class="text-muted small mb-2" th:if="${c.depth > 0}">
 				<span th:if="${c.parentComment != null}" th:text="${c.parentComment?.user.nickname} + '님에게 답글'"></span>
 			</div>
 			
 			<div class="row">
-				<!--				comment user info-->
-				<a class="text-decoration-none"
-				   th:href="@{/article(userId=${articleDTO.user.id})}"
-				   th:text="${c.user?.nickname}">
-				</a>
+				<!--				comment user image, nickname-->
+				<div>
+					<th:block
+							th:replace="~{fragments/user_image :: func(${c.user.image.url}, '')}">
+					</th:block>
+					<a class="text-decoration-none"
+					   th:href="@{/article(userId=${articleDTO.user.id})}"
+					   th:text="${c.user?.nickname}">
+					</a>
+					<th:block
+							th:replace="~{fragments/admin_badge :: roleBadge(${c.user.role.name})}">
+					</th:block>
+				</div>
 				
 				<!--				comment content-->
 				<div class="card-text mb-2" style="white-space: pre-line;" th:text="${c.content}"></div>
 				
-				<!--				comment time info-->
+				<!--				comment time-->
 				<div class="fw-lighter fs-6">
 					<span th:if="${c.updatedAt == null}"
 					      th:text="${#temporals.format(c.createdAt, 'yyyy-MM-dd HH:mm', 'Asia/Seoul')}"></span>
@@ -157,7 +171,7 @@
 				<!--				admin comment delete-->
 				<form method="post" onsubmit="return confirm('정말 삭제하시겠습니까?')"
 				      sec:authorize="hasRole('ADMIN')"
-				      th:action="@{/admin/comment/{id}/delete(id=${c.id})}"
+				      th:action="@{/admin/comment/{id}/delete(id=${c.id}, articleId=${c.articleId})}"
 				>
 					<input name="id" th:value="${c.articleId}" type="hidden"/>
 					<button class="btn btn-outline-danger btn-sm" type="submit">
@@ -181,7 +195,7 @@
 					</form>
 				</div>
 				
-				<!--comment reply form-->
+				<!--				comment reply form-->
 				<div style="display: none;" th:id="|comment_reply_form_${c.id}|">
 					<form class="comment-reply-form">
 						<input name="articleId" th:value="${c.articleId}" type="hidden">

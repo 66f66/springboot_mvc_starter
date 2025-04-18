@@ -33,10 +33,10 @@ public class ArticleCategoryService {
                 .articleCount(totalCount)
                 .build();
 
-        List<ArticleCategoryDTO> result = new ArrayList<>();
-        result.add(allCategory);
-        result.addAll(categoryDTOs);
+        List<ArticleCategoryDTO> newList = new ArrayList<>();
+        newList.add(allCategory);
+        newList.addAll(categoryDTOs);
 
-        return result;
+        return newList;
     }
 }

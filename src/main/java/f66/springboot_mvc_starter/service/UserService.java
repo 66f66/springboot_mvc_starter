@@ -58,6 +58,7 @@ public class UserService {
         }
 
         UserImageDTO userImageDTO = UserImageDTO.builder()
+                .userId(userDTO.getId())
                 .url(defaultImageUrl + userDTO.getNickname())
                 .build();
 

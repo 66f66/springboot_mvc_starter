@@ -1,7 +1,6 @@
 package f66.springboot_mvc_starter.controller;
 
-import f66.springboot_mvc_starter.service.ArticleService;
-import f66.springboot_mvc_starter.service.CommentService;
+import f66.springboot_mvc_starter.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -16,13 +15,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequiredArgsConstructor
 public class AdminController {
 
-    private final ArticleService articleService;
-    private final CommentService commentService;
+    private final AdminService adminService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/article/{id}/delete")
-    public String deleteArticle(@PathVariable Long id,
-                                @RequestParam int categoryId) {
+    public String deleteArticle(@PathVariable Long id) {
+
+        adminService.deleteArticle(id);
 
         return "redirect:/article";
     }
@@ -32,6 +31,8 @@ public class AdminController {
     public String deleteComment(@PathVariable Long id,
                                 @RequestParam Long articleId,
                                 RedirectAttributes redirectAttributes) {
+
+        adminService.deleteComment(id);
 
         redirectAttributes.addAttribute("articleId", articleId);
 

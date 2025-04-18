@@ -70,7 +70,7 @@
 
     <select id="countUsers"
             resultType="long">
-        select COUNT(*)
+        select COUNT(id)
         from users
     </select>
 </mapper>

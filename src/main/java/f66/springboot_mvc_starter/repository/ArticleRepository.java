@@ -19,9 +19,9 @@ public interface ArticleRepository {
 
     void updateCommentCount(Long id, int delta);
 
-    void updateVoteCount(Long id, int delta);
-
     void updateIsDeleted(Long id, boolean isDeleted);
+
+    Optional<ArticleDTO> selectArticleById(Long id);
 
     Optional<ArticleDTO> selectArticleByIdAndUserId(Long id, Long userId);
 

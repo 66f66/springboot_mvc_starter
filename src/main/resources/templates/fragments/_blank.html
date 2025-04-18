@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org"
+>
+
+<th:block th:fragment="func(var)">
+	<div th:if="${var == ''}"></div>
+</th:block>
+
+<!--<th:block-->
+<!--		th:replace="~{fragments/_blank :: func(${var})}">-->
+<!--</th:block>-->
+
+</html>

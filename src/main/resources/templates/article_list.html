@@ -89,7 +89,8 @@
 	<!--	category list-->
 	<div class="row mb-3" th:if="${articlePageRequest.userId == null}">
 		<div class="col-12 d-flex gap-2 align-items-center">
-			<a class="fw-semibold text-decoration-none link-underline link-underline-opacity-0 link-underline-opacity-75-hover"
+			<a class="text-decoration-none"
+			   th:classappend="${articlePageRequest.categoryId == c.id} ? 'fw-bold'"
 			   th:each="c : ${categoryDTOs}"
 			   th:href="${@httpUtil.setQueryParam(requestURIWithQuery, 'categoryId', c.id)}"
 			   th:text="|${c.name}(${c.articleCount})|"
@@ -135,14 +136,17 @@
 						<!--						article user, date, vote count(mobile only)-->
 						<div class="d-block d-md-none mt-1">
 							<div class="d-flex align-items-center gap-2">
-								<img alt=""
-								     class="avatar"
-								     th:src="${article.user.image.url}">
+								<th:block
+										th:replace="~{fragments/user_image :: func(${article.user.image.url}, '')}"></th:block>
 								<a class="text-decoration-none"
 								   th:href="@{/article(userId=${article.user.id})}"
 								   th:text="${article.user.nickname}">
 								</a>
+								<th:block
+										th:replace="~{fragments/admin_badge :: roleBadge(${article.user.role.name})}">
+								</th:block>
 							</div>
+							
 							<small class="text-muted">
 								<span th:text="${#temporals.format(article.createdAt, 'yyyy-MM-dd', 'Asia/Seoul')}"></span>
 								<span th:if="${article.voteCount != 0}" th:text="| 추천 ${article.voteCount}|"></span>
@@ -152,10 +156,15 @@
 					
 					<!--					article user(desktop only)-->
 					<div class="col-md-2 text-center d-none d-md-block">
+						<th:block
+								th:replace="~{fragments/user_image :: func(${article.user.image.url}, '')}"></th:block>
 						<a class="text-decoration-none"
 						   th:href="@{/article(userId=${article.user.id})}"
 						   th:text="${article.user.nickname}">
 						</a>
+						<th:block
+								th:replace="~{fragments/admin_badge :: roleBadge(${article.user.role.name})}">
+						</th:block>
 					</div>
 					
 					<!--					article date(desktop only)-->

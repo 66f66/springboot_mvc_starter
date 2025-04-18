@@ -12,6 +12,10 @@
             <association property="image" javaType="UserImageDTO">
                 <result property="url" column="user_image_url"/>
             </association>
+
+            <association property="role" javaType="UserRoleDTO">
+                <result property="name" column="user_role_name"/>
+            </association>
         </association>
 
         <association property="parentComment" javaType="CommentDTO">
@@ -80,14 +84,16 @@
                                    c.user_id,
                                    u.nickname            as "user_nickname",
                                    ui.url                as "user_image_url",
+                                   ur.name               as "user_role_name",
                                    c.article_id,
                                    c.parent_comment_id,
                                    CAST(NULL AS varchar) as "parent_comment_user_nickname",
                                    c.depth,
                                    ARRAY [c.id]          AS path
                             FROM comments c
-                                     left JOIN users u ON c.user_id = u.id
-                                     left join user_images ui on c.user_id = ui.user_id
+                                     JOIN users u ON c.user_id = u.id
+                                     JOIN user_images ui on c.user_id = ui.user_id
+                                     join user_roles ur on u.role_id = ur.id
                             WHERE c.parent_comment_id IS NULL
                               AND c.article_id = #{articleId}
 
@@ -100,6 +106,7 @@
                                    c.user_id,
                                    u.nickname        as "user_nickname",
                                    ui.url            as "user_image_url",
+                                   ur.name           as "user_role_name",
                                    c.article_id,
                                    c.parent_comment_id,
                                    parent_u.nickname as "parent_comment_user_nickname",
@@ -107,12 +114,11 @@
                                    ct.path || c.id
                             FROM comments c
                                      JOIN comment_tree ct ON c.parent_comment_id = ct.id
-                                     left JOIN users u ON c.user_id = u.id
-                                     left join user_images ui on c.user_id = ui.user_id
-                                     left JOIN comments parent_comment ON c.parent_comment_id = parent_comment.id
-                                     left JOIN users parent_u ON parent_comment.user_id = parent_u.id
-                            WHERE (c.parent_comment_id IS NULL OR parent_comment.id IS NOT NULL OR
-                                   (c.parent_comment_id IS NOT NULL AND parent_comment.id IS NULL)))
+                                     JOIN users u ON c.user_id = u.id
+                                     join user_images ui on c.user_id = ui.user_id
+                                     join user_roles ur on u.role_id = ur.id
+                                     JOIN comments parent_comment ON c.parent_comment_id = parent_comment.id
+                                     JOIN users parent_u ON parent_comment.user_id = parent_u.id)
         SELECT *
         FROM comment_tree
         ORDER BY path;

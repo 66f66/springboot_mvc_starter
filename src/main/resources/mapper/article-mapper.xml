@@ -12,6 +12,10 @@
             <association property="image" javaType="UserImageDTO">
                 <result property="url" column="user_image_url"/>
             </association>
+
+            <association property="role" javaType="UserRoleDTO">
+                <result property="name" column="user_role_name"/>
+            </association>
         </association>
 
         <association property="category" javaType="ArticleCategoryDTO">
@@ -53,6 +57,13 @@
         WHERE id = #{id}
     </update>
 
+    <select id="selectArticleById"
+            parameterType="Long" resultType="ArticleDTO">
+        select *
+        from articles
+        where id = #{id}
+    </select>
+
     <select id="selectArticleByIdAndUserId"
             parameterType="map" resultType="ArticleDTO">
         SELECT *
@@ -68,6 +79,7 @@
         u.id as "user_id",
         u.nickname as "user_nickname",
         ui.url as "user_image_url",
+        ur.name as "user_role_name",
         ac.id as "category_id",
         ac.name as "category_name",
         <if test="userId != null">
@@ -79,8 +91,9 @@
         AS voted
         FROM articles a
         JOIN users u ON a.user_id = u.id
-        JOIN article_categories ac ON a.category_id = ac.id
         JOIN user_images ui ON a.user_id = ui.user_id
+        JOIN user_roles ur ON u.role_id = ur.id
+        JOIN article_categories ac ON a.category_id = ac.id
         <if test="userId != null">
             LEFT JOIN article_votes av ON a.id = av.article_id AND av.user_id = #{userId}
         </if>
@@ -95,43 +108,15 @@
         u.id as "user_id",
         u.nickname as "user_nickname",
         ui.url as "user_image_url",
+        ur.name as "user_role_name",
         ac.id as "category_id",
         ac.name as "category_name"
         FROM articles a
         JOIN users u ON a.user_id = u.id
-        JOIN article_categories ac ON a.category_id = ac.id
         JOIN user_images ui ON a.user_id = ui.user_id
-        <where>
-            a.is_deleted = false
-            <trim prefixOverrides="AND |OR">
-
-                <if test="userId != null">
-                    and a.user_id = #{userId}
-                </if>
-
-                <if test="userId == null">
-                    <if test="searchKey != null and searchValue != null">
-                        AND (
-                        <choose>
-                            <when test="searchKey == 'title'">
-                                a.title LIKE CONCAT('%', #{searchValue}, '%')
-                            </when>
-                            <when test="searchKey == 'content'">
-                                a.content LIKE CONCAT('%', #{searchValue}, '%')
-                            </when>
-                            <when test="searchKey == 'nickname'">
-                                u.nickname LIKE CONCAT('%', #{searchValue}, '%')
-                            </when>
-                        </choose>
-                        )
-                    </if>
-
-                    <if test="categoryId != null and categoryId != 0">
-                        AND a.category_id = #{categoryId}
-                    </if>
-                </if>
-            </trim>
-        </where>
+        JOIN user_roles ur ON u.role_id = ur.id
+        JOIN article_categories ac ON a.category_id = ac.id
+        <include refid="articlePageConditions"/>
         ORDER BY
         <choose>
             <when test="order == 'id_desc'">a.id DESC</when>
@@ -151,42 +136,40 @@
 
     <select id="countArticlesByRequest"
             parameterType="ArticlePageRequest" resultType="long">
-        SELECT COUNT(*)
+        SELECT COUNT(a.id)
         FROM articles a
         <if test="searchKey == 'nickname'">
             JOIN users u ON a.user_id = u.id
         </if>
+        <include refid="articlePageConditions"/>
+    </select>
+
+    <sql id="articlePageConditions">
         <where>
             a.is_deleted = false
-            <trim prefixOverrides="AND |OR">
-
-                <if test="userId != null">
-                    and a.user_id = #{userId}
+            <if test="userId != null">
+                AND a.user_id = #{userId}
+            </if>
+            <if test="userId == null">
+                <if test="searchKey != null and searchValue != null">
+                    AND
+                    <choose>
+                        <when test="searchKey == 'title'">
+                            a.title LIKE CONCAT('%', #{searchValue}, '%')
+                        </when>
+                        <when test="searchKey == 'content'">
+                            a.content LIKE CONCAT('%', #{searchValue}, '%')
+                        </when>
+                        <when test="searchKey == 'nickname'">
+                            u.nickname LIKE CONCAT('%', #{searchValue}, '%')
+                        </when>
+                    </choose>
                 </if>
-
-                <if test="userId == null">
-                    <if test="searchKey != null and searchValue != null">
-                        AND (
-                        <choose>
-                            <when test="searchKey == 'title'">
-                                a.title LIKE CONCAT('%', #{searchValue}, '%')
-                            </when>
-                            <when test="searchKey == 'content'">
-                                a.content LIKE CONCAT('%', #{searchValue}, '%')
-                            </when>
-                            <when test="searchKey == 'nickname'">
-                                u.nickname LIKE CONCAT('%', #{searchValue}, '%')
-                            </when>
-                        </choose>
-                        )
-                    </if>
-
-                    <if test="categoryId != null and categoryId != 0">
-                        AND a.category_id = #{categoryId}
-                    </if>
+                <if test="categoryId != null and categoryId != 0">
+                    AND a.category_id = #{categoryId}
                 </if>
-            </trim>
+            </if>
         </where>
-    </select>
+    </sql>
 
 </mapper>
