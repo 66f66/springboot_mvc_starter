@@ -42,7 +42,7 @@ public class AuthController {
 
         try {
 
-            userService.createLocalUser(userDTO);
+            userService.createUser(userDTO);
         } catch (UserBadInputException | UniqueConstraintException e) {
 
             redirectAttributes.addFlashAttribute("error", e.getMessage());

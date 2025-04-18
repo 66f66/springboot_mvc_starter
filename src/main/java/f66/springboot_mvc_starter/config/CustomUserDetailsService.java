@@ -23,7 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        UserDTO userDTO = userRepository.selectByUsername(username)
+        UserDTO userDTO = userRepository.selectUserWithRelationsByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("username not found"));
 
         Set<SimpleGrantedAuthority> authorities = Collections

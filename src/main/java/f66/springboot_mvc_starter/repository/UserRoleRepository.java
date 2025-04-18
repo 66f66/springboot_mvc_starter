@@ -9,9 +9,9 @@ import java.util.Optional;
 @Mapper
 public interface UserRoleRepository {
 
-    void insertManyUserRoles(List<UserRoleDTO> userRoleDTOs);
+    void insertRoles(List<UserRoleDTO> userRoleDTOs);
 
-    long count();
+    Optional<UserRoleDTO> selectRoleByName(String name);
 
-    Optional<UserRoleDTO> selectByName(String name);
+    long countRoles();
 }

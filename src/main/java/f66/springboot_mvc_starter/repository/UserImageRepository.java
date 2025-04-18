@@ -8,9 +8,9 @@ import java.util.Optional;
 @Mapper
 public interface UserImageRepository {
 
-    void insertUserImage(UserImageDTO userImageDTO);
+    void insertImage(UserImageDTO userImageDTO);
 
-    void updateUserImage(UserImageDTO userImageDTO);
+    void updateImage(UserImageDTO userImageDTO);
 
-    Optional<UserImageDTO> selectByUserId(Long userId);
+    Optional<UserImageDTO> selectImageByUserId(Long userId);
 }

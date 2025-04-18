@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="f66.springboot_mvc_starter.repository.CommentRepository">
 
-    <resultMap id="CommentResultMap" type="CommentDTO" autoMapping="true">
+    <resultMap id="CommentWithRelations" type="CommentDTO" autoMapping="true">
         <id property="id" column="id"/>
 
         <association property="user" javaType="UserDTO">
@@ -22,7 +22,8 @@
         </association>
     </resultMap>
 
-    <insert id="insertComment" parameterType="CommentDTO" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertComment"
+            parameterType="CommentDTO" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO comments (content, user_id, article_id, parent_comment_id, depth)
         VALUES (#{content},
                 #{userId},
@@ -37,34 +38,39 @@
                     END)
     </insert>
 
-    <update id="updateComment" parameterType="CommentDTO">
+    <update id="updateComment"
+            parameterType="CommentDTO">
         UPDATE comments
         SET content    = #{content},
             updated_at = now()
         WHERE id = #{id}
     </update>
 
-    <update id="updateIsDeleted" parameterType="map">
+    <update id="updateIsDeleted"
+            parameterType="map">
         UPDATE comments
         SET is_deleted = #{isDeleted},
             updated_at = now()
-        WHERE id = #{commentId}
+        WHERE id = #{id}
     </update>
 
-    <select id="selectById" parameterType="map" resultType="CommentDTO">
+    <select id="selectCommentById"
+            parameterType="map" resultType="CommentDTO">
         SELECT *
         FROM comments
         WHERE id = #{id}
     </select>
 
-    <select id="selectByIdAndUserId" parameterType="map" resultType="CommentDTO">
+    <select id="selectCommentByIdAndUserId"
+            parameterType="map" resultType="CommentDTO">
         SELECT *
         FROM comments
-        WHERE id = #{commentId}
+        WHERE id = #{id}
           AND user_id = #{userId}
     </select>
 
-    <select id="selectCommentsWithRelationsByArticleId" parameterType="Long" resultMap="CommentResultMap">
+    <select id="selectCommentsWithRelationsByArticleId"
+            parameterType="Long" resultMap="CommentWithRelations">
         WITH RECURSIVE comment_tree
                            AS
                            (SELECT c.id,

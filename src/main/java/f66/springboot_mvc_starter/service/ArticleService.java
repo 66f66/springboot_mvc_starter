@@ -34,12 +34,12 @@ public class ArticleService {
     }
 
     @Transactional
-    public void updateArticle(Long articleId,
+    public void updateArticle(Long id,
                               Long currentUserId,
                               ArticleDTO articleDTO) {
 
         ArticleDTO oldArticleDTO = articleRepository
-                .selectArticleByIdAndUserId(articleId, currentUserId)
+                .selectArticleByIdAndUserId(id, currentUserId)
                 .orElseThrow(ForbiddenException::new);
 
         articleRepository.updateArticle(articleDTO);
@@ -53,31 +53,31 @@ public class ArticleService {
     }
 
     @Transactional
-    public void deleteArticle(Long articleId,
+    public void deleteArticle(Long id,
                               Long currentUserId) {
 
         int categoryId = articleRepository
-                .selectArticleByIdAndUserId(articleId, currentUserId)
+                .selectArticleByIdAndUserId(id, currentUserId)
                 .orElseThrow(ForbiddenException::new).getCategoryId();
 
-        articleRepository.updateIsDeleted(articleId, true);
+        articleRepository.updateIsDeleted(id, true);
 
         articleCategoryRepository.updateArticleCount(categoryId, -1);
     }
 
     @Transactional(readOnly = true)
-    public ArticleDTO getArticleByOwner(Long articleId,
+    public ArticleDTO getArticleByOwner(Long id,
                                         Long currentUserId) {
 
-        return articleRepository.selectArticleByIdAndUserId(articleId, currentUserId)
+        return articleRepository.selectArticleByIdAndUserId(id, currentUserId)
                 .orElseThrow(ForbiddenException::new);
     }
 
     @Transactional(readOnly = true)
-    public ArticleDTO getArticleDetail(Long articleId) {
+    public ArticleDTO getArticleDetail(Long id) {
 
         ArticleDTO articleDTO = ArticleDTO.builder()
-                .id(articleId)
+                .id(id)
                 .build();
 
         authUtil.currentUserId().ifPresent(articleDTO::setUserId);

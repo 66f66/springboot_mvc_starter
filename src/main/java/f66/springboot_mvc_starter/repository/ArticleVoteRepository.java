@@ -8,5 +8,5 @@ public interface ArticleVoteRepository {
 
     int toggleVote(Long articleId, Long userId);
 
-    VoteResult updateVoteCountAndGetResult(Long articleId, Long userId);
+    VoteResult updateVoteCountThenSelectResult(Long articleId, Long userId);
 }

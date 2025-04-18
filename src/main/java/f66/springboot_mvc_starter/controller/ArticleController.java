@@ -35,11 +35,11 @@ public class ArticleController {
     private final CommentService commentService;
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/{articleId}/vote")
+    @PostMapping("/{id}/vote")
     public ResponseEntity<Map<String, VoteResult>> vote(@AuthenticationPrincipal CustomUserDetails user,
-                                                        @PathVariable Long articleId) {
+                                                        @PathVariable Long id) {
 
-        VoteResult result = articleVoteService.voteArticle(articleId, user.getId());
+        VoteResult result = articleVoteService.voteArticle(id, user.getId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("result", result));
     }
@@ -55,23 +55,23 @@ public class ArticleController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PatchMapping("/{articleId}")
+    @PatchMapping("/{id}")
     public ResponseEntity<Map<String, Long>> updateArticle(@AuthenticationPrincipal CustomUserDetails user,
-                                                           @PathVariable Long articleId,
+                                                           @PathVariable Long id,
                                                            @RequestBody @Valid ArticleDTO articleDTO) {
 
-        articleService.updateArticle(articleId, user.getId(), articleDTO);
+        articleService.updateArticle(id, user.getId(), articleDTO);
 
         return ResponseEntity.ok(Map.of("id", articleDTO.getId()));
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/{articleId}")
+    @PostMapping("/{id}")
     public String deleteArticle(@AuthenticationPrincipal CustomUserDetails user,
-                                @PathVariable Long articleId,
+                                @PathVariable Long id,
                                 RedirectAttributes redirectAttributes) {
 
-        articleService.deleteArticle(articleId, user.getId());
+        articleService.deleteArticle(id, user.getId());
 
         redirectAttributes.addFlashAttribute("toast",
                 ToastDTO.createToast("게시물을 삭제했습니다."));
@@ -82,24 +82,20 @@ public class ArticleController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/form")
     public String articleForm(@AuthenticationPrincipal CustomUserDetails user,
-                              @RequestParam(required = false) Long articleId,
+                              @RequestParam(required = false) Long id,
                               Model model) {
 
         ArticleDTO articleDTO;
 
-        if (articleId != null) {
+        if (id != null) {
 
-            articleDTO = articleService.getArticleByOwner(articleId, user.getId());
+            articleDTO = articleService.getArticleByOwner(id, user.getId());
         } else {
 
             articleDTO = new ArticleDTO();
         }
 
-        System.out.println("TEST^");
-
         List<ArticleCategoryDTO> articleCategoryDTOs = articleCategoryService.getCategories();
-
-        System.out.println("TEST#");
 
         model.addAttribute("articleDTO", articleDTO);
         model.addAttribute("categoryDTOs", articleCategoryDTOs);
@@ -107,12 +103,12 @@ public class ArticleController {
         return "article_form";
     }
 
-    @GetMapping("/{articleId}")
-    public String view(@PathVariable Long articleId,
+    @GetMapping("/{id}")
+    public String view(@PathVariable Long id,
                        Model model) {
 
-        model.addAttribute("articleDTO", articleService.getArticleDetail(articleId));
-        model.addAttribute("commentDTOs", commentService.getComments(articleId));
+        model.addAttribute("articleDTO", articleService.getArticleDetail(id));
+        model.addAttribute("commentDTOs", commentService.getComments(id));
         model.addAttribute("commentDTO", new CommentDTO());
 
         return "article_view";

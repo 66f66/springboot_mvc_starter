@@ -30,22 +30,22 @@ public class CommentController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PatchMapping("/{commentId}")
+    @PatchMapping("/{id}")
     public ResponseEntity<Void> updateComment(@AuthenticationPrincipal CustomUserDetails user,
-                                              @PathVariable Long commentId,
+                                              @PathVariable Long id,
                                               @RequestBody @Valid CommentDTO commentDTO) {
 
-        commentService.updateComment(commentId, user.getId(), commentDTO);
+        commentService.updateComment(id, user.getId(), commentDTO);
 
         return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("isAuthenticated()")
-    @DeleteMapping("/{commentId}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteComment(@AuthenticationPrincipal CustomUserDetails user,
-                                              @PathVariable Long commentId) {
+                                              @PathVariable Long id) {
 
-        commentService.deleteComment(commentId, user.getId());
+        commentService.deleteComment(id, user.getId());
 
         return ResponseEntity.ok().build();
     }

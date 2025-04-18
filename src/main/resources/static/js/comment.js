@@ -131,8 +131,8 @@ async function onCommentSubmit(e) {
       content: contentValue,
     }
     
-    const commentIdVal = form.commentId?.value
-    if (commentIdVal) {
+    const idVal = form.commentId?.value
+    if (idVal) {
       body.id = form.id.value
     }
     
@@ -144,10 +144,8 @@ async function onCommentSubmit(e) {
       body.parentCommentId = form.parentCommentId.value
     }
     
-    const action = !commentIdVal ? '/comment' : `/comment/${commentIdVal}`
-    const method = !commentIdVal ? 'POST' : 'PATCH'
-    
-    console.log(action, method)
+    const action = !idVal ? '/comment' : `/comment/${idVal}`
+    const method = !idVal ? 'POST' : 'PATCH'
     
     const response = await fetch(action, {
       method,

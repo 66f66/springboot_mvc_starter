@@ -17,17 +17,19 @@ public interface ArticleRepository {
 
     void updateArticle(ArticleDTO articleDTO);
 
-    void updateCommentCount(Long articleId, int delta);
+    void updateCommentCount(Long id, int delta);
 
-    void updateIsDeleted(Long articleId, boolean isDeleted);
+    void updateVoteCount(Long id, int delta);
 
-    Optional<ArticleDTO> selectArticleByIdAndUserId(Long articleId, Long userId);
+    void updateIsDeleted(Long id, boolean isDeleted);
+
+    Optional<ArticleDTO> selectArticleByIdAndUserId(Long id, Long userId);
 
     Optional<ArticleDTO> selectArticleWithRelationsById(ArticleDTO articleDTO);
 
     List<ArticleDTO> selectArticlesWithRelationsByRequest(ArticlePageRequest articlePageRequest);
 
-    Long countByRequest(ArticlePageRequest articlePageRequest);
+    Long countArticlesByRequest(ArticlePageRequest articlePageRequest);
 
     default Page<ArticleDTO> selectPageByRequest(ArticlePageRequest articlePageRequest) {
         articlePageRequest.calculateOffset();
@@ -35,7 +37,7 @@ public interface ArticleRepository {
         return new PageImpl<>(
                 selectArticlesWithRelationsByRequest(articlePageRequest),
                 PageRequest.of(articlePageRequest.getPage(), articlePageRequest.getSize()),
-                countByRequest(articlePageRequest)
+                countArticlesByRequest(articlePageRequest)
         );
     }
 }

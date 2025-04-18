@@ -8,15 +8,15 @@ import java.util.Optional;
 @Mapper
 public interface UserRepository {
 
-    void insertLocalUser(UserDTO userDTO);
+    void insertUser(UserDTO userDTO);
 
     void updateUser(UserDTO userDTO);
 
     boolean existsByUsername(String username);
 
-    long count();
+    Optional<UserDTO> selectUserWithRelationsById(Long id);
 
-    Optional<UserDTO> selectById(Long id);
+    Optional<UserDTO> selectUserWithRelationsByUsername(String username);
 
-    Optional<UserDTO> selectByUsername(String username);
+    long countUsers();
 }

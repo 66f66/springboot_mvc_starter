@@ -19,11 +19,8 @@ public class ArticleVoteService {
 
         int voted = articleVoteRepository.toggleVote(articleId, currentUserId);
 
-        if (voted == 0) {
+        if (voted == 0) throw new ForbiddenException();
 
-            throw new ForbiddenException();
-        }
-
-        return articleVoteRepository.updateVoteCountAndGetResult(articleId, currentUserId);
+        return articleVoteRepository.updateVoteCountThenSelectResult(articleId, currentUserId);
     }
 }

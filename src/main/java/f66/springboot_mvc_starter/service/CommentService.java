@@ -31,26 +31,28 @@ public class CommentService {
     }
 
     @Transactional
-    public void updateComment(Long commentId,
+    public void updateComment(Long id,
                               Long currentUserId,
                               CommentDTO commentDTO) {
 
-        commentDTO.setId(commentId);
+        commentDTO.setId(id);
 
-        commentRepository.selectByIdAndUserId(commentId, currentUserId)
+        commentRepository
+                .selectCommentByIdAndUserId(id, currentUserId)
                 .orElseThrow(ForbiddenException::new);
 
         commentRepository.updateComment(commentDTO);
     }
 
     @Transactional
-    public void deleteComment(Long commentId,
+    public void deleteComment(Long id,
                               Long currentUserId) {
 
-        Long articleId = commentRepository.selectByIdAndUserId(commentId, currentUserId)
+        Long articleId = commentRepository
+                .selectCommentByIdAndUserId(id, currentUserId)
                 .orElseThrow(ForbiddenException::new).getArticleId();
 
-        commentRepository.updateIsDeleted(commentId, true);
+        commentRepository.updateIsDeleted(id, true);
 
         articleRepository.updateCommentCount(articleId, -1);
     }

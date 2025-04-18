@@ -9,7 +9,7 @@
             DO UPDATE SET is_active = NOT article_votes.is_active
     </insert>
 
-    <select id="updateVoteCountAndGetResult" parameterType="map" resultType="VoteResult">
+    <select id="updateVoteCountThenSelectResult" parameterType="map" resultType="VoteResult">
         WITH vote_status AS (SELECT is_active
                              FROM article_votes
                              WHERE article_id = #{articleId}

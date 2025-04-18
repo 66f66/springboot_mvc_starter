@@ -13,11 +13,11 @@ public interface CommentRepository {
 
     void updateComment(CommentDTO commentDTO);
 
-    void updateIsDeleted(Long commentId, boolean isDeleted);
+    void updateIsDeleted(Long id, boolean isDeleted);
 
-    Optional<CommentDTO> selectById(Long commentId);
+    Optional<CommentDTO> selectCommentById(Long id);
 
-    Optional<CommentDTO> selectByIdAndUserId(Long commentId, Long userId);
+    Optional<CommentDTO> selectCommentByIdAndUserId(Long id, Long userId);
 
     List<CommentDTO> selectCommentsWithRelationsByArticleId(Long articleId);
 }

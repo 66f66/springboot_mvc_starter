@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="f66.springboot_mvc_starter.repository.ArticleRepository">
 
-    <resultMap id="ArticleResultMap" type="ArticleDTO" autoMapping="true">
+    <resultMap id="ArticleWithRelations" type="ArticleDTO" autoMapping="true">
         <id property="id" column="id"/>
 
         <association property="user" javaType="UserDTO">
@@ -20,12 +20,14 @@
         </association>
     </resultMap>
 
-    <insert id="insertArticle" parameterType="ArticleDTO" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertArticle"
+            parameterType="ArticleDTO" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO articles (title, content, user_id, category_id)
         VALUES (#{title}, #{content}, #{userId}, #{categoryId})
     </insert>
 
-    <update id="updateArticle" parameterType="ArticleDTO">
+    <update id="updateArticle"
+            parameterType="ArticleDTO">
         UPDATE articles
         <set>
             <if test="title != null">title = #{title},</if>
@@ -36,27 +38,31 @@
         WHERE id = #{id}
     </update>
 
-    <update id="updateCommentCount" parameterType="map">
+    <update id="updateCommentCount"
+            parameterType="map">
         UPDATE articles
         SET comment_count = comment_count + #{delta}
-        WHERE id = #{articleId}
+        WHERE id = #{id}
     </update>
 
-    <update id="updateIsDeleted" parameterType="map">
+    <update id="updateIsDeleted"
+            parameterType="map">
         UPDATE articles
         SET is_deleted = #{isDeleted},
             updated_at = now()
-        WHERE id = #{articleId}
+        WHERE id = #{id}
     </update>
 
-    <select id="selectArticleByIdAndUserId" parameterType="map" resultType="ArticleDTO">
+    <select id="selectArticleByIdAndUserId"
+            parameterType="map" resultType="ArticleDTO">
         SELECT *
         FROM articles
-        WHERE id = #{articleId}
+        WHERE id = #{id}
           AND user_id = #{userId}
     </select>
 
-    <select id="selectArticleWithRelationsById" parameterType="ArticleDTO" resultMap="ArticleResultMap">
+    <select id="selectArticleWithRelationsById"
+            parameterType="ArticleDTO" resultMap="ArticleWithRelations">
         SELECT
         a.*,
         u.id as "user_id",
@@ -82,8 +88,8 @@
         and a.is_deleted = false
     </select>
 
-    <select id="selectArticlesWithRelationsByRequest" parameterType="ArticlePageRequest"
-            resultMap="ArticleResultMap">
+    <select id="selectArticlesWithRelationsByRequest"
+            parameterType="ArticlePageRequest" resultMap="ArticleWithRelations">
         SELECT
         a.*,
         u.id as "user_id",
@@ -143,8 +149,8 @@
         LIMIT #{size} OFFSET #{offset}
     </select>
 
-    <select id="countByRequest" parameterType="ArticlePageRequest"
-            resultType="long">
+    <select id="countArticlesByRequest"
+            parameterType="ArticlePageRequest" resultType="long">
         SELECT COUNT(*)
         FROM articles a
         <if test="searchKey == 'nickname'">

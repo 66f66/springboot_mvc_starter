@@ -2,12 +2,30 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="f66.springboot_mvc_starter.repository.UserRepository">
 
-    <insert id="insertUser" parameterType="UserDTO" useGeneratedKeys="true" keyProperty="id">
+    <resultMap id="UserWithRelations" type="UserDTO" autoMapping="true">
+        <id property="id" column="id"/>
+
+        <association property="role" javaType="UserRoleDTO">
+            <id property="id" column="role_id"/>
+            <result property="name" column="role_name"/>
+            <result property="displayName" column="role_display_name"/>
+        </association>
+
+        <association property="image" javaType="UserImageDTO">
+            <id property="id" column="image_id"/>
+            <result property="url" column="image_url"/>
+            <result property="publicId" column="image_public_id"/>
+        </association>
+    </resultMap>
+
+    <insert id="insertUser"
+            parameterType="UserDTO" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO users (username, nickname, password)
         VALUES (#{username}, #{nickname}, #{password})
     </insert>
 
-    <update id="updateUser" parameterType="UserDTO">
+    <update id="updateUser"
+            parameterType="UserDTO">
         UPDATE users
         <set>
             <if test="nickname != null">nickname = #{nickname},</if>
@@ -17,37 +35,41 @@
         WHERE id = #{id}
     </update>
 
-    <select id="existsByUsername" parameterType="String" resultType="boolean">
+    <select id="existsByUsername"
+            parameterType="String" resultType="boolean">
         SELECT EXISTS (SELECT 1 FROM users WHERE username = #{value})
     </select>
 
-    <select id="selectById" parameterType="Long" resultType="UserDTO">
+    <select id="selectUserWithRelationsById"
+            parameterType="Long" resultMap="UserWithRelations">
         select u.*,
-               ur.name         as "role.name",
-               ur.display_name as "role.displayName",
-               ui.id           as "image.id",
-               ui.url          as "image.url",
-               ui.public_id    as "image.publicId"
+               ur.name         as "role_name",
+               ur.display_name as "role_displayName",
+               ui.id           as "image_id",
+               ui.url          as "image_url",
+               ui.public_id    as "image_public_id"
         from users u
                  join user_roles ur on u.role_id = ur.id
                  join user_images ui on u.id = ui.user_id
         where u.id = #{id}
     </select>
 
-    <select id="selectByUsername" parameterType="String" resultType="UserDTO">
+    <select id="selectUserWithRelationsByUsername"
+            parameterType="String" resultMap="UserWithRelations">
         SELECT u.*,
-               ur.name         as "role.name",
-               ur.display_name as "role.displayName",
-               ui.id           as "image.id",
-               ui.url          as "image.url",
-               ui.public_id    as "image.publicId"
+               ur.name         as "role_name",
+               ur.display_name as "role_displayName",
+               ui.id           as "image_id",
+               ui.url          as "image_url",
+               ui.public_id    as "image_public_id"
         FROM users u
                  join user_roles ur on u.role_id = ur.id
                  join user_images ui ON u.id = ui.user_id
         WHERE u.username = #{username}
     </select>
 
-    <select id="count" resultType="Long">
+    <select id="countUsers"
+            resultType="long">
         select COUNT(*)
         from users
     </select>

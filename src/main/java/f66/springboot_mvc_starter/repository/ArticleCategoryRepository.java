@@ -8,7 +8,7 @@ import java.util.List;
 @Mapper
 public interface ArticleCategoryRepository {
 
-    void updateArticleCount(int articleCategoryId, int delta);
+    void updateArticleCount(int id, int delta);
 
     List<ArticleCategoryDTO> selectCategories();
 }

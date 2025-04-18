@@ -2,12 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="f66.springboot_mvc_starter.repository.UserImageRepository">
 
-    <insert id="insertUserImage" parameterType="UserImageDTO" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertImage"
+            parameterType="UserImageDTO" useGeneratedKeys="true" keyProperty="id">
         insert into user_images (public_id, original_file_name, url, user_id)
         values (#{publicId}, #{originalFileName}, #{url}, #{userId})
     </insert>
 
-    <update id="updateUserImage" parameterType="UserImageDTO">
+    <update id="updateImage"
+            parameterType="UserImageDTO">
         update user_images
         <set>
             <if test="publicId != null">public_id = #{publicId},</if>
@@ -18,7 +20,8 @@
         WHERE id = #{id}
     </update>
 
-    <select id="selectByUserId" parameterType="Long" resultType="UserImageDTO">
+    <select id="selectImageByUserId"
+            parameterType="Long" resultType="UserImageDTO">
         select *
         from user_images
         where user_id = #{userId}

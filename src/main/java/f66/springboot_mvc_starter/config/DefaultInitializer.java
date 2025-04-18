@@ -41,7 +41,7 @@ public class DefaultInitializer {
 
             final String ROLE_ADMIN = "ROLE_ADMIN";
 
-            if (userRoleRepository.count() == 0) {
+            if (userRoleRepository.countRoles() == 0) {
 
                 UserRoleDTO roleUser = new UserRoleDTO();
                 UserRoleDTO roleAdmin = UserRoleDTO.builder()
@@ -51,13 +51,13 @@ public class DefaultInitializer {
 
                 List<UserRoleDTO> userRoleDTOList = List.of(roleAdmin, roleUser);
 
-                userRoleRepository.insertManyUserRoles(userRoleDTOList);
+                userRoleRepository.insertRoles(userRoleDTOList);
             }
 
-            UserRoleDTO userRoleDTO = userRoleRepository.selectByName(ROLE_ADMIN)
+            UserRoleDTO userRoleDTO = userRoleRepository.selectRoleByName(ROLE_ADMIN)
                     .orElseThrow(ResourceNotFoundException::new);
 
-            if (userRepository.count() == 0) {
+            if (userRepository.countUsers() == 0) {
 
                 UserDTO user = UserDTO.builder()
                         .username("admin")
@@ -66,14 +66,14 @@ public class DefaultInitializer {
                         .roleId(userRoleDTO.getId())
                         .build();
 
-                userRepository.insertLocalUser(user);
+                userRepository.insertUser(user);
 
                 UserImageDTO userImageDTO = UserImageDTO.builder()
                         .userId(user.getId())
                         .url(defaultImageUrl + user.getNickname())
                         .build();
 
-                userImageRepository.insertUserImage(userImageDTO);
+                userImageRepository.insertImage(userImageDTO);
             }
         };
     }

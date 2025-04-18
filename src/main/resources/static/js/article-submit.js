@@ -79,13 +79,13 @@ async function articleSubmit(e) {
       categoryId: categoryIdVal,
     }
     
-    const articleIdVal = form.articleId?.value
-    if (articleIdVal) {
-      body.id = form.articleId.value
+    const idVal = form.id?.value
+    if (idVal) {
+      body.id = idVal
     }
     
-    const action = !articleIdVal ? '/article' : `/article/${articleIdVal}`
-    const method = !articleIdVal ? 'POST' : 'PATCH'
+    const action = !idVal ? '/article' : `/article/${idVal}`
+    const method = !idVal ? 'POST' : 'PATCH'
     
     const response = await fetch(action, {
       method,

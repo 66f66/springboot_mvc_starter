@@ -2,13 +2,24 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="f66.springboot_mvc_starter.repository.ArticleCategoryRepository">
 
-    <update id="updateArticleCount" parameterType="map">
+    <insert id="insertCategories"
+            parameterMap="java.util.List"
+    >
+        insert into article_categories (name)
+        <foreach collection="list" item="ArticleCategoryDTO" separator=",">
+            values (#{name})
+        </foreach>
+    </insert>
+
+    <update id="updateArticleCount"
+            parameterType="map">
         UPDATE article_categories
         SET article_count = article_count + #{delta}
-        WHERE id = #{articleCategoryId}
+        WHERE id = #{id}
     </update>
 
-    <select id="selectCategories" resultType="ArticleCategoryDTO">
+    <select id="selectCategories"
+            resultType="ArticleCategoryDTO">
         select *
         from article_categories
         order by article_count desc, id
