@@ -24,9 +24,9 @@ public class UserImageDTO {
 
     private OffsetDateTime createdAt;
 
-    private Long userId;
+    private OffsetDateTime updatedAt;
 
-    private UserDTO user;
+    private Long userId;
 
     private MultipartFile file;
 }

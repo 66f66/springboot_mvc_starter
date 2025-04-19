@@ -33,7 +33,7 @@
 				<!--				article user image, nickname-->
 				<div>
 					<th:block
-							th:replace="~{fragments/user_image :: func(${articleDTO.user.image.url}, '')}">
+							th:replace="~{fragments/user_image :: func(${articleDTO.user.imageUrl}, '')}">
 					</th:block>
 					<a class="text-decoration-none"
 					   th:href="@{/article(userId=${articleDTO.user.id})}"
@@ -116,7 +116,7 @@
 				<!--				comment user image, nickname-->
 				<div>
 					<th:block
-							th:replace="~{fragments/user_image :: func(${c.user.image.url}, '')}">
+							th:replace="~{fragments/user_image :: func(${c.user.imageUrl}, '')}">
 					</th:block>
 					<a class="text-decoration-none"
 					   th:href="@{/article(userId=${articleDTO.user.id})}"

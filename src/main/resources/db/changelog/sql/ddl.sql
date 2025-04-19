@@ -32,7 +32,7 @@ create table user_images
             primary key,
     public_id          varchar(50),
     original_file_name varchar(500),
-    url                varchar(500)                           not null,
+    url                varchar(500),
     created_at         timestamp with time zone default now() not null,
     updated_at         timestamp with time zone default now(),
     user_id            bigint                                 not null
@@ -55,21 +55,21 @@ create table articles
     id            bigint generated always as identity
         constraint articles_pk
             primary key,
-    is_deleted    boolean                  default false not null,
     title         text                                   not null,
     content       text                                   not null,
-    created_at    timestamp with time zone default now() not null,
-    updated_at    timestamp with time zone,
+    is_deleted    boolean                  default false not null,
     comment_count integer                  default 0     not null,
     vote_count    integer                  default 0     not null,
-    user_id       bigint
-        constraint articles_users_id_fk
-            references users
-            on delete set null,
+    created_at    timestamp with time zone default now() not null,
+    updated_at    timestamp with time zone,
     category_id   integer                  default 1
         constraint articles_article_categories_id_fk
             references article_categories
-            on delete set default
+            on delete NO ACTION,
+    user_id       bigint
+        constraint articles_users_id_fk
+            references users
+            on delete set null
 );
 
 create index articles_title_index
@@ -105,9 +105,9 @@ create table comments
     id                bigint generated always as identity
         constraint comments_pk
             primary key,
-    is_deleted        boolean                  default false not null,
     content           text                                   not null,
     depth             integer                  default 0     not null,
+    is_deleted        boolean                  default false not null,
     created_at        timestamp with time zone default now() not null,
     updated_at        timestamp with time zone,
     user_id           bigint

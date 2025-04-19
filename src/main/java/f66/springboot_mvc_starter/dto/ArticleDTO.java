@@ -17,8 +17,6 @@ public class ArticleDTO {
 
     private Long id;
 
-    private Boolean isDeleted;
-
     @NotBlank(message = "제목은 필수 값입니다.")
     @Size(min = 2, max = 100, message = "제목은 {min}자 이상 {max}자 이내입니다.")
     private String title;
@@ -26,6 +24,14 @@ public class ArticleDTO {
     @NotBlank(message = "내용은 필수 값입니다.")
     @Size(min = 10, max = 2000, message = "내용은 {min}자 이상 {max}자 이내입니다.")
     private String content;
+
+    private boolean isDeleted;
+
+    private Boolean voted;
+
+    private int voteCount;
+
+    private int commentCount;
 
     private OffsetDateTime createdAt;
 
@@ -38,10 +44,4 @@ public class ArticleDTO {
     private Long userId;
 
     private UserDTO user;
-
-    private Boolean voted;
-
-    private int voteCount;
-
-    private int commentCount;
 }

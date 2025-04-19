@@ -26,8 +26,8 @@
 
     <insert id="insertArticle"
             parameterType="ArticleDTO" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO articles (title, content, user_id, category_id)
-        VALUES (#{title}, #{content}, #{userId}, #{categoryId})
+        INSERT INTO articles (title, content, category_id, user_id)
+        VALUES (#{title}, #{content}, #{categoryId}, #{userId})
     </insert>
 
     <update id="updateArticle"

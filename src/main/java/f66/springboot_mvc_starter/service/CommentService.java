@@ -35,8 +35,6 @@ public class CommentService {
                               Long currentUserId,
                               CommentDTO commentDTO) {
 
-        commentDTO.setId(id);
-
         commentRepository
                 .selectCommentByIdAndUserId(id, currentUserId)
                 .orElseThrow(ForbiddenException::new);

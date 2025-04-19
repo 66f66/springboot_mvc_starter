@@ -17,11 +17,13 @@ public class CommentDTO {
 
     private Long id;
 
-    private Boolean isDeleted;
-
     @NotBlank(message = "댓글 내용은 필수 입력 값입니다.")
     @Size(min = 10, max = 300, message = "댓글은 {min}자에서 {max}자 이내입니다.")
     private String content;
+
+    private int depth;
+
+    private Boolean isDeleted;
 
     private OffsetDateTime createdAt;
 
@@ -38,6 +40,4 @@ public class CommentDTO {
     private Long parentCommentId;
 
     private CommentDTO parentComment;
-
-    private int depth;
 }

@@ -35,6 +35,8 @@ public class CommentController {
                                               @PathVariable Long id,
                                               @RequestBody @Valid CommentDTO commentDTO) {
 
+        commentDTO.setId(id);
+
         commentService.updateComment(id, user.getId(), commentDTO);
 
         return ResponseEntity.ok().build();

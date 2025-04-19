@@ -18,7 +18,7 @@ public class CloudinaryUtil {
     private final Cloudinary cloudinary;
     private final ObjectMapper objectMapper;
 
-    public CloudinaryUploadResult uploadFile(MultipartFile file, Map<String, String> options) throws IOException {
+    public CloudinaryUploadResult uplodaMultipartFile(MultipartFile file, Map<String, String> options) throws IOException {
 
         return objectMapper
                 .convertValue(cloudinary.uploader().upload(file.getBytes(), options), CloudinaryUploadResult.class);

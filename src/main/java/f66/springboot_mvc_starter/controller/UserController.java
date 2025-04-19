@@ -48,7 +48,7 @@ public class UserController {
 
         UserDTO updatedUserDTO = userService.updateUser(userDTO);
 
-        authUtil.updateContextUserImageUrl(authentication, updatedUserDTO.getImage().getUrl());
+        authUtil.updateContextUserImageUrl(authentication, updatedUserDTO.getImageUrl());
 
         return ResponseEntity.ok().body(Map.of("user", updatedUserDTO));
     }

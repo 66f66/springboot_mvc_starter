@@ -133,11 +133,11 @@
                             </span>
 						</a>
 						
-						<!--						article user, date, vote count(mobile only)-->
+						<!--						article nickname, avatar, date, vote count(mobile only)-->
 						<div class="d-block d-md-none mt-1">
 							<div class="d-flex align-items-center gap-2">
 								<th:block
-										th:replace="~{fragments/user_image :: func(${article.user.image.url}, '')}"></th:block>
+										th:replace="~{fragments/user_image :: func(${article.user.imageUrl}, '')}"></th:block>
 								<a class="text-decoration-none"
 								   th:href="@{/article(userId=${article.user.id})}"
 								   th:text="${article.user.nickname}">
@@ -157,7 +157,7 @@
 					<!--					article user(desktop only)-->
 					<div class="col-md-2 text-center d-none d-md-block">
 						<th:block
-								th:replace="~{fragments/user_image :: func(${article.user.image.url}, '')}"></th:block>
+								th:replace="~{fragments/user_image :: func(${article.user.imageUrl}, '')}"></th:block>
 						<a class="text-decoration-none"
 						   th:href="@{/article(userId=${article.user.id})}"
 						   th:text="${article.user.nickname}">

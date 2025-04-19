@@ -61,7 +61,7 @@ public class DefaultInitializer {
 
                 UserDTO user = UserDTO.builder()
                         .username("admin")
-                        .nickname("관리자")
+                        .nickname("admin")
                         .password(passwordEncoder.encode(adminPassword))
                         .roleId(userRoleDTO.getId())
                         .build();
@@ -70,7 +70,6 @@ public class DefaultInitializer {
 
                 UserImageDTO userImageDTO = UserImageDTO.builder()
                         .userId(user.getId())
-                        .url(defaultImageUrl + user.getNickname())
                         .build();
 
                 userImageRepository.insertImage(userImageDTO);

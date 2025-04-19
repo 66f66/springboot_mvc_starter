@@ -34,7 +34,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 userDTO.getUsername(),
                 userDTO.getNickname(),
                 userDTO.getPassword(),
-                userDTO.getImage().getUrl(),
+                userDTO.getImageUrl(),
                 authorities
         );
     }
