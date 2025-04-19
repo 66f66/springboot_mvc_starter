@@ -18,7 +18,12 @@ public class CloudinaryUtil {
     private final Cloudinary cloudinary;
     private final ObjectMapper objectMapper;
 
-    public CloudinaryUploadResult uplodaMultipartFile(MultipartFile file, Map<String, String> options) throws IOException {
+    /**
+     * @param file    MultipartFile 타입의 파일
+     * @param options 참고 <a href="https://cloudinary.com/documentation/image_upload_api_reference#upload"></a>
+     * @return 참고 <a href="https://cloudinary.com/documentation/java_image_and_video_upload"></a>
+     */
+    public CloudinaryUploadResult uploadMultipartFile(MultipartFile file, Map<String, String> options) throws IOException {
 
         return objectMapper
                 .convertValue(cloudinary.uploader().upload(file.getBytes(), options), CloudinaryUploadResult.class);

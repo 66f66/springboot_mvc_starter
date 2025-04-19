@@ -10,6 +10,7 @@
             <result property="nickname" column="user_nickname"/>
 
             <association property="image" javaType="UserImageDTO">
+                <id property="id" column="user_image_id"/>
                 <result property="url" column="user_image_url"/>
             </association>
 
@@ -37,7 +38,7 @@
             <if test="title != null">title = #{title},</if>
             <if test="content != null">content = #{content},</if>
             <if test="categoryId != null">category_id = #{categoryId},</if>
-            updated_at = now()
+            deleted_at = now()
         </set>
         WHERE id = #{id}
     </update>
@@ -73,19 +74,20 @@
     </select>
 
     <select id="selectArticleWithRelationsById"
-            parameterType="ArticleDTO" resultMap="ArticleWithRelations">
+            parameterType="map" resultMap="ArticleWithRelations">
         SELECT
         a.*,
         u.id as "user_id",
         u.nickname as "user_nickname",
+        ui.id as "user_image_id",
         ui.url as "user_image_url",
         ur.name as "user_role_name",
         ac.id as "category_id",
         ac.name as "category_name",
-        <if test="userId != null">
+        <if test="currentUserId != null">
             av.is_active
         </if>
-        <if test="userId == null">
+        <if test="currentUserId == null">
             false
         </if>
         AS voted
@@ -94,8 +96,8 @@
         JOIN user_images ui ON a.user_id = ui.user_id
         JOIN user_roles ur ON u.role_id = ur.id
         JOIN article_categories ac ON a.category_id = ac.id
-        <if test="userId != null">
-            LEFT JOIN article_votes av ON a.id = av.article_id AND av.user_id = #{userId}
+        <if test="currentUserId != null">
+            LEFT JOIN article_votes av ON a.id = av.article_id AND av.user_id = #{currentUserId}
         </if>
         WHERE a.id = #{id}
         and a.is_deleted = false
@@ -107,6 +109,7 @@
         a.*,
         u.id as "user_id",
         u.nickname as "user_nickname",
+        ui.id as "user_image_id",
         ui.url as "user_image_url",
         ur.name as "user_role_name",
         ac.id as "category_id",

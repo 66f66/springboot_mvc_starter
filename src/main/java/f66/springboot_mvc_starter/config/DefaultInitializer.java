@@ -27,9 +27,6 @@ public class DefaultInitializer {
     private final UserImageRepository userImageRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${config.default-image-url}")
-    private String defaultImageUrl;
-
     @Value("${config.admin-password}")
     private String adminPassword;
 
@@ -49,7 +46,7 @@ public class DefaultInitializer {
                         .displayName("관리자")
                         .build();
 
-                List<UserRoleDTO> userRoleDTOList = List.of(roleAdmin, roleUser);
+                List<UserRoleDTO> userRoleDTOList = List.of(roleUser, roleAdmin);
 
                 userRoleRepository.insertRoles(userRoleDTOList);
             }

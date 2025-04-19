@@ -27,7 +27,7 @@ public class ArticleDTO {
 
     private boolean isDeleted;
 
-    private Boolean voted;
+    private boolean voted;
 
     private int voteCount;
 
@@ -36,6 +36,8 @@ public class ArticleDTO {
     private OffsetDateTime createdAt;
 
     private OffsetDateTime updatedAt;
+
+    private OffsetDateTime deletedAt;
 
     private int categoryId;
 

@@ -25,7 +25,7 @@ public class AuthUtil {
     /**
      * @return 인증 된 사용자라면 id 값 반환, 인증 된 사용자가 아니라면 null 값 반환
      */
-    public Optional<Long> currentUserId() {
+    public Optional<Long> getCurrentUserId() {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

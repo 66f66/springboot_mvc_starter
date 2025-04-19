@@ -37,4 +37,3 @@ cloudinary:
 
 config:
   admin-password: ${ADMIN_PASSWORD}
-  default-image-url: https://avatar.iran.liara.run/username?username=

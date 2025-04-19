@@ -25,7 +25,7 @@ public interface ArticleRepository {
 
     Optional<ArticleDTO> selectArticleByIdAndUserId(Long id, Long userId);
 
-    Optional<ArticleDTO> selectArticleWithRelationsById(ArticleDTO articleDTO);
+    Optional<ArticleDTO> selectArticleWithRelationsById(Long id, Long currentUserId);
 
     List<ArticleDTO> selectArticlesWithRelationsByRequest(ArticlePageRequest articlePageRequest);
 

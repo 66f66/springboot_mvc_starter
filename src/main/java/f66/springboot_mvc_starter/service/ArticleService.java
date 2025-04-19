@@ -6,7 +6,6 @@ import f66.springboot_mvc_starter.exception.ForbiddenException;
 import f66.springboot_mvc_starter.exception.ResourceNotFoundException;
 import f66.springboot_mvc_starter.repository.ArticleCategoryRepository;
 import f66.springboot_mvc_starter.repository.ArticleRepository;
-import f66.springboot_mvc_starter.util.AuthUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,6 @@ public class ArticleService {
 
     private final ArticleRepository articleRepository;
     private final ArticleCategoryRepository articleCategoryRepository;
-    private final AuthUtil authUtil;
 
     @Transactional
     public void createArticle(Long currentUserId,
@@ -58,7 +56,8 @@ public class ArticleService {
 
         int categoryId = articleRepository
                 .selectArticleByIdAndUserId(id, currentUserId)
-                .orElseThrow(ForbiddenException::new).getCategoryId();
+                .orElseThrow(ForbiddenException::new)
+                .getCategoryId();
 
         articleRepository.updateIsDeleted(id, true);
 
@@ -74,15 +73,10 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public ArticleDTO getArticleDetail(Long id) {
+    public ArticleDTO getArticleDetail(Long id,
+                                       Long currentUserId) {
 
-        ArticleDTO articleDTO = ArticleDTO.builder()
-                .id(id)
-                .build();
-
-        authUtil.currentUserId().ifPresent(articleDTO::setUserId);
-
-        return articleRepository.selectArticleWithRelationsById(articleDTO)
+        return articleRepository.selectArticleWithRelationsById(id, currentUserId)
                 .orElseThrow(ResourceNotFoundException::new);
     }
 

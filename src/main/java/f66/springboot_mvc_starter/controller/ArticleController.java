@@ -6,6 +6,7 @@ import f66.springboot_mvc_starter.service.ArticleCategoryService;
 import f66.springboot_mvc_starter.service.ArticleService;
 import f66.springboot_mvc_starter.service.ArticleVoteService;
 import f66.springboot_mvc_starter.service.CommentService;
+import f66.springboot_mvc_starter.util.AuthUtil;
 import f66.springboot_mvc_starter.util.HttpUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -22,17 +23,19 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/article")
 @RequiredArgsConstructor
 public class ArticleController {
 
-    private final HttpUtil httpUtil;
     private final ArticleService articleService;
     private final ArticleVoteService articleVoteService;
     private final ArticleCategoryService articleCategoryService;
     private final CommentService commentService;
+    private final HttpUtil httpUtil;
+    private final AuthUtil authUtil;
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/{id}/vote")
@@ -107,7 +110,9 @@ public class ArticleController {
     public String view(@PathVariable Long id,
                        Model model) {
 
-        model.addAttribute("articleDTO", articleService.getArticleDetail(id));
+        Optional<Long> currentUserId = authUtil.getCurrentUserId();
+
+        model.addAttribute("articleDTO", articleService.getArticleDetail(id, currentUserId.orElse(null)));
         model.addAttribute("commentDTOs", commentService.getComments(id));
         model.addAttribute("commentDTO", new CommentDTO());
 

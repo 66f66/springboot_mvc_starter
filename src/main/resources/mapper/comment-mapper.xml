@@ -10,6 +10,7 @@
             <result property="nickname" column="user_nickname"/>
 
             <association property="image" javaType="UserImageDTO">
+                <id property="id" column="user_image_id"/>
                 <result property="url" column="user_image_url"/>
             </association>
 
@@ -20,6 +21,7 @@
 
         <association property="parentComment" javaType="CommentDTO">
             <id property="id" column="parent_comment_id"/>
+
             <association property="user" javaType="UserDTO">
                 <result property="nickname" column="parent_comment_user_nickname"/>
             </association>
@@ -28,18 +30,18 @@
 
     <insert id="insertComment"
             parameterType="CommentDTO" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO comments (content, user_id, article_id, parent_comment_id, depth)
+        INSERT INTO comments (content, depth, user_id, article_id, parent_comment_id)
         VALUES (#{content},
-                #{userId},
-                #{articleId},
-                #{parentCommentId, jdbcType=BIGINT},
                 CASE
                     WHEN #{parentCommentId, jdbcType=BIGINT} IS NULL THEN 0
                     ELSE
                         (SELECT depth + 1
                          FROM comments
                          WHERE id = #{parentCommentId, jdbcType=BIGINT})
-                    END)
+                    END,
+                #{userId},
+                #{articleId},
+                #{parentCommentId, jdbcType=BIGINT})
     </insert>
 
     <update id="updateComment"
@@ -54,7 +56,7 @@
             parameterType="map">
         UPDATE comments
         SET is_deleted = #{isDeleted},
-            updated_at = now()
+            deleted_at = now()
         WHERE id = #{id}
     </update>
 
@@ -75,52 +77,48 @@
 
     <select id="selectCommentsWithRelationsByArticleId"
             parameterType="Long" resultMap="CommentWithRelations">
-        WITH RECURSIVE comment_tree
-                           AS
-                           (SELECT c.id,
-                                   c.content,
-                                   c.created_at,
-                                   c.updated_at,
-                                   c.user_id,
-                                   u.nickname            as "user_nickname",
-                                   ui.url                as "user_image_url",
-                                   ur.name               as "user_role_name",
-                                   c.article_id,
-                                   c.parent_comment_id,
-                                   CAST(NULL AS varchar) as "parent_comment_user_nickname",
-                                   c.depth,
-                                   ARRAY [c.id]          AS path
-                            FROM comments c
-                                     JOIN users u ON c.user_id = u.id
-                                     JOIN user_images ui on c.user_id = ui.user_id
-                                     join user_roles ur on u.role_id = ur.id
-                            WHERE c.parent_comment_id IS NULL
-                              AND c.article_id = #{articleId}
+        WITH RECURSIVE
+            comment_tree AS (
+                -- 기본 케이스 (최상위 댓글)
+                SELECT c.*,
+                       u.nickname    as "user_nickname",
+                       ui.id         as "user_image_id",
+                       ui.url        as "user_image_url",
+                       ur.name       as "user_role_name",
+                       NULL::varchar as "parent_comment_user_nickname",
+                       ARRAY [c.id]  AS path
+                FROM comments c
+                         JOIN users u ON c.user_id = u.id
+                         JOIN user_images ui ON u.id = ui.user_id
+                         JOIN user_roles ur ON u.role_id = ur.id
+                WHERE c.parent_comment_id IS NULL
+                  AND c.article_id = #{articleId}
 
-                            UNION ALL
+                UNION ALL
 
-                            SELECT c.id,
-                                   c.content,
-                                   c.created_at,
-                                   c.updated_at,
-                                   c.user_id,
-                                   u.nickname        as "user_nickname",
-                                   ui.url            as "user_image_url",
-                                   ur.name           as "user_role_name",
-                                   c.article_id,
-                                   c.parent_comment_id,
-                                   parent_u.nickname as "parent_comment_user_nickname",
-                                   ct.depth + 1,
-                                   ct.path || c.id
-                            FROM comments c
-                                     JOIN comment_tree ct ON c.parent_comment_id = ct.id
-                                     JOIN users u ON c.user_id = u.id
-                                     join user_images ui on c.user_id = ui.user_id
-                                     join user_roles ur on u.role_id = ur.id
-                                     JOIN comments parent_comment ON c.parent_comment_id = parent_comment.id
-                                     JOIN users parent_u ON parent_comment.user_id = parent_u.id)
+                -- 재귀 케이스 (자식 댓글)
+                SELECT c.*,
+                       u.nickname        as "user_nickname",
+                       ui.id             as "user_image_id",
+                       ui.url            as "user_image_url",
+                       ur.name           as "user_role_name",
+                       parent_u.nickname as "parent_comment_user_nickname",
+                       ct.path || c.id
+                FROM comments c
+                         JOIN comment_tree ct ON c.parent_comment_id = ct.id
+                         JOIN users u ON c.user_id = u.id
+                         JOIN user_images ui ON u.id = ui.user_id
+                         JOIN user_roles ur ON u.role_id = ur.id
+                         JOIN users parent_u ON ct.user_id = parent_u.id),
+            filtered_comments
+                AS (SELECT ct.*,
+                           EXISTS (SELECT 1
+                                   FROM comment_tree child
+                                   WHERE child.parent_comment_id = ct.id) as has_children
+                    FROM comment_tree ct)
         SELECT *
-        FROM comment_tree
+        FROM filtered_comments
+        WHERE NOT (is_deleted = true AND has_children = false)
         ORDER BY path;
     </select>
 </mapper>

@@ -23,11 +23,13 @@ public class CommentDTO {
 
     private int depth;
 
-    private Boolean isDeleted;
+    private boolean isDeleted;
 
     private OffsetDateTime createdAt;
 
     private OffsetDateTime updatedAt;
+
+    private OffsetDateTime deletedAt;
 
     private Long userId;
 
@@ -40,4 +42,11 @@ public class CommentDTO {
     private Long parentCommentId;
 
     private CommentDTO parentComment;
+
+    private boolean hasChildren;
+
+    public boolean getIsDeletedHasChildren() {
+
+        return this.hasChildren && isDeleted;
+    }
 }

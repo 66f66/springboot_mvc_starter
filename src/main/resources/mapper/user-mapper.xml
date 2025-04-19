@@ -20,8 +20,8 @@
 
     <insert id="insertUser"
             parameterType="UserDTO" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO users (username, nickname, password)
-        VALUES (#{username}, #{nickname}, #{password})
+        INSERT INTO users (username, nickname, password, role_id)
+        VALUES (#{username}, #{nickname}, #{password}, #{roleId})
     </insert>
 
     <update id="updateUser"

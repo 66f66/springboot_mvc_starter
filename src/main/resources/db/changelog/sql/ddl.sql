@@ -19,7 +19,7 @@ create table users
     password   varchar(100)                           not null,
     created_at timestamp with time zone default now() not null,
     updated_at timestamp with time zone,
-    role_id    integer                  default 1
+    role_id    integer
         constraint users_user_roles_id_fk
             references user_roles
             on delete cascade
@@ -62,6 +62,7 @@ create table articles
     vote_count    integer                  default 0     not null,
     created_at    timestamp with time zone default now() not null,
     updated_at    timestamp with time zone,
+    deleted_at    timestamp with time zone,
     category_id   integer                  default 1
         constraint articles_article_categories_id_fk
             references article_categories
@@ -110,6 +111,7 @@ create table comments
     is_deleted        boolean                  default false not null,
     created_at        timestamp with time zone default now() not null,
     updated_at        timestamp with time zone,
+    deleted_at        timestamp with time zone,
     user_id           bigint
         constraint comments_users_id_fk
             references users

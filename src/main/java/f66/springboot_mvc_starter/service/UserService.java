@@ -3,12 +3,14 @@ package f66.springboot_mvc_starter.service;
 import f66.springboot_mvc_starter.dto.CloudinaryUploadResult;
 import f66.springboot_mvc_starter.dto.UserDTO;
 import f66.springboot_mvc_starter.dto.UserImageDTO;
+import f66.springboot_mvc_starter.dto.UserRoleDTO;
 import f66.springboot_mvc_starter.exception.ResourceNotFoundException;
 import f66.springboot_mvc_starter.exception.UniqueConstraintException;
 import f66.springboot_mvc_starter.exception.UserBadInputException;
 import f66.springboot_mvc_starter.exception.WrongUsernameOrPasswordException;
 import f66.springboot_mvc_starter.repository.UserImageRepository;
 import f66.springboot_mvc_starter.repository.UserRepository;
+import f66.springboot_mvc_starter.repository.UserRoleRepository;
 import f66.springboot_mvc_starter.util.CloudinaryUtil;
 import f66.springboot_mvc_starter.util.FileUtil;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +30,9 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final UserImageRepository userImageRepository;
+    private final UserRoleRepository userRoleRepository;
     private final FileUtil fileUtil;
     private final CloudinaryUtil cloudinaryUtil;
-
-//    @Value("${config.default-image-url}")
-//    private String defaultImageUrl;
 
     @Transactional
     public void createUser(UserDTO userDTO) {
@@ -45,6 +45,11 @@ public class UserService {
         boolean exists = userRepository.existsByUsername(userDTO.getUsername());
 
         if (exists) throw new UniqueConstraintException("이미 사용중인 아이디입니다.");
+
+        UserRoleDTO userRoleDTO = userRoleRepository.selectRoleByName("ROLE_USER")
+                .orElseThrow(ResourceNotFoundException::new);
+
+        userDTO.setRoleId(userRoleDTO.getId());
 
         try {
 
@@ -59,7 +64,6 @@ public class UserService {
         UserImageDTO userImageDTO = UserImageDTO.builder()
                 .userId(userDTO.getId())
                 .build();
-//                .url(defaultImageUrl + userDTO.getNickname())
 
         userImageRepository.insertImage(userImageDTO);
     }
@@ -95,19 +99,6 @@ public class UserService {
 
         if (oldUser.getNickname().equals(userDTO.getNickname())) userDTO.setNickname(null);
 
-//        if (userDTO.getNickname() != null) {
-//
-//            UserImageDTO userImageDTO = userImageRepository.selectImageByUserId(userDTO.getId())
-//                    .orElseThrow(ResourceNotFoundException::new);
-//
-//            if (userImageDTO.getPublicId() == null) {
-//
-//                userImageDTO.setUrl(defaultImageUrl + userDTO.getNickname());
-//
-//                userImageRepository.updateImage(userImageDTO);
-//            }
-//        }
-
         if (userDTO.getNewPassword() != null && userDTO.getOldPassword() != null) {
 
             if (!passwordEncoder.matches(userDTO.getOldPassword(), oldUser.getPassword()))
@@ -136,7 +127,7 @@ public class UserService {
         final String FOLDER_NAME = "user_profile";
 
         CloudinaryUploadResult result = cloudinaryUtil
-                .uplodaMultipartFile(file, Map.of("folder", FOLDER_NAME));
+                .uploadMultipartFile(file, Map.of("folder", FOLDER_NAME));
 
         userImageDTO.setPublicId(result.getPublicId());
         userImageDTO.setOriginalFileName(file.getOriginalFilename());
