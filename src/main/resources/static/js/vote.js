@@ -21,7 +21,7 @@ async function onVote(e) {
       
       if (response.status === 401) {
         
-        alert('로그인 후에 추천할 수 있습니다.')
+        window.showGlobalToast('로그인 후에 추천할 수 있습니다', 2000)
         
         window.isSubmitting = false
         

@@ -182,7 +182,9 @@ async function onUserUpdate(e) {
     
     navbarUserImage.src = user.image.url
     
-    alert('변경사항을 저장했습니다.')
+    window.showGlobalToast('변경사항을 저장했습니다', 3000)
+    
+    await window.sleep(3000)
     
     window.location.reload()
   } catch (err) {

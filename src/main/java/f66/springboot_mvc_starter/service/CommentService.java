@@ -58,6 +58,7 @@ public class CommentService {
     @Transactional(readOnly = true)
     public List<CommentDTO> getComments(Long articleId) {
 
-        return commentRepository.selectCommentsWithRelationsByArticleId(articleId);
+        return commentRepository
+                .selectCommentsWithRelationsByArticleId(articleId);
     }
 }

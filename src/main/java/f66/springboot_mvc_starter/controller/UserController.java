@@ -9,7 +9,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,14 +40,13 @@ public class UserController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/update")
     public ResponseEntity<Map<String, UserDTO>> updateUser(@AuthenticationPrincipal CustomUserDetails user,
-                                                           @RequestBody @Valid UserDTO userDTO,
-                                                           Authentication authentication) {
+                                                           @RequestBody @Valid UserDTO userDTO) {
 
         userDTO.setId(user.getId());
 
         UserDTO updatedUserDTO = userService.updateUser(userDTO);
 
-        authUtil.updateContextUserImageUrl(authentication, updatedUserDTO.getImageUrl());
+        authUtil.updateContextUserImageUrl(updatedUserDTO.getImageUrl());
 
         return ResponseEntity.ok().body(Map.of("user", updatedUserDTO));
     }
@@ -56,21 +54,20 @@ public class UserController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/update/image")
     public ResponseEntity<Map<String, String>> updateImage(@AuthenticationPrincipal CustomUserDetails user,
-                                                           @ModelAttribute UserImageDTO userImageDTO,
-                                                           Authentication authentication) {
+                                                           @ModelAttribute UserImageDTO userImageDTO) {
 
-        String imageUrl;
+        String newImageUrl;
 
         try {
 
-            imageUrl = userService.updateUserProfileImage(user.getId(), userImageDTO).getUrl();
+            newImageUrl = userService.updateUserProfileImage(user.getId(), userImageDTO).getUrl();
         } catch (IOException e) {
 
             return ResponseEntity.internalServerError().build();
         }
 
-        authUtil.updateContextUserImageUrl(authentication, imageUrl);
+        authUtil.updateContextUserImageUrl(newImageUrl);
 
-        return ResponseEntity.ok().body(Map.of("imageUrl", imageUrl));
+        return ResponseEntity.ok().body(Map.of("imageUrl", newImageUrl));
     }
 }

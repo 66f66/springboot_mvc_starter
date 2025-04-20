@@ -39,12 +39,11 @@ public class AuthUtil {
     }
 
     /**
-     * @param authentication java spring security Authentication 객체
-     * @param newImageUrl    업데이트된 이미지의 url
+     * @param newImageUrl 업데이트된 이미지의 url
      */
-    public void updateContextUserImageUrl(Authentication authentication,
-                                          String newImageUrl) {
+    public void updateContextUserImageUrl(String newImageUrl) {
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         userDetails.setImageUrl(newImageUrl);
 

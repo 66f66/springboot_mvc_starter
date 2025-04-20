@@ -40,6 +40,13 @@
         SELECT EXISTS (SELECT 1 FROM users WHERE username = #{value})
     </select>
 
+    <select id="selectUserByUsername"
+            parameterType="String" resultType="UserDTO">
+        select *
+        from users
+        where username = #{username}
+    </select>
+
     <select id="selectUserWithRelationsById"
             parameterType="Long" resultMap="UserWithRelations">
         select u.*,

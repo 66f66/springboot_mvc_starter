@@ -38,7 +38,7 @@
             <if test="title != null">title = #{title},</if>
             <if test="content != null">content = #{content},</if>
             <if test="categoryId != null">category_id = #{categoryId},</if>
-            deleted_at = now()
+            updated_at = now()
         </set>
         WHERE id = #{id}
     </update>

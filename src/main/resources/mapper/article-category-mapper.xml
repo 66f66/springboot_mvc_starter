@@ -2,6 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="f66.springboot_mvc_starter.repository.ArticleCategoryRepository">
 
+    <insert id="insertCategory">
+        insert into article_categories (name)
+        values (#{name})
+    </insert>
+
     <update id="updateArticleCount"
             parameterType="map">
         UPDATE article_categories

@@ -15,6 +15,12 @@ public class ArticleCategoryService {
 
     private final ArticleCategoryRepository articleCategoryRepository;
 
+    @Transactional
+    public void createCategory(ArticleCategoryDTO articleCategoryDTO) {
+
+        articleCategoryRepository.insertCategory(articleCategoryDTO);
+    }
+
     @Transactional(readOnly = true)
     public List<ArticleCategoryDTO> getCategories() {
 

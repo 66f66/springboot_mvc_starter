@@ -68,7 +68,8 @@ public class ArticleService {
     public ArticleDTO getArticleByOwner(Long id,
                                         Long currentUserId) {
 
-        return articleRepository.selectArticleByIdAndUserId(id, currentUserId)
+        return articleRepository
+                .selectArticleByIdAndUserId(id, currentUserId)
                 .orElseThrow(ForbiddenException::new);
     }
 
@@ -76,7 +77,8 @@ public class ArticleService {
     public ArticleDTO getArticleDetail(Long id,
                                        Long currentUserId) {
 
-        return articleRepository.selectArticleWithRelationsByIdAndOptionalUserId(id, currentUserId)
+        return articleRepository
+                .selectArticleWithRelationsByIdAndOptionalUserId(id, currentUserId)
                 .orElseThrow(ResourceNotFoundException::new);
     }
 

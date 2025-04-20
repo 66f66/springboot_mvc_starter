@@ -77,7 +77,8 @@ public class UserService {
     @Transactional(readOnly = true)
     public void signInPreProcess(UserDTO userDTO) {
 
-        UserDTO foundUser = userRepository.selectUserWithRelationsByUsername(userDTO.getUsername())
+        UserDTO foundUser = userRepository
+                .selectUserByUsername(userDTO.getUsername())
                 .orElseThrow(WrongUsernameOrPasswordException::new);
 
         if (!passwordEncoder.matches(userDTO.getPassword(), foundUser.getPassword()))
@@ -87,14 +88,16 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserDTO selectUserById(Long id) {
 
-        return userRepository.selectUserWithRelationsById(id)
+        return userRepository
+                .selectUserWithRelationsById(id)
                 .orElseThrow(ResourceNotFoundException::new);
     }
 
     @Transactional
     public UserDTO updateUser(UserDTO userDTO) {
 
-        UserDTO oldUser = userRepository.selectUserWithRelationsById(userDTO.getId())
+        UserDTO oldUser = userRepository
+                .selectUserWithRelationsById(userDTO.getId())
                 .orElseThrow(ResourceNotFoundException::new);
 
         if (oldUser.getNickname().equals(userDTO.getNickname())) userDTO.setNickname(null);
@@ -109,7 +112,8 @@ public class UserService {
 
         userRepository.updateUser(userDTO);
 
-        return userRepository.selectUserWithRelationsById(userDTO.getId())
+        return userRepository
+                .selectUserWithRelationsById(userDTO.getId())
                 .orElseThrow(ResourceNotFoundException::new);
     }
 
@@ -133,19 +137,18 @@ public class UserService {
         userImageDTO.setOriginalFileName(file.getOriginalFilename());
         userImageDTO.setUrl(result.getUrl());
 
-        UserImageDTO oldImageDTO = userImageRepository.selectImageByUserId(userId)
+        UserImageDTO oldImageDTO = userImageRepository
+                .selectImageByUserId(userId)
                 .orElseThrow(ResourceNotFoundException::new);
 
-        if (oldImageDTO.getPublicId() != null) {
+        userImageDTO.setId(oldImageDTO.getId());
 
-            userImageDTO.setId(oldImageDTO.getId());
+        if (oldImageDTO.getPublicId() != null) {
 
             userImageRepository.updateImage(userImageDTO);
 
             cloudinaryUtil.deleteFile(oldImageDTO.getPublicId());
         } else {
-
-            userImageDTO.setId(oldImageDTO.getId());
 
             userImageRepository.updateImage(userImageDTO);
         }

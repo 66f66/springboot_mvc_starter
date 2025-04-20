@@ -10,21 +10,28 @@
 		.comment-item:hover {
 			background-color: #f8f9fa;
 		}
+		
+		.card-text img {
+			max-width: 100%;
+			height: auto;
+			border-radius: 4px;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		}
 	</style>
 	<title th:text="${articleDTO.title}"></title>
 </head>
 <div class="container my-5" layout:fragment="content">
 	
-	<div class="row">
+	<div class="d-flex gap-2">
 		<!--		category name-->
-		<a
-				class="text-decoration-none"
-				th:href="@{/article(categoryId=${articleDTO.category.id})}"
-				th:text="${articleDTO.category.name}"
+		<a class="text-decoration-none"
+		   th:href="@{/article(categoryId=${articleDTO.category.id})}"
+		   th:text="${articleDTO.category.name}"
 		></a>
 		
 		<!--	article title-->
-		<p class="text-break" style="white-space: pre-line;" th:text="${articleDTO.title}"></p>
+		<p class="text-break" style="white-space: pre-line;"
+		   th:text="${articleDTO.title}"></p>
 	</div>
 	
 	<div class="card my-3">
@@ -34,7 +41,7 @@
 				<!--				article user image, nickname-->
 				<div>
 					<th:block
-							th:replace="~{fragments/user_image :: func(${articleDTO.user.imageUrl}, '')}">
+							th:replace="~{fragments/user_image :: func(${articleDTO.user.imageUrl}, ${articleDTO.user.nickname})}">
 					</th:block>
 					<a class="text-decoration-none"
 					   th:href="@{/article(userId=${articleDTO.user.id})}"
@@ -45,13 +52,13 @@
 				</div>
 				
 				<!--				article timestamp-->
-				<div class="text-muted fw-lighter d-flex flex-column">
-					<span
-							th:text="${#temporals.format(articleDTO.createdAt, 'yyyy-MM-dd HH:mm')}">
-					</span>
-					<span th:if="${articleDTO.updatedAt != null}"
-					      th:text="|${#temporals.format(articleDTO.updatedAt, 'yyyy-MM-dd HH:mm', 'Asia/Seoul')}(수정됨)|">
-					</span>
+				<div class="text-muted fw-lighter fs-6 d-flex flex-column">
+					<small
+							th:text="${#temporals.format(articleDTO.createdAt, 'yyyy-MM-dd HH:mm', 'Asia/Seoul')}">
+					</small>
+					<small th:if="${articleDTO.updatedAt != null}"
+					       th:text="|${#temporals.format(articleDTO.updatedAt, 'yyyy-MM-dd HH:mm', 'Asia/Seoul')}(수정됨)|">
+					</small>
 				</div>
 			</div>
 			
@@ -76,7 +83,8 @@
 				</a>
 				
 				<!--				article delete-->
-				<form method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');" sec:authorize="isAuthenticated()"
+				<form method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');"
+				      sec:authorize="isAuthenticated()"
 				      th:action="@{/article/{id}(id=${articleDTO.id})}">
 					<button class="btn btn-outline-secondary btn-sm"
 					        th:if="${articleDTO.user.id} == ${#authentication.principal.id}"
@@ -106,18 +114,21 @@
 	</div>
 	
 	<!--		comment list-->
-	<div class="card p-2" th:each="c : ${commentDTOs}" th:style="'margin-left: ' + ${c.depth * 20} + 'px;'">
+	<div class="card p-2"
+	     th:each="c : ${commentDTOs}"
+	     th:style="'margin-left: ' + ${c.depth * 20} + 'px;'">
+		
+		<!--		comment item-->
 		<div class="card-body comment-item">
 			<!--			comment reply to-->
 			<div class="text-muted small mb-2" th:if="${c.depth > 0}">
-				<span th:if="${c.parentComment != null}" th:text="${c.parentComment?.user.nickname} + '님에게 답글'"></span>
+				<span th:if="${c.parentComment != null}" th:text="${c.parentComment.user.nickname} + '님에게 답글'"></span>
 			</div>
 			
 			<div class="d-flex flex-column gap-3">
 				<!--				comment user image, nickname-->
 				<div>
-					<th:block
-							th:replace="~{fragments/user_image :: func(${c.user.imageUrl}, '')}">
+					<th:block th:replace="~{fragments/user_image :: func(${c.user.imageUrl}, ${c.user.nickname})}">
 					</th:block>
 					<a class="text-decoration-none"
 					   th:href="@{/article(userId=${articleDTO.user.id})}"
@@ -129,28 +140,27 @@
 				</div>
 				
 				<!--				comment content-->
-				<div style="white-space: pre-line;"
+				<div class="card-text"
 				     th:unless="${c.deletedHasChildren}"
 				     th:utext="${@markdownUtil.markdownToHtml(c.content)}"></div>
-				<div class="text-muted" th:if="${c.deletedHasChildren}">작성자에 의해 삭제된 댓글입니다.</div>
+				<div class="text-muted"
+				     th:if="${c.deletedHasChildren}">작성자에 의해 삭제된 댓글입니다.
+				</div>
 				
 				<!--				comment timestamp-->
-				<div class="fw-lighter fs-6">
+				<div class="text-muted fw-lighter fs-6">
 					<th:block th:if="${c.deletedAt == null}">
-						<span th:if="${c.updatedAt == null}"
-						      th:text="${#temporals.format(c.createdAt, 'yyyy-MM-dd HH:mm', 'Asia/Seoul')}">
-						</span>
-						<span th:if="${c.updatedAt != null}"
-						      th:text="|${#temporals.format(c.updatedAt, 'yyyy-MM-dd HH:mm', 'Asia/Seoul')}|">
-							
-						</span>
-						<small class="text-muted" th:if="${c.updatedAt != null}">(수정됨)
+						<small th:if="${c.updatedAt == null}"
+						       th:text="${#temporals.format(c.createdAt, 'yyyy-MM-dd HH:mm', 'Asia/Seoul')}">
+						</small>
+						<small th:if="${c.updatedAt != null}"
+						       th:text="|${#temporals.format(c.updatedAt, 'yyyy-MM-dd HH:mm', 'Asia/Seoul')} (수정됨)|">
 						</small>
 					</th:block>
+					
 					<th:block th:unless="${c.deletedAt == null}">
-						<span th:text="|${#temporals.format(c.deletedAt, 'yyyy-MM-dd HH:mm', 'Asia/Seoul')}|">
-						</span>
-						<small class="text-muted">(삭제됨)</small>
+						<small th:text="|${#temporals.format(c.deletedAt, 'yyyy-MM-dd HH:mm', 'Asia/Seoul')} (삭제됨)|">
+						</small>
 					</th:block>
 				</div>
 			</div>
@@ -192,6 +202,7 @@
 				      th:if="${c.deleted != true}"
 				>
 					<input name="id" th:value="${c.articleId}" type="hidden"/>
+					
 					<button class="btn btn-outline-danger btn-sm" type="submit">
 						관리자 삭제
 					</button>
@@ -203,11 +214,14 @@
 				<div style="display: none;" th:id="|comment_update_form_${c.id}|">
 					<form class="comment-update-form">
 						<input name="id" th:value="${c.id}" type="hidden"/>
-						<input name="articleId" th:value="${c.articleId}" type="hidden"/>
-						<textarea class="form-control mb-2" name="content" rows="5" th:text="${c.content}"></textarea>
+						
+						<textarea class="form-control mb-2" name="content" rows="5"
+						          th:text="${c.content}"></textarea>
 						<div class="invalid-feedback"></div>
+						
 						<button class="btn btn-primary btn-sm" type="submit">저장</button>
-						<button class="btn btn-secondary btn-sm ms-1 my-2" th:onclick="|toggleUpdateForm(${c.id})|"
+						<button class="btn btn-secondary btn-sm ms-1 my-2"
+						        th:onclick="|toggleUpdateForm(${c.id})|"
 						        type="button">취소
 						</button>
 					</form>
@@ -218,10 +232,14 @@
 					<form class="comment-reply-form">
 						<input name="articleId" th:value="${c.articleId}" type="hidden">
 						<input name="parentCommentId" th:value="${c.id}" type="hidden">
-						<textarea class="form-control mb-2" name="content" placeholder="답글을 작성하세요" rows="5"></textarea>
+						
+						<textarea class="form-control mb-2" name="content"
+						          placeholder="답글을 작성하세요" rows="5"></textarea>
 						<div class="invalid-feedback"></div>
+						
 						<button class="btn btn-primary btn-sm" type="submit">저장</button>
-						<button class="btn btn-secondary btn-sm ms-1 my-2" th:onclick="|toggleReplyForm(${c.id})|"
+						<button class="btn btn-secondary btn-sm ms-1 my-2"
+						        th:onclick="|toggleReplyForm(${c.id})|"
 						        type="button">취소
 						</button>
 					</form>
@@ -236,13 +254,14 @@
 		<a th:href="@{/auth/sign-in(redirect_url='/article/' + ${articleDTO.id})}">로그인</a> 후에 댓글을 작성할 수 있습니다.
 	</div>
 	<div class="mt-3 mb-5" sec:authorize="isAuthenticated()">
-		<form class="comment-create-form" method="post" th:action="@{/comment/create}">
+		<form class="comment-create-form">
 			<input name="articleId" th:value="${articleDTO.id}" type="hidden"/>
 			<label for="comment-content"></label>
-			<textarea class="form-control" id="comment-content" name="content" placeholder="답글을 작성하세요. 마크다운 문법을 지원합니다."
+			<textarea class="form-control" id="comment-content" name="content"
+			          placeholder="답글을 작성하세요. 마크다운 문법을 지원합니다."
 			          rows="5"></textarea>
 			<div class="invalid-feedback"></div>
-			<button class="btn btn-primary my-2" sec:authorize="isAuthenticated()" type="submit">저장</button>
+			<button class="btn btn-primary my-2" type="submit">저장</button>
 		</form>
 	</div>
 

@@ -29,6 +29,9 @@ public class CloudinaryUtil {
                 .convertValue(cloudinary.uploader().upload(file.getBytes(), options), CloudinaryUploadResult.class);
     }
 
+    /**
+     * @param publicId cloudinary 에 저장된 id
+     */
     public void deleteFile(String publicId) throws IOException {
 
         cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());

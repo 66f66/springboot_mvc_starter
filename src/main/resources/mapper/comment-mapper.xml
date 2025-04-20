@@ -79,7 +79,7 @@
             parameterType="Long" resultMap="CommentWithRelations">
         WITH RECURSIVE
             comment_tree AS (
-                -- 기본 케이스 (최상위 댓글)
+                -- 최상위 댓글
                 SELECT c.*,
                        u.nickname    as "user_nickname",
                        ui.id         as "user_image_id",
@@ -96,7 +96,7 @@
 
                 UNION ALL
 
-                -- 재귀 케이스 (자식 댓글)
+                -- 자식 댓글
                 SELECT c.*,
                        u.nickname        as "user_nickname",
                        ui.id             as "user_image_id",

@@ -13,7 +13,7 @@ public class FileUtil {
      * @param file         MultipartFile 타입의 파일
      * @param allowedTypes ex) {"image/jpeg", "image/png"}
      * @param maxSize      파일의 최대크기를 byte 로 나타낸 수
-     * @throws UserBadInputException 파일 여부, 형식, 크기 순으로 검증
+     * @throws UserBadInputException 파일 존재 여부, 형식, 크기 순으로 검증
      */
     public void validateMultipartFile(MultipartFile file,
                                       String[] allowedTypes,
