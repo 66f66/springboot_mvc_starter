@@ -56,7 +56,7 @@
 			</div>
 			
 			<!--			article content-->
-			<div class="card-text" th:utext="${@markdownUtil.markdownToHtml(articleDTO.content)}"></div>
+			<div class="card-text" th:utext="${articleDTO.content}"></div>
 			
 			<div class="mt-5 mb-2 d-flex gap-1">
 				<!--				article vote-->
@@ -129,8 +129,10 @@
 				</div>
 				
 				<!--				comment content-->
-				<div style="white-space: pre-line;" th:text="${c.content}" th:unless="${c.isDeletedHasChildren}"></div>
-				<div class="text-muted" th:if="${c.isDeletedHasChildren}">작성자에 의해 삭제된 댓글입니다.</div>
+				<div style="white-space: pre-line;"
+				     th:unless="${c.deletedHasChildren}"
+				     th:utext="${@markdownUtil.markdownToHtml(c.content)}"></div>
+				<div class="text-muted" th:if="${c.deletedHasChildren}">작성자에 의해 삭제된 댓글입니다.</div>
 				
 				<!--				comment timestamp-->
 				<div class="fw-lighter fs-6">
@@ -164,16 +166,16 @@
 				</button>
 				
 				<!--				delete comment button-->
-				<div class="comment-delete-form"
-				     sec:authorize="isAuthenticated()"
-				     th:if="${c.user.id} == ${#authentication.principal.id} and ${c.deleted != true}"
+				<form class="comment-delete-form"
+				      sec:authorize="isAuthenticated()"
+				      th:if="${c.user.id} == ${#authentication.principal.id} and ${c.deleted != true}"
 				>
 					<input name="commentId" th:value="${c.id}" type="hidden"/>
 					<button class="btn btn-outline-secondary btn-sm"
 					        type="submit">
 						삭제
 					</button>
-				</div>
+				</form>
 				
 				<!--				comment on comment button-->
 				<button class="btn btn-outline-secondary btn-sm"
@@ -200,8 +202,8 @@
 				<!--			comment update form-->
 				<div style="display: none;" th:id="|comment_update_form_${c.id}|">
 					<form class="comment-update-form">
+						<input name="id" th:value="${c.id}" type="hidden"/>
 						<input name="articleId" th:value="${c.articleId}" type="hidden"/>
-						<input name="commentId" th:value="${c.id}" type="hidden"/>
 						<textarea class="form-control mb-2" name="content" rows="5" th:text="${c.content}"></textarea>
 						<div class="invalid-feedback"></div>
 						<button class="btn btn-primary btn-sm" type="submit">저장</button>
@@ -237,7 +239,7 @@
 		<form class="comment-create-form" method="post" th:action="@{/comment/create}">
 			<input name="articleId" th:value="${articleDTO.id}" type="hidden"/>
 			<label for="comment-content"></label>
-			<textarea class="form-control" id="comment-content" name="content" placeholder="답글을 작성하세요"
+			<textarea class="form-control" id="comment-content" name="content" placeholder="답글을 작성하세요. 마크다운 문법을 지원합니다."
 			          rows="5"></textarea>
 			<div class="invalid-feedback"></div>
 			<button class="btn btn-primary my-2" sec:authorize="isAuthenticated()" type="submit">저장</button>

@@ -73,7 +73,7 @@
           AND user_id = #{userId}
     </select>
 
-    <select id="selectArticleWithRelationsById"
+    <select id="selectArticleWithRelationsByIdAndOptionalUserId"
             parameterType="map" resultMap="ArticleWithRelations">
         SELECT
         a.*,

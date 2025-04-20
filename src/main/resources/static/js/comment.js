@@ -131,7 +131,7 @@ async function onCommentSubmit(e) {
       content: contentValue,
     }
     
-    const idVal = form.commentId?.value
+    const idVal = form.id?.value
     if (idVal) {
       body.id = form.id.value
     }

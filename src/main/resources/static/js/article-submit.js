@@ -47,10 +47,10 @@ async function articleSubmit(e) {
     content.classList.add('is-invalid')
     contentFeedback.textContent = '내용은 공백일 수 없습니다.'
     isValid = false
-  } else if (contentVal.length < 10 || contentVal.length > 2000) {
+  } else if (contentVal.length < 10 || contentVal.length > 5000) {
     
     content.classList.add('is-invalid')
-    contentFeedback.textContent = '내용은 10자 이상 2000자 이하입니다.'
+    contentFeedback.textContent = '내용은 10자 이상 5000자 이하입니다.'
     isValid = false
   } else {
     

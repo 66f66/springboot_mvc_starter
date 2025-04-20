@@ -6,6 +6,7 @@
       xmlns:th="http://www.thymeleaf.org"
 >
 <head>
+	<link rel="stylesheet" th:href="@{/webjars/summernote/0.8.20/dist/summernote-bs5.css}"/>
 	<title th:text="${articleDTO.id == null ? '새글 작성' : '글 편집'}"></title>
 </head>
 <div class="container my-3" layout:fragment="content">
@@ -43,7 +44,6 @@
 		<div class="mb-3">
 			<label class="form-label" for="content">내용</label>
 			<textarea class="form-control" id="content" name="content"
-			          placeholder="내용을 입력하세요. 마크다운 문법을 지원합니다."
 			          rows="10"
 			          th:text="${articleDTO.content}"></textarea>
 			<div class="invalid-feedback"></div>
@@ -62,5 +62,35 @@
 </div>
 <th:block layout:fragment="script">
 	<script src="/js/article-submit.js"></script>
+	<script th:src="@{/webjars/jquery/3.7.1/jquery.slim.js}"></script>
+	<script th:src="@{/webjars/summernote/0.8.20/dist/summernote-bs5.js}"></script>
+	<script th:src="@{/webjars/summernote/0.8.20/src/lang/summernote-ko-KR.js}"></script>
+	<script>
+		$(document).ready(function () {
+			$('#content').summernote({
+				height: 300,
+				lang: 'ko-KR',
+				spellCheck: true,
+				placeholder: '내용을 입력하세요. 마크다운 문법을 지원합니다.',
+				toolbar: [
+					['style', ['style']],
+					['font', ['bold', 'underline', 'clear']],
+					['color', ['color']],
+					['para', ['ul', 'ol', 'paragraph']],
+					['table', ['table']],
+					['insert', ['link', 'picture']],
+					['view', ['fullscreen', 'codeview', 'help']],
+				],
+				callbacks: {
+					onInit: function () {
+						var selectFromFiles = document.querySelector('.note-group-select-from-files')
+						if (selectFromFiles) {
+							selectFromFiles.remove()
+						}
+					},
+				},
+			})
+		})
+	</script>
 </th:block>
 </html>

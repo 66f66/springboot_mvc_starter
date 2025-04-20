@@ -76,7 +76,7 @@ public class ArticleService {
     public ArticleDTO getArticleDetail(Long id,
                                        Long currentUserId) {
 
-        return articleRepository.selectArticleWithRelationsById(id, currentUserId)
+        return articleRepository.selectArticleWithRelationsByIdAndOptionalUserId(id, currentUserId)
                 .orElseThrow(ResourceNotFoundException::new);
     }
 

@@ -58,6 +58,10 @@ dependencies {
 
     //    https://github.com/commonmark/commonmark-java
     implementation 'org.commonmark:commonmark:0.24.0'
+
+    //    https://summernote.org/getting-started/
+    implementation 'org.webjars:jquery:3.7.1'
+    implementation 'org.webjars.npm:summernote:0.8.20'
 }
 
 tasks.named('test') {

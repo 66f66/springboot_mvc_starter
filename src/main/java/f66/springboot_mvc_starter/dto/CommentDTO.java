@@ -45,7 +45,7 @@ public class CommentDTO {
 
     private boolean hasChildren;
 
-    public boolean getIsDeletedHasChildren() {
+    public boolean isDeletedHasChildren() {
 
         return this.hasChildren && isDeleted;
     }

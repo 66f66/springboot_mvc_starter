@@ -22,7 +22,7 @@ public class ArticleDTO {
     private String title;
 
     @NotBlank(message = "내용은 필수 값입니다.")
-    @Size(min = 10, max = 2000, message = "내용은 {min}자 이상 {max}자 이내입니다.")
+    @Size(min = 10, max = 5000, message = "내용은 {min}자 이상 {max}자 이내입니다.")
     private String content;
 
     private boolean isDeleted;

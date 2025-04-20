@@ -114,7 +114,8 @@
                 AS (SELECT ct.*,
                            EXISTS (SELECT 1
                                    FROM comment_tree child
-                                   WHERE child.parent_comment_id = ct.id) as has_children
+                                   WHERE child.parent_comment_id = ct.id
+                                     and child.is_deleted != true) as has_children
                     FROM comment_tree ct)
         SELECT *
         FROM filtered_comments
