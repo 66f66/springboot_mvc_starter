@@ -34,15 +34,17 @@ async function onVote(e) {
     const data = await response.json()
     const result = data.result
     
-    alert(result.voted ? '추천했습니다.' : '추천을 취소했습니다.')
+    const message = result.voted ? '추천했습니다' : '추천을 취소했습니다'
+    window.showGlobalToast(message, 3000)
     
     this.classList.toggle('btn-success', result.voted)
     this.classList.toggle('btn-outline-secondary', !result.voted)
     this.querySelector('.badge').textContent = result.voteCount
+    
     window.isSubmitting = false
   } catch (err) {
     
-    alert('현재 추천할 수 없습니다.')
+    window.showGlobalToast('현재 추천할 수 없습니다', 3000)
     
     window.isSubmitting = false
   }

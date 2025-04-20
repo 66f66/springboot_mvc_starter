@@ -27,8 +27,6 @@ public class ArticleDTO {
 
     private boolean isDeleted;
 
-    private boolean voted;
-
     private int voteCount;
 
     private int commentCount;
@@ -46,4 +44,6 @@ public class ArticleDTO {
     private Long userId;
 
     private UserDTO user;
+
+    private boolean voted;
 }

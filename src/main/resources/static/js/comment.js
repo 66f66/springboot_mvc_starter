@@ -74,9 +74,9 @@ async function onCommentDelete(e) {
     window.location.reload()
   } catch (err) {
     
-    window.isSubmitting = false
+    window.showGlobalToast('댓글을 삭제하지 못했습니다', 3000)
     
-    alert('댓글 삭제에 실패했습니다.')
+    window.isSubmitting = false
   }
 }
 
@@ -158,13 +158,11 @@ async function onCommentSubmit(e) {
     window.location.reload()
   } catch (err) {
     
-    console.log(err)
+    window.showGlobalToast('댓글을 저장하지 못했습니다', 3000)
     
     submitButton.disabled = false
     submitButton.innerHTML = '저장'
     window.isSubmitting = false
-    
-    alert('댓글 저장에 실패했습니다.')
   }
 }
 

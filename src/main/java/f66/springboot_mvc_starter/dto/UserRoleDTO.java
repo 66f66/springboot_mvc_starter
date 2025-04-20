@@ -13,7 +13,7 @@ public class UserRoleDTO {
 
     private Long id;
 
-    private String name = "ROLE_USER";
+    private String name;
 
-    private String displayName = "사용자";
+    private String displayName;
 }

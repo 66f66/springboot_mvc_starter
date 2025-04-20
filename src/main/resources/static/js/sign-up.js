@@ -96,16 +96,11 @@ async function onSignUpSubmit(e) {
         method: 'GET',
       })
       
-      if (!response.ok) {
-        throw new Error()
-      }
+      if (!response.ok) throw new Error()
       
       const body = await response.json()
       
-      if (body.existsByUsername) {
-        
-        throw new Error()
-      }
+      if (body.existsByUsername) throw new Error()
     } catch (err) {
       
       username.classList.add('is-invalid')
@@ -123,7 +118,35 @@ async function onSignUpSubmit(e) {
     return
   }
   
-  form.submit()
+  try {
+    const body = {
+      username: usernameVal,
+      nickname: nicknameVal,
+      password: passwordVal,
+      passwordCheck: passwordCheckVal,
+    }
+    
+    const response = await fetch('/auth/sign-up', {
+      method: 'post',
+      headers: customJsonHeaders,
+      body: JSON.stringify(body),
+    })
+    
+    if (!response.ok) throw new Error()
+    
+    window.showGlobalToast('회원가입 되었습니다', 3000)
+    
+    await window.sleep(1000)
+    
+    window.location.replace('/auth/sign-in')
+  } catch (e) {
+    
+    window.showGlobalToast('현재 회원가입 할 수 없습니다', 3000)
+    
+    submitButton.disabled = false
+    submitButton.textContent = '회원가입'
+    window.isSubmitting = false
+  }
 }
 
 document.querySelector('#sign-up-form')?.addEventListener('submit', onSignUpSubmit)

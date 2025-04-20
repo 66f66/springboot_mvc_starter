@@ -1,3 +1,5 @@
+let sigInAttempted = 0
+
 /**
  * @param e {SubmitEvent}
  * @returns {Promise<void>}
@@ -5,25 +7,36 @@
 async function onSignInSubmit(e) {
   
   e.preventDefault()
-  
   if (window.isSubmitting) return
   window.isSubmitting = true
   
   const form = e.target
   
   const button = form.querySelector('button[type="submit"]')
-  const feedback = form.querySelector('#feedback')
-  
   button.disabled = true
   button.innerHTML = '<span class="spinner-border spinner-border-sm"></span> 처리 중...'
+  
+  if (sigInAttempted > 3) {
+    window.showGlobalToast('로그인을 너무 많이 시도했습니다', 3000)
+    
+    setTimeout(() => {
+      sigInAttempted = 0
+      
+      button.disabled = false
+      button.textContent = '로그인'
+      window.isSubmitting = false
+    }, 5000)
+    
+    return
+  }
   
   const usernameVal = form.username.value.trim()
   const passwordVal = form.password.value.trim()
   
   if (usernameVal.length === 0 || passwordVal.length === 0) {
     
-    feedback.textContent = '유효한 값을 입력해주세요.'
-    feedback.classList.remove('d-none')
+    window.showGlobalToast('유효한 값을 입력해주세요', 3000)
+    
     button.disabled = false
     button.textContent = '로그인'
     window.isSubmitting = false
@@ -44,16 +57,19 @@ async function onSignInSubmit(e) {
       body: JSON.stringify(body),
     })
     
-    if (!response.ok) {
-      
-      throw new Error()
-    }
+    if (!response.ok) throw new Error()
+    
+    window.showGlobalToast('로그인 되었습니다', 3000)
+    
+    await window.sleep(1000)
     
     form.submit()
   } catch (err) {
     
-    feedback.textContent = '아이디 또는 비밀번호가 일치하지 않습니다.'
-    feedback.classList.remove('d-none')
+    sigInAttempted++
+    
+    window.showGlobalToast('아이디 또는 비밀번호가 일치하지 않습니다', 3000)
+    
     button.disabled = false
     button.textContent = '로그인'
     window.isSubmitting = false

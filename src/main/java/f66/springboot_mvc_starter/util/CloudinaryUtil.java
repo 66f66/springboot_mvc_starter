@@ -20,8 +20,8 @@ public class CloudinaryUtil {
 
     /**
      * @param file    MultipartFile 타입의 파일
-     * @param options 참고 <a href="https://cloudinary.com/documentation/image_upload_api_reference#upload"></a>
-     * @return 참고 <a href="https://cloudinary.com/documentation/java_image_and_video_upload"></a>
+     * @param options <a href="https://cloudinary.com/documentation/image_upload_api_reference#upload">참고</a>
+     * @return <a href="https://cloudinary.com/documentation/java_image_and_video_upload">참고</a>
      */
     public CloudinaryUploadResult uploadMultipartFile(MultipartFile file, Map<String, String> options) throws IOException {
 

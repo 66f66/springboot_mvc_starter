@@ -5,20 +5,58 @@
       xmlns:th="http://www.thymeleaf.org"
 >
 
-<div aria-atomic="true" aria-live="assertive"
-     class="toast align-items-center"
-     id="global-toast"
-     role="alert"
-     th:attr="data-bs-delay=${toast.duration}"
-     th:fragment="toast-notification"
-     th:if="${toast != null}">
-	<div class="d-flex">
-		<div class="toast-body" th:text="${toast.message}"></div>
-		<button aria-label="Close" class="btn-close me-2 m-auto" data-bs-dismiss="toast" type="button"></button>
+<div
+		class="toast-container position-fixed start-50 translate-middle-x p-3"
+		style="bottom: 50px;"
+		th:fragment="toast-notification"
+>
+	<div aria-atomic="true"
+	     aria-live="assertive"
+	     class="toast align-items-center"
+	     id="global-toast"
+	     role="alert">
+		<div class="d-flex">
+			<div class="toast-body"></div>
+			<button aria-label="Close" class="btn-close me-2 m-auto" data-bs-dismiss="toast" type="button"></button>
+		</div>
 	</div>
 </div>
 
+<!-- global toast-->
 <script th:fragment="toast-script">
+	window.showGlobalToast = function showGlobalToast(message, duration = 3000) {
+		const toastContainer = document.querySelector('.toast-container')
+		
+		const toastId = 'toast-' + Date.now()
+		const toastHTML = `
+            <div aria-atomic="true" aria-live="assertive"
+                 class="toast align-items-center"
+                 id="${toastId}"
+                 role="alert"
+                 data-bs-delay="${duration}">
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button aria-label="Close" class="btn-close me-2 m-auto" data-bs-dismiss="toast" type="button"></button>
+                </div>
+            </div>
+        `
+		
+		toastContainer.insertAdjacentHTML('beforeend', toastHTML)
+		
+		const toastElement = document.getElementById(toastId)
+		const toast = new bootstrap.Toast(toastElement, {
+			autohide: true,
+		})
+		
+		toast.show()
+		
+		toastElement.addEventListener('hidden.bs.toast', function () {
+			toastElement.remove()
+		})
+	}
+</script>
+
+<script>
 	document.addEventListener('DOMContentLoaded', function () {
 		const toastElList = [].slice.call(document.querySelectorAll('.toast'))
 		toastElList.map(function (toastEl) {
@@ -26,4 +64,5 @@
 		})
 	})
 </script>
+
 </html>

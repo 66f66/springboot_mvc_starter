@@ -90,15 +90,13 @@ async function onUserUpdate(e) {
       
       if (!response.ok) throw new Error()
       
-      alert('이미지를 저장했습니다.')
+      window.showGlobalToast('이미지를 저장했습니다', 3000)
       
       const data = await response.json()
-      const imageUrl = data.imageUrl
-      
-      navbarUserImage.src = imageUrl
+      navbarUserImage.src = data?.imageUrl
     } catch (err) {
       
-      alert('이미지를 저장하지 못했습니다.')
+      window.showGlobalToast('이미지를 저장하지 못했습니다', 3000)
     } finally {
       
       isNewImage = false

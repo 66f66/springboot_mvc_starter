@@ -27,9 +27,7 @@
 <div layout:fragment="content"></div>
 
 <!--toast-->
-<div class="toast-container position-fixed start-50 translate-middle-x p-3" style="bottom: 50px;">
-	<div th:replace="~{fragments/toast :: toast-notification}"></div>
-</div>
+<div th:replace="~{fragments/toast :: toast-notification}"></div>
 
 <!--bootstrap-->
 <script src="/js/bootstrap.bundle.min.js"></script>

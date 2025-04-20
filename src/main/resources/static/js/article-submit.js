@@ -108,9 +108,7 @@ async function articleSubmit(e) {
     window.location.replace(`/article/${data.id}`)
   } catch (err) {
     
-    console.log(err)
-    
-    alert('게시물을 저장하지 못했습니다.')
+    window.showGlobalToast('게시물을 저장하지 못했습니다', 3000)
     
     submitButton.disabled = false
     submitButton.innerHTML = '저장'

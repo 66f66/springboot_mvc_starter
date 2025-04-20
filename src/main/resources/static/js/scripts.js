@@ -41,6 +41,11 @@ window.formattedErrors = function formattedErrors(errors) {
     .join('\n')
 }
 
+// sleep
+window.sleep = function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 // global variables
 window.nicknameRegex = /^[가-힣a-zA-Z0-9]{2,10}$/
 window.passwordRegex = /^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':",./<>?]{8,12}$/

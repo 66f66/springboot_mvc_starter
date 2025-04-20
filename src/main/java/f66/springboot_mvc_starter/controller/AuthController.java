@@ -1,6 +1,5 @@
 package f66.springboot_mvc_starter.controller;
 
-import f66.springboot_mvc_starter.dto.ToastDTO;
 import f66.springboot_mvc_starter.dto.UserDTO;
 import f66.springboot_mvc_starter.dto.ValidationGroups;
 import f66.springboot_mvc_starter.exception.UniqueConstraintException;
@@ -8,13 +7,13 @@ import f66.springboot_mvc_starter.exception.UserBadInputException;
 import f66.springboot_mvc_starter.exception.WrongUsernameOrPasswordException;
 import f66.springboot_mvc_starter.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Map;
 
@@ -37,23 +36,19 @@ public class AuthController {
 
     @PreAuthorize("isAnonymous()")
     @PostMapping("/sign-up")
-    public String signUp(@Validated(ValidationGroups.Create.class) UserDTO userDTO,
-                         RedirectAttributes redirectAttributes) {
+    public ResponseEntity<Map<String, String>> signUp(@RequestBody @Validated(ValidationGroups.Create.class) UserDTO userDTO) {
 
         try {
 
             userService.createUser(userDTO);
         } catch (UserBadInputException | UniqueConstraintException e) {
 
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-
-            return "redirect:/auth/sign-up";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("message", e.getMessage()));
         }
 
-        redirectAttributes.addFlashAttribute("toast",
-                ToastDTO.createToast("회원가입 되었습니다."));
-
-        return "redirect:/auth/sign-in";
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Map.of("message", "회원 가입 되었습니다"));
     }
 
     @PreAuthorize("isAnonymous()")
