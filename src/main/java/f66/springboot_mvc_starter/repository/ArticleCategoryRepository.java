@@ -13,4 +13,6 @@ public interface ArticleCategoryRepository {
     void updateArticleCount(int id, int delta);
 
     List<ArticleCategoryDTO> selectCategories();
+
+    long countCategories();
 }

@@ -6,6 +6,7 @@ import f66.springboot_mvc_starter.exception.ForbiddenException;
 import f66.springboot_mvc_starter.exception.ResourceNotFoundException;
 import f66.springboot_mvc_starter.repository.ArticleCategoryRepository;
 import f66.springboot_mvc_starter.repository.ArticleRepository;
+import f66.springboot_mvc_starter.util.JsoupUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -19,12 +20,15 @@ public class ArticleService {
 
     private final ArticleRepository articleRepository;
     private final ArticleCategoryRepository articleCategoryRepository;
+    private final JsoupUtil jsoupUtil;
 
     @Transactional
     public void createArticle(Long currentUserId,
                               ArticleDTO articleDTO) {
 
         articleDTO.setUserId(currentUserId);
+
+        articleDTO.setContent(jsoupUtil.sanitizeHtml(articleDTO.getContent()));
 
         articleRepository.insertArticle(articleDTO);
 
@@ -39,6 +43,9 @@ public class ArticleService {
         ArticleDTO oldArticleDTO = articleRepository
                 .selectArticleByIdAndUserId(id, currentUserId)
                 .orElseThrow(ForbiddenException::new);
+
+        if (!articleDTO.getContent().isEmpty())
+            articleDTO.setContent(jsoupUtil.sanitizeHtml(articleDTO.getContent()));
 
         articleRepository.updateArticle(articleDTO);
 

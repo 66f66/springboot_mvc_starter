@@ -113,9 +113,9 @@ async function onUserUpdate(e) {
   if (nicknameVal.length !== 0) {
     if (!nicknameRegex.test(nicknameVal)) {
       
-      isValid = false
-      alert('유효한 닉네임이 아닙니다.')
+      window.showGlobalToast('유효한 닉네임이 아닙니다', 3000)
       
+      isValid = false
     } else {
       
       isNicknameTouched = true
@@ -134,13 +134,15 @@ async function onUserUpdate(e) {
     
     if (oldPasswordVal.length === 0) {
       
+      window.showGlobalToast('비밀번호를 변경하려면 기존 비밀번호를 입력해야 합니다', 3000)
+      
       isValid = false
-      alert('비밀번호를 변경하려면 현재 비밀번호를 입력해야 합니다.')
     } else if (!passwordRegex.test(newPasswordVal)
       || !passwordRegex.test(oldPasswordVal)) {
       
+      window.showGlobalToast('유효한 비밀번호가 아닙니다', 3000)
+      
       isValid = false
-      alert('유효한 비밀번호가 아닙니다.')
     } else {
       
       isPasswordTouched = true

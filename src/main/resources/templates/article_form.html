@@ -6,7 +6,8 @@
       xmlns:th="http://www.thymeleaf.org"
 >
 <head>
-	<link rel="stylesheet" th:href="@{/webjars/summernote/0.8.20/dist/summernote-bs5.css}"/>
+	<link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs5.min.css" rel="stylesheet">
+	
 	<title th:text="${articleDTO.id == null ? '새글 작성' : '글 편집'}"></title>
 </head>
 <div class="container my-3" layout:fragment="content">
@@ -60,21 +61,23 @@
 	</form>
 </div>
 <th:block layout:fragment="script">
-	<script th:src="@{/webjars/jquery/3.7.1/jquery.slim.js}"></script>
-	<script th:src="@{/webjars/summernote/0.8.20/dist/summernote-bs5.js}"></script>
-	<script th:src="@{/webjars/summernote/0.8.20/src/lang/summernote-ko-KR.js}"></script>
+	<script th:src="@{/webjars/jquery/3.7.1/jquery.js}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs5.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/src/lang/summernote-ko-KR.js"></script>
+	
 	<script>
 		$(document).ready(function () {
 			
-			$('#content').summernote({
+			const contentEl = $('#content')
+			
+			contentEl.summernote({
 				disableDragAndDrop: true,
-				height: 300,
+				minHeight: 300,
 				lang: 'ko-KR',
 				spellCheck: true,
 				placeholder: '내용을 입력하세요. ※이미지는 외부 URL로만 첨부 가능합니다.',
 				toolbar: [
-					['style', ['bold', 'italic', 'underline', 'clear']],
-					['font', ['strikethrough', 'superscript', 'subscript']],
+					['style', ['style', 'bold', 'italic', 'underline', 'clear']],
 					['color', ['color']],
 					['para', ['ul', 'ol', 'paragraph']],
 					['table', ['table']],
@@ -88,15 +91,14 @@
 							selectFromFiles.remove()
 						}
 					},
-					onPaste: function (e) {
-						// HTML 내용에서 Base64 이미지 검출 후 제거
+					onPaste: function () {
 						setTimeout(() => {
-							var code = $('#content').summernote('code')
+							var code = contentEl.summernote('code')
 							if (code.includes('data:image/')) {
-								$('#content').summernote('code', code.replace(/<img[^>]+src="data:image\/[^">]+"[^>]*>/g, ''))
+								contentEl.summernote('code', code.replace(/<img[^>]+src="data:image\/[^">]+"[^>]*>/g, ''))
 								alert('이미지는 URL로만 첨부 가능합니다.')
 							}
-						}, 10) // Summernote 내부 처리 대기
+						}, 10)
 					},
 				},
 			})

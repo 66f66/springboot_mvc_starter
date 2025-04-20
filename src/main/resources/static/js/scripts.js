@@ -1,25 +1,31 @@
 const springSecurityCsrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content')
 const springSecurityCsrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content')
+const springSecurityHeaders = {
+  [springSecurityCsrfHeader]: springSecurityCsrfToken,
+}
 
 const commonJsonHeaders = {
   'Content-Type': 'application/json',
   'Accept': 'application/json',
 }
 
-const springSecurityHeaders = {
-  [springSecurityCsrfHeader]: springSecurityCsrfToken,
-}
-
+// custom headers
 window.customJsonHeaders = {
   ...commonJsonHeaders,
   ...springSecurityHeaders,
 }
-
 window.customHeaders = {
   ...springSecurityHeaders,
 }
 
+// sleep
+window.sleep = function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+// isSubmitting
 let isSubmitting = false
+window.isSubmitting = isSubmitting
 
 /**
  * @param e {KeyboardEvent}
@@ -41,11 +47,6 @@ window.formattedErrors = function formattedErrors(errors) {
     .join('\n')
 }
 
-// sleep
-window.sleep = function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms))
-}
-
-// global variables
+// regexes
 window.nicknameRegex = /^[가-힣a-zA-Z0-9]{2,10}$/
 window.passwordRegex = /^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':",./<>?]{8,12}$/

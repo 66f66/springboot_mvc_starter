@@ -11,7 +11,17 @@
 			background-color: #f8f9fa;
 		}
 		
-		.card-text img {
+		.summernote-content table {
+			border-collapse: collapse;
+			width: 100%;
+		}
+		
+		.summernote-content td, th {
+			border: 1px solid #ddd;
+			padding: 8px;
+		}
+		
+		.summernote-content img {
 			max-width: 100%;
 			height: auto;
 			border-radius: 4px;
@@ -63,7 +73,7 @@
 			</div>
 			
 			<!--			article content-->
-			<div class="card-text" th:utext="${articleDTO.content}"></div>
+			<div class="card-text summernote-content" th:utext="${articleDTO.content}"></div>
 			
 			<div class="mt-5 mb-2 d-flex gap-1">
 				<!--				article vote-->
