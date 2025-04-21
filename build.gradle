@@ -41,9 +41,6 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-    //    https://mvnrepository.com/artifact/net.datafaker/datafaker
-    implementation 'net.datafaker:datafaker:2.4.3'
-
     //    https://mvnrepository.com/artifact/me.paulschwarz/spring-dotenv/4.0.0
     implementation 'me.paulschwarz:spring-dotenv:4.0.0'
 
@@ -52,9 +49,6 @@ dependencies {
 
     //    https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
-
-    //    https://mvnrepository.com/artifact/org.jsoup/jsoup
-    implementation 'org.jsoup:jsoup:1.19.1'
 
     //    https://mvnrepository.com/artifact/org.webjars/font-awesome
     implementation 'org.webjars:font-awesome:6.7.2'
