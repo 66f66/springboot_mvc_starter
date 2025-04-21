@@ -6,9 +6,11 @@
 >
 
 <th:block th:fragment="func(src, alt)">
-	<img class="avatar"
-	     th:alt="${alt}"
-	     th:src="${src}"/>
+	<img
+			class="avatar"
+			th:alt="${alt}"
+			th:if="${src != null}"
+			th:src="${src}"/>
 </th:block>
 
 </html>

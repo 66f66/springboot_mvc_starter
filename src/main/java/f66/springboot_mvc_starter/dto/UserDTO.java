@@ -69,34 +69,6 @@ public class UserDTO {
 
     public String getImageUrl() {
 
-        if (this.image.getUrl() != null) {
-
-            return this.image.getUrl();
-        }
-
-        String BASE_IMAGE_URL = "https://avatar.iran.liara.run/username?username=";
-
-        if (this.nickname == null || this.nickname.isEmpty()) {
-
-            return BASE_IMAGE_URL + "u";
-        }
-
-        String firstTwoChars;
-        if (this.nickname.length() >= 2) {
-
-            firstTwoChars = this.nickname.substring(0, 2);
-        } else {
-
-            firstTwoChars = this.nickname;
-        }
-
-        if (firstTwoChars.matches("^[a-zA-Z0-9]+$")) {
-
-            return BASE_IMAGE_URL + this.nickname;
-        } else {
-
-            int hashCode = Math.abs(this.nickname.hashCode());
-            return BASE_IMAGE_URL + hashCode;
-        }
+        return this.image.getUrl() != null ? this.image.getUrl() : null;
     }
 }

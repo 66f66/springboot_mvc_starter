@@ -187,7 +187,7 @@
 			<!--			search feedback-->
 			<div class="p-5 text-center text-muted fs-5" th:if="${#lists.isEmpty(articleDTOs)}">
 				<th:block th:if="${paging.number > paging.totalPages and paging.totalPages > 1}">
-					<span>페이지 번호를 초과했습니다.</span>
+					<span>최대 페이지 번호를 초과했습니다.</span>
 				</th:block>
 				<th:block th:unless="${paging.number > paging.totalPages and paging.totalPages > 1}">
 					<span th:if="${articlePageRequest.searchKey == null}">작성된 글이 없습니다.</span>
@@ -261,8 +261,8 @@
 				<li class="page-item"
 				    th:classappend="${i == currentPage} ? 'active'"
 				    th:each="i : ${#numbers.sequence(
-                    T(java.lang.Math).max(0, ((currentPage / 5) * 5)),
-                    T(java.lang.Math).min(paging.totalPages - 1, ((currentPage / 5) * 5) + 4))}"
+                    T(java.lang.Math).max(0, T(java.lang.Math).min(((currentPage / 5) * 5), paging.totalPages - 5)),
+                    T(java.lang.Math).min(paging.totalPages - 1, ((currentPage / 5) * 5) + 4)) }"
 				>
 					<a class="page-link"
 					   th:href="${@httpUtil.setQueryParam(requestURIWithQuery, 'page', i)}"
