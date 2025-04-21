@@ -75,6 +75,11 @@
         WHERE u.username = #{username}
     </select>
 
+    <select id="selectUsers">
+        select *
+        from users
+    </select>
+
     <select id="countUsers"
             resultType="long">
         select COUNT(id)

@@ -7,31 +7,7 @@
 >
 <head>
 	<link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs5.min.css" rel="stylesheet">
-	<style>
-		
-		.note-editor blockquote {
-			padding: 10px 20px !important;
-			margin: 0 0 20px !important;
-			border-left: 5px solid #eee !important;
-			background-color: #f9f9f9 !important;
-			font-style: italic !important;
-			color: #555 !important;
-		}
-		
-		.note-editor pre {
-			padding: 12px 16px !important;
-			margin: 0 0 16px !important;
-			background-color: #f5f5f5 !important;
-			border: 1px solid #e0e0e0 !important;
-			border-radius: 4px !important;
-			font-family: 'Courier New', Courier, monospace !important;
-			font-size: 14px !important;
-			color: #333 !important;
-			white-space: pre-wrap !important;
-			overflow-x: auto !important;
-			line-height: 1.5 !important;
-		}
-	</style>
+	<link href="/css/custom-summernote.css" rel="stylesheet">
 	
 	<title th:text="${articleDTO.id == null ? '새글 작성' : '글 편집'}"></title>
 </head>
@@ -89,44 +65,7 @@
 	<script th:src="@{/webjars/jquery/3.7.1/jquery.js}"></script>
 	<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs5.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/src/lang/summernote-ko-KR.js"></script>
-	<script>
-		$(document).ready(function () {
-			
-			const contentEl = $('#content')
-			
-			contentEl.summernote({
-				disableDragAndDrop: true,
-				minHeight: 300,
-				lang: 'ko-KR',
-				spellCheck: true,
-				placeholder: '내용을 입력하세요. ※이미지는 외부 URL로만 첨부 가능합니다.',
-				toolbar: [
-					['style', ['style', 'bold', 'italic', 'underline', 'clear']],
-					['para', ['ul', 'ol', 'paragraph']],
-					['table', ['table']],
-					['insert', ['link', 'picture']],
-					['view', ['fullscreen', 'codeview', 'help']],
-				],
-				callbacks: {
-					onInit: function () {
-						const selectFromFiles = document.querySelector('.note-group-select-from-files')
-						if (selectFromFiles) {
-							selectFromFiles.remove()
-						}
-					},
-					onPaste: function () {
-						setTimeout(() => {
-							var code = contentEl.summernote('code')
-							if (code.includes('data:image/')) {
-								contentEl.summernote('code', code.replace(/<img[^>]+src="data:image\/[^">]+"[^>]*>/g, ''))
-								alert('이미지는 URL로만 첨부 가능합니다.')
-							}
-						}, 10)
-					},
-				},
-			})
-		})
-	</script>
+	<script src="/js/custom-summernote.js"></script>
 	<script src="/js/article-submit.js"></script>
 </th:block>
 </html>

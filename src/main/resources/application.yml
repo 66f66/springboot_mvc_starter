@@ -39,3 +39,4 @@ cloudinary:
 
 config:
   admin-password: ${ADMIN_PASSWORD}
+  test-password: ${TEST_PASSWORD}
