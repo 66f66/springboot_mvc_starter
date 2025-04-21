@@ -56,6 +56,9 @@ public class DefaultInitializer {
                 List<UserRoleDTO> userRoleDTOList = List.of(roleAdmin, roleUser);
 
                 userRoleRepository.insertRoles(userRoleDTOList);
+            } else {
+
+                return;
             }
 
             UserRoleDTO userRoleDTO = userRoleRepository.selectRoleByName(ROLE_ADMIN)
