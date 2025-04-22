@@ -40,6 +40,7 @@
 			<img class="avatar"
 			     id="navbar-user-image"
 			     th:alt="${#authentication.principal.nickname}"
+			     th:classappend="${#authentication.principal.imageUrl == null} ? 'd-none'"
 			     th:src="${#authentication.principal.imageUrl}"
 			>
 			<small class="d-none d-md-inline" th:text="${#authentication.principal.nickname}"></small>

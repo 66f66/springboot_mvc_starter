@@ -1,13 +1,13 @@
 let isNewImage = false
-let oldImageUrl = ''
 const image = document.getElementById('image')
 
-function setOldImageUrl() {
+function setOriginalImageUrl() {
   
-  if (oldImageUrl !== '') {
-    
-    image.src = oldImageUrl
+  if (window.originalImageUrl === '') {
+    image.classList.add('d-none')
   }
+  
+  image.src = window.originalImageUrl
 }
 
 /**
@@ -23,13 +23,11 @@ function onFileInput(e) {
   if (!file) return
   
   const allowedTypes = ['image/jpeg', 'image/png']
-  
   if (!allowedTypes.includes(file.type)) {
     
     alert('JPEG 또는 PNG 이미지 파일만 업로드 가능합니다.')
     fileInput.value = ''
-    setOldImageUrl()
-    image.classList.add('d-none')
+    setOriginalImageUrl()
     
     return
   }
@@ -39,17 +37,12 @@ function onFileInput(e) {
     
     alert('파일 크기는 1MB를 초과할 수 없습니다.')
     fileInput.value = ''
-    setOldImageUrl()
-    image.classList.add('d-none')
+    setOriginalImageUrl()
     
     return
   }
   
   isNewImage = true
-  
-  if (!oldImageUrl) {
-    oldImageUrl = image.src
-  }
   
   if (image.src.startsWith('blob:')) {
     URL.revokeObjectURL(image.src)
@@ -96,7 +89,10 @@ async function onUserUpdate(e) {
       window.showGlobalToast('이미지를 저장했습니다', 3000)
       
       const data = await response.json()
+      
+      navbarUserImage.classList.remove('d-none')
       navbarUserImage.src = data?.imageUrl
+      window.originalImageUrl = data?.imageUrl
     } catch (err) {
       
       window.showGlobalToast('이미지를 저장하지 못했습니다', 3000)

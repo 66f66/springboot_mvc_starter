@@ -19,9 +19,10 @@
 				<!--				user image-->
 				<div class="my-4" th:action="@{/user/upddate/image}">
 					<div class="text-center">
-						<img class="avatar d-none"
+						<img class="avatar"
 						     id="image"
 						     th:alt="${userDTO.nickname}"
+						     th:classappend="${userDTO.imageUrl == null} ? 'd-none'"
 						     th:src="${userDTO?.imageUrl}"
 						>
 					</div>
@@ -73,6 +74,11 @@
 	</div>
 </div>
 <th:block layout:fragment="script">
-	<script src="/js/user-settings.js"></script>
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		window.originalImageUrl = /*[[${userDTO.imageUrl}]]*/ ''
+		/*]]>*/
+	</script>
+	<script src="/js/user-settings.js" th:inline="javascript"></script>
 </th:block>
 </html>
