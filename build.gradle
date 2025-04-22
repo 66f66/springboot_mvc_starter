@@ -50,9 +50,6 @@ dependencies {
     //    https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
-    //    https://mvnrepository.com/artifact/org.webjars/font-awesome
-    implementation 'org.webjars:font-awesome:6.7.2'
-
     //    https://mvnrepository.com/artifact/nz.net.ultraq.thymeleaf/thymeleaf-layout-dialect
     implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
 

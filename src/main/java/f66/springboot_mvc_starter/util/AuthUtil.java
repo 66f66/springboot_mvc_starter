@@ -38,14 +38,15 @@ public class AuthUtil {
         return Optional.empty();
     }
 
-    /**
-     * @param newImageUrl 업데이트된 이미지의 url
-     */
-    public void updateContextUserImageUrl(String newImageUrl) {
+    public void updateContextUser(String newNickname,
+                                  String newImageUrl) {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder
+                .getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        userDetails.setImageUrl(newImageUrl);
+
+        if (newNickname != null) userDetails.setNickname(newNickname);
+        if (newImageUrl != null) userDetails.setImageUrl(newImageUrl);
 
         SecurityContext context = SecurityContextHolder.getContext();
         context.setAuthentication(authentication);

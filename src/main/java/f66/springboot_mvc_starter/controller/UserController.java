@@ -46,7 +46,7 @@ public class UserController {
 
         UserDTO updatedUserDTO = userService.updateUser(userDTO);
 
-        authUtil.updateContextUserImageUrl(updatedUserDTO.getImageUrl());
+        authUtil.updateContextUser(userDTO.getNickname(), null);
 
         return ResponseEntity.ok().body(Map.of("user", updatedUserDTO));
     }
@@ -66,7 +66,7 @@ public class UserController {
             return ResponseEntity.internalServerError().build();
         }
 
-        authUtil.updateContextUserImageUrl(newImageUrl);
+        authUtil.updateContextUser(null, newImageUrl);
 
         return ResponseEntity.ok().body(Map.of("imageUrl", newImageUrl));
     }

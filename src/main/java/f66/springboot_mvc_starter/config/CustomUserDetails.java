@@ -12,9 +12,11 @@ public class CustomUserDetails implements UserDetails {
 
     private final Long id;
     private final String username;
-    private final String nickname;
     private final String password;
     private final Collection<? extends GrantedAuthority> authorities;
+
+    @Setter
+    private String nickname;
 
     @Setter
     private String imageUrl;

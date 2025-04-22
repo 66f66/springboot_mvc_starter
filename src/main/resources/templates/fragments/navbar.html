@@ -23,15 +23,26 @@
 						<button class="nav-link" type="submit">로그아웃</button>
 					</form>
 				</li>
+			
 			</ul>
+			
+			<a class="text-decoration-none ms-2"
+			   href="https://github.com/66f66/springboot_mvc_starter"
+			   target="_blank"
+			>
+				<small class="d-none d-md-inline">코드</small>
+				<i class="bi bi-github"></i>
+			</a>
 		</div>
 		
 		<div class="d-flex gap-2 justify-content-start align-items-center"
 		     sec:authorize="isAuthenticated()">
-			<img alt=""
-			     class="avatar"
+			<img class="avatar"
 			     id="navbar-user-image"
-			     th:src="${#authentication.principal.imageUrl}">
+			     th:alt="${#authentication.principal.nickname}"
+			     th:src="${#authentication.principal.imageUrl}"
+			>
+			<small class="d-none d-md-inline" th:text="${#authentication.principal.nickname}"></small>
 			<a class="btn btn-outline-secondary" th:href="@{/user/settings}">프로필 설정</a>
 		</div>
 	</div>

@@ -29,6 +29,7 @@ function onFileInput(e) {
     alert('JPEG 또는 PNG 이미지 파일만 업로드 가능합니다.')
     fileInput.value = ''
     setOldImageUrl()
+    image.classList.add('d-none')
     
     return
   }
@@ -39,6 +40,7 @@ function onFileInput(e) {
     alert('파일 크기는 1MB를 초과할 수 없습니다.')
     fileInput.value = ''
     setOldImageUrl()
+    image.classList.add('d-none')
     
     return
   }
@@ -53,6 +55,7 @@ function onFileInput(e) {
     URL.revokeObjectURL(image.src)
   }
   image.src = URL.createObjectURL(file)
+  image.classList.remove('d-none')
 }
 
 document.querySelector('#user-file-input').addEventListener('change', onFileInput)

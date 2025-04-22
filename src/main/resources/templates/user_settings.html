@@ -19,14 +19,17 @@
 				<!--				user image-->
 				<div class="my-4" th:action="@{/user/upddate/image}">
 					<div class="text-center">
-						<img alt=""
-						     class="avatar"
+						<img class="avatar d-none"
 						     id="image"
-						     th:src="${userDTO.imageUrl}"
+						     th:alt="${userDTO.nickname}"
+						     th:src="${userDTO?.imageUrl}"
 						>
 					</div>
-					<label>프로필 사진</label>
-					<input class="form-control" id="user-file-input" name="file" type="file">
+					<label for="user-file-input">프로필 사진</label>
+					<input class="form-control"
+					       id="user-file-input"
+					       name="file"
+					       type="file">
 					<div class="form-text">프로필 사진은 1MB 이하여야 하며, image/jpeg와 image/png 이미지만 사용 가능합니다.</div>
 				</div>
 				
