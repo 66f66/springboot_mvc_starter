@@ -252,9 +252,10 @@
 				</li>
 				
 				<!--				5 prev page-->
-				<li class="page-item" th:classappend="${currentPage < 5} ? 'disabled'">
+				<li class="page-item" th:classappend="${currentPage < 5} ? 'disabled'"
+				    th:with="prevPage = ${T(java.lang.Math).min(currentPage - 5, paging.totalPages - 5)}">
 					<a class="page-link"
-					   th:href="${@httpUtil.setQueryParam(requestURIWithQuery, 'page', currentPage - 5)}">-5</a>
+					   th:href="${@httpUtil.setQueryParam(requestURIWithQuery, 'page', prevPage)}">-5</a>
 				</li>
 				
 				<!--				page numbers-->
