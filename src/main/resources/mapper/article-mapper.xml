@@ -154,13 +154,13 @@
                 <if test="searchKey == 'title' or searchKey == 'content' or searchKey == 'nickname' and searchValue != null">
                     AND
                     <choose>
-                        <when test="searchKey == 'title'">
+                        <when test="searchKey == 'title'.toString()">
                             a.title LIKE CONCAT('%', #{searchValue}, '%')
                         </when>
-                        <when test="searchKey == 'content'">
+                        <when test="searchKey == 'content'.toString()">
                             a.content LIKE CONCAT('%', #{searchValue}, '%')
                         </when>
-                        <when test="searchKey == 'nickname'">
+                        <when test="searchKey == 'nickname'.toString()">
                             u.nickname LIKE CONCAT('%', #{searchValue}, '%')
                         </when>
                     </choose>
