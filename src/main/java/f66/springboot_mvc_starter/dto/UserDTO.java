@@ -36,7 +36,7 @@ public class UserDTO {
     @NotBlank(message = "비밀번호는 필수 입력값입니다", groups = ValidationGroups.Create.class)
     @Pattern(
             regexp = "^[A-Za-z0-9!@#$%^&*()_+\\-=\\[\\]{};':\",./<>?]{8,12}$",
-            message = "비밀번호는 8~32자이며, 영문 대/소문자, 숫자, 특수문자를 각각 1개 이상 포함해야 합니다"
+            message = "비밀번호는 8~32자이며, 영문 대/소문자, 숫자, 특수문자를 사용 가능합니다"
     )
     private String password;
 
@@ -45,13 +45,13 @@ public class UserDTO {
 
     @Pattern(
             regexp = "^[A-Za-z0-9!@#$%^&*()_+\\-=\\[\\]{};':\",./<>?]{8,12}$",
-            message = "비밀번호는 8~12자이며, 영문 대/소문자, 숫자, 특수문자를 각각 1개 이상 포함해야 합니다"
+            message = "비밀번호는 8~12자이며, 영문 대/소문자, 숫자, 특수문자를 사용 가능합니다"
     )
     private String oldPassword;
 
     @Pattern(
             regexp = "^[A-Za-z0-9!@#$%^&*()_+\\-=\\[\\]{};':\",./<>?]{8,12}$",
-            message = "비밀번호는 8~12자이며, 영문 대/소문자, 숫자, 특수문자를 각각 1개 이상 포함해야 합니다"
+            message = "비밀번호는 8~12자이며, 영문 대/소문자, 숫자, 특수문자를 사용 가능합니다"
     )
     private String newPassword;
 
