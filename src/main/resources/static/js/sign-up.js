@@ -58,7 +58,7 @@ async function onSignUpSubmit(e) {
   if (!passwordRegex.test(passwordVal)) {
     
     password.classList.add('is-invalid')
-    passwordFeedback.textContent = '비밀번호는 8~32자이며, 영문 대/소문자, 숫자, 특수문자를 각각 1개 이상 포함해야 합니다.'
+    passwordFeedback.textContent = '비밀번호는 8~12자이며, 영문 대/소문자, 숫자, 특수문자를 각각 1개 이상 포함해야 합니다.'
     isValid = false
   } else {
     
@@ -138,7 +138,7 @@ async function onSignUpSubmit(e) {
     
     await window.sleep(1000)
     
-    window.location.replace('/auth/sign-in')
+    window.history.back()
   } catch (e) {
     
     window.showGlobalToast('현재 회원가입 할 수 없습니다', 3000)
