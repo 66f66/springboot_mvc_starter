@@ -27,14 +27,3 @@
 3. **댓글 기능**
     - CRUD
     - 대댓글 (2-depth 계층형)
-
-## 데이터베이스 설계
-
-### 주요 테이블 구조
-
-1. **users**: 사용자 기본 정보 (email, password, nickname 등)
-2. **user_images**: 사용자별 프로필 이미지 (1:1)
-3. **articles**: 게시글 (제목, 내용, 카테고리 FK 등)
-4. **article_categories**: 게시글 카테고리 분류
-5. **comments**: 댓글 (부모 댓글 FK로 계층 구현)
-6. **article_votes**: 게시글 추천 기록 (사용자별 중복 방지)
