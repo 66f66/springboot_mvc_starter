@@ -11,6 +11,8 @@
 - **DB 접근**: MyBatis
 - **템플릿 엔진**: Thymeleaf
 - **빌드 도구**: Gradle
+- **배포**: Docker
+- **호스팅**: Render
 
 ## 주요 기능
 
