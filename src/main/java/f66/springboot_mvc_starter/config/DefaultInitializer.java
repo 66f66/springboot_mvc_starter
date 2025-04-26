@@ -112,7 +112,7 @@ public class DefaultInitializer {
             // user id = 1(admin),2,3,4,5,6
             List<UserDTO> userDTOs = userRepository.selectUsers();
 
-            if (articleRepository.countArticlesByRequest(new ArticlePageRequest()) == 0) {
+            if (articleRepository.countForPage(new ArticlePageRequest()) == 0) {
 
                 List<ArticleCategoryDTO> articleCategoryDTOs = articleCategoryRepository.selectCategories();
 

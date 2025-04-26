@@ -85,6 +85,6 @@ public class ArticleService {
     @Transactional(readOnly = true)
     public Page<ArticleDTO> getArticlePage(ArticlePageRequest request) {
 
-        return articleRepository.selectPageByRequest(request);
+        return articleRepository.getPage(request);
     }
 }

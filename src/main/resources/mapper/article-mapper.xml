@@ -5,9 +5,8 @@
     <resultMap id="ArticleWithRelations" type="ArticleDTO" autoMapping="true">
         <id property="id" column="id"/>
 
-        <association property="user" javaType="UserDTO">
+        <association property="user" javaType="UserDTO" autoMapping="true">
             <id property="id" column="user_id"/>
-            <result property="nickname" column="user_nickname"/>
 
             <association property="image" javaType="UserImageDTO">
                 <id property="id" column="user_image_id"/>
@@ -77,8 +76,7 @@
             parameterType="map" resultMap="ArticleWithRelations">
         SELECT
         a.*,
-        u.id as "user_id",
-        u.nickname as "user_nickname",
+        u.*,
         ui.id as "user_image_id",
         ui.url as "user_image_url",
         ur.name as "user_role_name",
@@ -103,12 +101,11 @@
         and a.is_deleted = false
     </select>
 
-    <select id="selectArticlesWithRelationsByRequest"
+    <select id="selectListForPage"
             parameterType="ArticlePageRequest" resultMap="ArticleWithRelations">
         SELECT
         a.*,
-        u.id as "user_id",
-        u.nickname as "user_nickname",
+        u.*,
         ui.id as "user_image_id",
         ui.url as "user_image_url",
         ur.name as "user_role_name",
@@ -137,7 +134,7 @@
         LIMIT #{size} OFFSET #{offset}
     </select>
 
-    <select id="countArticlesByRequest"
+    <select id="countForPage"
             parameterType="ArticlePageRequest" resultType="long">
         SELECT COUNT(a.id)
         FROM articles a
