@@ -151,7 +151,7 @@
                 AND a.user_id = #{userId}
             </if>
             <if test="userId == null">
-                <if test="searchKey != null and searchValue != null">
+                <if test="searchKey == 'title' or searchKey == 'content' or searchKey == 'nickname' and searchValue != null">
                     AND
                     <choose>
                         <when test="searchKey == 'title'">
