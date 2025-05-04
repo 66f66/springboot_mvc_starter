@@ -1,4 +1,4 @@
-# 작업 관리 프로젝트 (Spring Boot + React)
+# 게시판 프로젝트 (Spring Boot)
 
 ## 프로젝트 개요
 
