@@ -56,14 +56,15 @@
     <select id="selectUserWithRelationsById"
             parameterType="Long" resultMap="UserWithRelations">
         SELECT u.*,
-               ur.name      as "role_name",
-               r.display_name  "role_displayName",
-               ui.id        as "image_id",
-               ui.url       as "image_url",
-               ui.public_id as "image_public_id"
+               r.id           as "role_id",
+               r.role_type    as "role_type",
+               r.display_name as "role_displayName",
+               ui.id          as "image_id",
+               ui.url         as "image_url",
+               ui.public_id   as "image_public_id"
         FROM users u
                  JOIN users_roles ur on u.id = ur.user_id
-                 JOIN roles r on ur.role_id = r.display_name
+                 JOIN roles r on r.id = ur.role_id
                  JOIN user_images ui on u.id = ui.user_id
         WHERE u.id = #{id}
     </select>

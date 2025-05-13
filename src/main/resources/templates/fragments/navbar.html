@@ -6,7 +6,7 @@
       xmlns:th="http://www.thymeleaf.org"
 >
 <nav class="navbar navbar-expand-lg bg-light border-bottom"
-     th:unless="${contextRequestURIWithQuery.startsWith('/auth/sign-in') or contextRequestURIWithQuery.startsWith('/auth/sign-up')}">
+     th:unless="${#strings.contains(contextRequestURIWithQuery, '/auth/')}">
 	<div class="container-lg d-flex justify-content-between">
 		<div class="d-flex align-items-center">
 			<a class="navbar-brand" href="/">홈</a>
