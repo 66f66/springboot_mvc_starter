@@ -25,7 +25,7 @@ public class ArticleDTO {
     @Size(min = 10, max = 5000, message = "내용은 {min}자 이상 {max}자 이내입니다.")
     private String content;
 
-    private boolean isDeleted;
+    private boolean deleted;
 
     private int voteCount;
 

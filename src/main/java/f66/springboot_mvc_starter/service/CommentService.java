@@ -1,5 +1,6 @@
 package f66.springboot_mvc_starter.service;
 
+import f66.springboot_mvc_starter.dto.ArticleDTO;
 import f66.springboot_mvc_starter.dto.CommentDTO;
 import f66.springboot_mvc_starter.exception.ForbiddenException;
 import f66.springboot_mvc_starter.repository.ArticleRepository;
@@ -27,7 +28,11 @@ public class CommentService {
 
         commentRepository.insertComment(commentDTO);
 
-        articleRepository.updateCommentCount(commentDTO.getArticleId(), 1);
+        ArticleDTO articleDTO = articleRepository
+                .selectArticleByIdForUpdate(commentDTO.getArticleId())
+                .orElseThrow();
+
+        articleRepository.updateCommentCount(commentDTO.getArticleId(), articleDTO.getCommentCount() + 1);
     }
 
     @Transactional
@@ -50,9 +55,13 @@ public class CommentService {
                 .selectCommentByIdAndUserId(id, currentUserId)
                 .orElseThrow(ForbiddenException::new).getArticleId();
 
-        commentRepository.updateIsDeleted(id, true);
+        commentRepository.updateDeleted(id, true);
 
-        articleRepository.updateCommentCount(articleId, -1);
+        ArticleDTO articleDTO = articleRepository
+                .selectArticleByIdForUpdate(articleId)
+                .orElseThrow();
+
+        articleRepository.updateCommentCount(articleId, articleDTO.getCommentCount() - 1);
     }
 
     @Transactional(readOnly = true)

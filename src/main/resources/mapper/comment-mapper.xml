@@ -54,10 +54,10 @@
         WHERE id = #{id}
     </update>
 
-    <update id="updateIsDeleted"
+    <update id="updateDeleted"
             parameterType="map">
         UPDATE comments
-        SET is_deleted = #{isDeleted},
+        SET deleted    = #{deleted},
             deleted_at = now()
         WHERE id = #{id}
     </update>
@@ -123,11 +123,11 @@
                            EXISTS (SELECT 1
                                    FROM comment_tree child
                                    WHERE child.parent_comment_id = ct.id
-                                     and child.is_deleted != true) as has_children
+                                     and child.deleted != true) as has_children
                     FROM comment_tree ct)
         SELECT *
         FROM filtered_comments
-        WHERE NOT (is_deleted = true AND has_children = false)
+        WHERE NOT (deleted = true AND has_children = false)
         ORDER BY path;
     </select>
 </mapper>

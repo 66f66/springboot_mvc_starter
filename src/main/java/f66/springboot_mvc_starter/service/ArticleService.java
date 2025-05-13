@@ -1,5 +1,6 @@
 package f66.springboot_mvc_starter.service;
 
+import f66.springboot_mvc_starter.dto.ArticleCategoryDTO;
 import f66.springboot_mvc_starter.dto.ArticleDTO;
 import f66.springboot_mvc_starter.dto.ArticlePageRequest;
 import f66.springboot_mvc_starter.exception.ForbiddenException;
@@ -27,7 +28,11 @@ public class ArticleService {
 
         articleRepository.insertArticle(articleDTO);
 
-        articleCategoryRepository.updateArticleCount(articleDTO.getCategoryId(), 1);
+        ArticleCategoryDTO articleCategoryDTO = articleCategoryRepository
+                .selectCategoryByIdForUpdate(articleDTO.getCategoryId())
+                .orElseThrow();
+
+        articleCategoryRepository.updateArticleCount(articleDTO.getCategoryId(), articleCategoryDTO.getArticleCount() + 1);
     }
 
     @Transactional
@@ -43,9 +48,17 @@ public class ArticleService {
 
         if (!Objects.equals(oldArticleDTO.getCategoryId(), articleDTO.getCategoryId())) {
 
-            articleCategoryRepository.updateArticleCount(oldArticleDTO.getCategoryId(), -1);
+            ArticleCategoryDTO oldArticleCategoryDTO = articleCategoryRepository
+                    .selectCategoryByIdForUpdate(oldArticleDTO.getCategoryId())
+                    .orElseThrow();
 
-            articleCategoryRepository.updateArticleCount(articleDTO.getCategoryId(), 1);
+            articleCategoryRepository.updateArticleCount(oldArticleDTO.getCategoryId(), oldArticleCategoryDTO.getArticleCount() - 1);
+
+            ArticleCategoryDTO articleCategoryDTO = articleCategoryRepository
+                    .selectCategoryByIdForUpdate(articleDTO.getCategoryId())
+                    .orElseThrow();
+
+            articleCategoryRepository.updateArticleCount(articleDTO.getCategoryId(), articleCategoryDTO.getArticleCount() + 1);
         }
     }
 
@@ -58,9 +71,13 @@ public class ArticleService {
                 .orElseThrow(ForbiddenException::new)
                 .getCategoryId();
 
-        articleRepository.updateIsDeleted(id, true);
+        articleRepository.updateDeleted(id, true);
 
-        articleCategoryRepository.updateArticleCount(categoryId, -1);
+        ArticleCategoryDTO articleCategoryDTO = articleCategoryRepository
+                .selectCategoryByIdForUpdate(categoryId)
+                .orElseThrow();
+
+        articleCategoryRepository.updateArticleCount(categoryId, articleCategoryDTO.getArticleCount() - 1);
     }
 
     @Transactional(readOnly = true)

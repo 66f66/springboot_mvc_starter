@@ -1,5 +1,6 @@
 package f66.springboot_mvc_starter.service;
 
+import f66.springboot_mvc_starter.dto.ArticleCategoryDTO;
 import f66.springboot_mvc_starter.dto.ArticleDTO;
 import f66.springboot_mvc_starter.dto.CommentDTO;
 import f66.springboot_mvc_starter.repository.ArticleCategoryRepository;
@@ -23,19 +24,28 @@ public class AdminService {
         ArticleDTO articleDTO = articleRepository.selectArticleByIdForUpdate(id)
                 .orElseThrow();
 
-        articleRepository.updateIsDeleted(id, true);
+        articleRepository.updateDeleted(id, true);
 
-        articleCategoryRepository.updateArticleCount(articleDTO.getCategoryId(), -1);
+        ArticleCategoryDTO articleCategoryDTO = articleCategoryRepository
+                .selectCategoryByIdForUpdate(articleDTO.getCategoryId())
+                .orElseThrow();
+
+        articleCategoryRepository.updateArticleCount(articleDTO.getCategoryId(), articleCategoryDTO.getArticleCount() - 1);
     }
 
     @Transactional
     public void deleteComment(Long id) {
 
-        CommentDTO commentDTO = commentRepository.selectCommentById(id)
+        CommentDTO commentDTO = commentRepository
+                .selectCommentById(id)
                 .orElseThrow();
 
-        commentRepository.updateIsDeleted(id, true);
+        commentRepository.updateDeleted(id, true);
 
-        articleRepository.updateCommentCount(commentDTO.getArticleId(), -1);
+        ArticleDTO articleDTO = articleRepository
+                .selectArticleByIdForUpdate(commentDTO.getArticleId())
+                .orElseThrow();
+
+        articleRepository.updateCommentCount(commentDTO.getArticleId(), articleDTO.getCommentCount() - 1);
     }
 }

@@ -47,19 +47,19 @@
     <update id="updateCommentCount"
             parameterType="map">
         UPDATE articles
-        SET comment_count = comment_count + #{delta}
+        SET comment_count = #{commentCount}
         WHERE id = #{id}
     </update>
 
-    <update id="updateIsDeleted"
+    <update id="updateDeleted"
             parameterType="map">
         UPDATE articles
-        SET is_deleted = #{isDeleted},
+        SET deleted    = #{deleted},
             updated_at = now()
         WHERE id = #{id}
     </update>
 
-    <select id="selectArticleById"
+    <select id="selectArticleByIdForUpdate"
             parameterType="Long" resultType="ArticleDTO">
         SELECT *
         FROM articles
@@ -88,7 +88,7 @@
         ac.id as "category_id",
         ac.name as "category_name",
         <if test="currentUserId != null">
-            av.is_active
+            av.active
         </if>
         <if test="currentUserId == null">
             false
@@ -101,10 +101,10 @@
         JOIN roles r ON r.id = ur.role_id
         JOIN article_categories ac ON a.category_id = ac.id
         <if test="currentUserId != null">
-            LEFT JOIN article_votes av ON a.id = av.article_id AND av.user_id = #{currentUserId}
+            LEFT JOIN articles_votes av ON a.id = av.article_id AND av.user_id = #{currentUserId}
         </if>
         WHERE a.id = #{id}
-        and a.is_deleted = false
+        and a.deleted = false
     </select>
 
     <select id="selectListForPage"
@@ -155,7 +155,7 @@
 
     <sql id="articlePageConditions">
         <where>
-            a.is_deleted = false
+            a.deleted = false
             <if test="userId != null">
                 AND a.user_id = #{userId}
             </if>

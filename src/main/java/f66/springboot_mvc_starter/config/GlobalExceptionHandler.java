@@ -141,14 +141,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    @ExceptionHandler(Exception.class)
-    public Object handleException(Exception e,
+    @ExceptionHandler(RuntimeException.class)
+    public Object handleException(RuntimeException e,
                                   HttpServletRequest request,
                                   HttpServletResponse response) throws IOException {
 
         boolean isJsonRequest = httpUtil.isJsonRequest(request);
-
-        System.out.println("Hit5");
 
         log.error(e.getMessage());
 
@@ -161,8 +159,6 @@ public class GlobalExceptionHandler {
 
             return null;
         }
-
-        System.out.println("Hit7");
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }

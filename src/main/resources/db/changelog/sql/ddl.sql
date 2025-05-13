@@ -65,7 +65,7 @@ create table articles
             primary key,
     title         text                                   not null,
     content       text                                   not null,
-    is_deleted    boolean                  default false not null,
+    deleted       boolean                  default false not null,
     comment_count integer                  default 0     not null,
     vote_count    integer                  default 0     not null,
     created_at    timestamp with time zone default now() not null,
@@ -93,7 +93,7 @@ create index articles_vote_count_index
 create index articles_comment_count_index
     on articles (comment_count desc);
 
-create table article_votes
+create table articles_votes
 (
     article_id bigint                                 not null
         constraint article_voters_articles_id_fk
@@ -103,7 +103,7 @@ create table article_votes
         constraint article_voters_users_id_fk
             references users
             on delete set null,
-    is_active  boolean                  default true  not null,
+    active     boolean                  default true  not null,
     created_at timestamp with time zone default now() not null,
     constraint article_voters_pk
         primary key (user_id, article_id)
@@ -116,7 +116,7 @@ create table comments
             primary key,
     content           text                                   not null,
     depth             integer                  default 0     not null,
-    is_deleted        boolean                  default false not null,
+    deleted           boolean                  default false not null,
     created_at        timestamp with time zone default now() not null,
     updated_at        timestamp with time zone,
     deleted_at        timestamp with time zone,

@@ -13,9 +13,9 @@ public interface ArticleRepository extends PagingRepository<ArticleDTO, ArticleP
 
     void updateArticle(ArticleDTO articleDTO);
 
-    void updateCommentCount(Long id, int delta);
+    void updateCommentCount(Long id, long commentCount);
 
-    void updateIsDeleted(Long id, boolean isDeleted);
+    void updateDeleted(Long id, boolean deleted);
 
     Optional<ArticleDTO> selectArticleByIdForUpdate(Long id);
 

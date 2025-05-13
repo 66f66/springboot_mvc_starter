@@ -42,7 +42,7 @@ public class ArticleController {
     public ResponseEntity<Map<String, VoteResult>> vote(@AuthenticationPrincipal CustomUserDetails user,
                                                         @PathVariable Long id) {
 
-        VoteResult result = articleVoteService.voteArticle(id, user.getId());
+        VoteResult result = articleVoteService.toggleVote(id, user.getId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("result", result));
     }

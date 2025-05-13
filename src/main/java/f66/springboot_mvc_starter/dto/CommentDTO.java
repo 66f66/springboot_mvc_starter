@@ -23,7 +23,7 @@ public class CommentDTO {
 
     private int depth;
 
-    private boolean isDeleted;
+    private boolean deleted;
 
     private OffsetDateTime createdAt;
 
@@ -47,6 +47,6 @@ public class CommentDTO {
 
     public boolean isDeletedHasChildren() {
 
-        return this.hasChildren && isDeleted;
+        return this.hasChildren && this.deleted;
     }
 }

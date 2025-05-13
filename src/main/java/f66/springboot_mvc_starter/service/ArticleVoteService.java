@@ -1,7 +1,8 @@
 package f66.springboot_mvc_starter.service;
 
+import f66.springboot_mvc_starter.dto.ArticleDTO;
+import f66.springboot_mvc_starter.dto.ArticleVoteDTO;
 import f66.springboot_mvc_starter.dto.VoteResult;
-import f66.springboot_mvc_starter.exception.ForbiddenException;
 import f66.springboot_mvc_starter.repository.ArticleRepository;
 import f66.springboot_mvc_starter.repository.ArticleVoteRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,15 +17,19 @@ public class ArticleVoteService {
     private final ArticleVoteRepository articleVoteRepository;
 
     @Transactional
-    public VoteResult voteArticle(Long articleId,
-                                  Long currentUserId) {
+    public VoteResult toggleVote(Long articleId,
+                                 Long currentUserId) {
 
-        articleRepository.selectArticleByIdForUpdate(articleId).orElseThrow();
+        articleVoteRepository.toggleVote(articleId, currentUserId);
 
-        int voted = articleVoteRepository.toggleVote(articleId, currentUserId);
+        ArticleVoteDTO articleVoteDTO = articleVoteRepository
+                .selectVoteByUserIdAndArticleId(articleId, currentUserId)
+                .orElseThrow();
 
-        if (voted == 0) throw new ForbiddenException();
+        ArticleDTO articleDTO = articleRepository
+                .selectArticleByIdForUpdate(articleId)
+                .orElseThrow();
 
-        return articleVoteRepository.updateVoteCountThenSelectResult(articleId, currentUserId);
+        return articleVoteRepository.updateVoteCountThenSelectResult(articleId, currentUserId, articleDTO.getVoteCount() + (articleVoteDTO.isActive() ? 1 : -1));
     }
 }

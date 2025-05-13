@@ -10,18 +10,17 @@
     <update id="updateArticleCount"
             parameterType="map">
         UPDATE article_categories
-        SET article_count = article_count + #{delta}
+        SET article_count = #{articleCount}
         WHERE id = #{id}
     </update>
 
-    <!--    todo-->
-    <!--    <select id="selectByIdForUpdate"-->
-    <!--            parameterType="Long" resultType="ArticleCategoryDTO">-->
-    <!--        SELECT *-->
-    <!--        FROM article_categories-->
-    <!--        WHERE id = #{id}-->
-    <!--            FOR UPDATE-->
-    <!--    </select>-->
+    <select id="selectCategoryByIdForUpdate"
+            parameterType="Long" resultType="ArticleCategoryDTO">
+        SELECT *
+        FROM article_categories
+        WHERE id = #{id}
+            FOR UPDATE
+    </select>
 
     <select id="selectCategories"
             resultType="ArticleCategoryDTO">

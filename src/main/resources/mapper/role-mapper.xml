@@ -4,8 +4,8 @@
 
     <insert id="insertRoles"
             parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
-        insert into roles (role_type, display_name)
-        values
+        INSERT INTO roles (role_type, display_name)
+        VALUES
         <foreach collection="list" item="RoleDTO" separator=",">
             (#{RoleDTO.roleType}, #{RoleDTO.displayName})
         </foreach>
@@ -13,14 +13,14 @@
 
     <select id="selectByRoleType"
             resultType="RoleDTO" parameterType="RoleType">
-        select *
-        from roles
-        where role_type = #{roleType}
+        SELECT *
+        FROM roles
+        WHERE role_type = #{roleType}
     </select>
 
     <select id="countRoles"
             resultType="long">
-        select count(id)
-        from roles
+        SELECT count(id)
+        FROM roles
     </select>
 </mapper>
