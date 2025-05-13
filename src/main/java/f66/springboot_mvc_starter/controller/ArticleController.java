@@ -1,7 +1,7 @@
 package f66.springboot_mvc_starter.controller;
 
-import f66.springboot_mvc_starter.config.CustomUserDetails;
 import f66.springboot_mvc_starter.dto.*;
+import f66.springboot_mvc_starter.security.CustomUserDetails;
 import f66.springboot_mvc_starter.service.ArticleCategoryService;
 import f66.springboot_mvc_starter.service.ArticleService;
 import f66.springboot_mvc_starter.service.ArticleVoteService;

@@ -1,6 +1,6 @@
 package f66.springboot_mvc_starter.util;
 
-import f66.springboot_mvc_starter.config.CustomUserDetails;
+import f66.springboot_mvc_starter.security.CustomUserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;

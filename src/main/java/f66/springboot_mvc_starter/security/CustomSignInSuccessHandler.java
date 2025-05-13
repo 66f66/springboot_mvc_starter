@@ -1,4 +1,4 @@
-package f66.springboot_mvc_starter.config;
+package f66.springboot_mvc_starter.security;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

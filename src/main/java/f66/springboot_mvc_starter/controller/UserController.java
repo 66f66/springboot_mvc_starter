@@ -1,8 +1,8 @@
 package f66.springboot_mvc_starter.controller;
 
-import f66.springboot_mvc_starter.config.CustomUserDetails;
 import f66.springboot_mvc_starter.dto.UserDTO;
 import f66.springboot_mvc_starter.dto.UserImageDTO;
+import f66.springboot_mvc_starter.security.CustomUserDetails;
 import f66.springboot_mvc_starter.service.UserService;
 import f66.springboot_mvc_starter.util.AuthUtil;
 import jakarta.validation.Valid;
