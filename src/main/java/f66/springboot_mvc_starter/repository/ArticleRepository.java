@@ -17,7 +17,7 @@ public interface ArticleRepository extends PagingRepository<ArticleDTO, ArticleP
 
     void updateIsDeleted(Long id, boolean isDeleted);
 
-    Optional<ArticleDTO> selectArticleById(Long id);
+    Optional<ArticleDTO> selectArticleByIdForUpdate(Long id);
 
     Optional<ArticleDTO> selectArticleByIdAndUserId(Long id, Long userId);
 

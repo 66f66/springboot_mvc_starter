@@ -59,9 +59,10 @@
 
     <select id="selectArticleById"
             parameterType="Long" resultType="ArticleDTO">
-        select *
-        from articles
-        where id = #{id}
+        SELECT *
+        FROM articles
+        WHERE id = #{id}
+            FOR UPDATE
     </select>
 
     <select id="selectArticleByIdAndUserId"

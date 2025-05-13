@@ -21,7 +21,7 @@ public class AdminService {
     @Transactional
     public void deleteArticle(Long id) {
 
-        ArticleDTO articleDTO = articleRepository.selectArticleById(id)
+        ArticleDTO articleDTO = articleRepository.selectArticleByIdForUpdate(id)
                 .orElseThrow(ResourceNotFoundException::new);
 
         articleRepository.updateIsDeleted(id, true);
