@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -59,9 +60,7 @@ public class UserDTO {
 
     private OffsetDateTime updatedAt;
 
-    private Long roleId;
-
-    private UserRoleDTO role;
+    private List<RoleDTO> roles;
 
     private UserImageDTO image;
 
@@ -70,5 +69,11 @@ public class UserDTO {
     public String getImageUrl() {
 
         return this.image.getUrl() != null ? this.image.getUrl() : null;
+    }
+
+    public boolean hasRole(String roleTypeName) {
+
+        return this.roles.stream()
+                .anyMatch(role -> role.getRoleType().name().equals(roleTypeName));
     }
 }

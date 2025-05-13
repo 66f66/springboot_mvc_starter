@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CloudinaryUploadResult {
+public class CloudinaryUploadResponse {
 
     @JsonProperty("public_id")
     private String publicId;

@@ -5,8 +5,8 @@
       xmlns:th="http://www.thymeleaf.org"
 >
 
-<span class="badge text-bg-secondary" th:fragment="roleBadge(userRole)"
-      th:if="${userRole == 'ROLE_ADMIN'}">관리자
+<span class="badge text-bg-secondary" th:fragment="roleBadge(user)"
+      th:if="${user.hasRole('ROLE_ADMIN')}">관리자
 </span>
 
 <div></div>

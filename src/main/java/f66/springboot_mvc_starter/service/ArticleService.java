@@ -3,7 +3,6 @@ package f66.springboot_mvc_starter.service;
 import f66.springboot_mvc_starter.dto.ArticleDTO;
 import f66.springboot_mvc_starter.dto.ArticlePageRequest;
 import f66.springboot_mvc_starter.exception.ForbiddenException;
-import f66.springboot_mvc_starter.exception.ResourceNotFoundException;
 import f66.springboot_mvc_starter.repository.ArticleCategoryRepository;
 import f66.springboot_mvc_starter.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
@@ -79,7 +78,7 @@ public class ArticleService {
 
         return articleRepository
                 .selectArticleWithRelationsByIdAndOptionalUserId(id, currentUserId)
-                .orElseThrow(ResourceNotFoundException::new);
+                .orElseThrow();
     }
 
     @Transactional(readOnly = true)

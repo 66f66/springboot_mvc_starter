@@ -11,6 +11,8 @@ public interface UserRepository {
 
     void insertUser(UserDTO userDTO);
 
+    void insertUserRole(Long userId, Long roleId);
+
     void updateUser(UserDTO userDTO);
 
     boolean existsByUsername(String username);

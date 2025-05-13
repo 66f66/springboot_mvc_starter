@@ -42,7 +42,7 @@
 					   th:text="${articleDTO.user.nickname}">
 					</a>
 					<th:block
-							th:replace="~{fragments/admin_badge :: roleBadge(${articleDTO.user.role.name})}"></th:block>
+							th:replace="~{fragments/admin_badge :: roleBadge(${articleDTO.user})}"></th:block>
 				</div>
 				
 				<!--				article timestamp-->
@@ -129,7 +129,7 @@
 					   th:text="${c.user?.nickname}">
 					</a>
 					<th:block
-							th:replace="~{fragments/admin_badge :: roleBadge(${c.user.role.name})}">
+							th:replace="~{fragments/admin_badge :: roleBadge(${c.user})}">
 					</th:block>
 				</div>
 				

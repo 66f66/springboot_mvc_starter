@@ -1,8 +1,10 @@
 package f66.springboot_mvc_starter.config;
 
 import f66.springboot_mvc_starter.dto.*;
-import f66.springboot_mvc_starter.exception.ResourceNotFoundException;
-import f66.springboot_mvc_starter.repository.*;
+import f66.springboot_mvc_starter.repository.ArticleCategoryRepository;
+import f66.springboot_mvc_starter.repository.ArticleRepository;
+import f66.springboot_mvc_starter.repository.RoleRepository;
+import f66.springboot_mvc_starter.repository.UserRepository;
 import f66.springboot_mvc_starter.service.ArticleService;
 import f66.springboot_mvc_starter.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,19 +21,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DefaultInitializer {
 
-    private final UserRoleRepository userRoleRepository;
+    private final RoleRepository roleRepository;
     private final UserRepository userRepository;
-    private final UserImageRepository userImageRepository;
     private final ArticleCategoryRepository articleCategoryRepository;
     private final ArticleRepository articleRepository;
     private final ArticleService articleService;
-    private final PasswordEncoder passwordEncoder;
 
     @Value("${config.admin-password}")
     private String adminPassword;
-
-    @Value("${config.test-password}")
-    private String testPassword;
 
     @Bean
     @Transactional
@@ -40,47 +36,35 @@ public class DefaultInitializer {
     public CommandLineRunner init(UserService userService) {
         return args -> {
 
-            final String ROLE_ADMIN = "ROLE_ADMIN";
+            if (roleRepository.countRoles() == 0) {
 
-            if (userRoleRepository.countRoles() == 0) {
-
-                UserRoleDTO roleAdmin = UserRoleDTO.builder()
-                        .name(ROLE_ADMIN)
+                RoleDTO roleAdmin = RoleDTO.builder()
+                        .roleType(RoleType.ROLE_ADMIN)
                         .displayName("관리자")
                         .build();
-                UserRoleDTO roleUser = UserRoleDTO.builder()
-                        .name("ROLE_USER")
+                RoleDTO roleUser = RoleDTO.builder()
+                        .roleType(RoleType.ROLE_USER)
                         .displayName("사용자")
                         .build();
 
-                List<UserRoleDTO> userRoleDTOList = List.of(roleAdmin, roleUser);
+                List<RoleDTO> roleDTOList = List.of(roleAdmin, roleUser);
 
-                userRoleRepository.insertRoles(userRoleDTOList);
+                roleRepository.insertRoles(roleDTOList);
             } else {
 
                 return;
             }
-
-            UserRoleDTO userRoleDTO = userRoleRepository.selectRoleByName(ROLE_ADMIN)
-                    .orElseThrow(ResourceNotFoundException::new);
 
             if (userRepository.countUsers() == 0) {
 
                 UserDTO adminUser = UserDTO.builder()
                         .username("admin")
                         .nickname("admin")
-                        .password(passwordEncoder.encode(adminPassword))
-                        .roleId(userRoleDTO.getId())
+                        .password(adminPassword)
+                        .passwordCheck(adminPassword)
                         .build();
 
-                userRepository.insertUser(adminUser);
-
-                UserImageDTO userImageDTO = UserImageDTO.builder()
-                        .userId(adminUser.getId())
-                        .build();
-
-                // admin user id = 1
-                userImageRepository.insertImage(userImageDTO);
+                userService.createUser(adminUser, RoleType.ROLE_ADMIN);
 
                 // user id = 2,3,4,5,6
                 for (int i = 1; i < 6; i++) {
@@ -88,11 +72,11 @@ public class DefaultInitializer {
                     UserDTO userDTO = UserDTO.builder()
                             .username("user" + i)
                             .nickname("u" + i)
-                            .password(testPassword + i)
-                            .passwordCheck(testPassword + i)
+                            .password("12341234" + i)
+                            .passwordCheck("12341234" + i)
                             .build();
 
-                    userService.createUser(userDTO);
+                    userService.createUser(userDTO, RoleType.ROLE_USER);
                 }
             }
 

@@ -3,8 +3,8 @@
 <mapper namespace="f66.springboot_mvc_starter.repository.ArticleCategoryRepository">
 
     <insert id="insertCategory">
-        insert into article_categories (name)
-        values (#{name})
+        INSERT INTO article_categories (name)
+        VALUES (#{name})
     </insert>
 
     <update id="updateArticleCount"
@@ -14,16 +14,25 @@
         WHERE id = #{id}
     </update>
 
+    <!--    todo-->
+    <!--    <select id="selectByIdForUpdate"-->
+    <!--            parameterType="Long" resultType="ArticleCategoryDTO">-->
+    <!--        SELECT *-->
+    <!--        FROM article_categories-->
+    <!--        WHERE id = #{id}-->
+    <!--            FOR UPDATE-->
+    <!--    </select>-->
+
     <select id="selectCategories"
             resultType="ArticleCategoryDTO">
-        select *
-        from article_categories
-        order by article_count desc, id
+        SELECT *
+        FROM article_categories
+        ORDER BY article_count DESC, id
     </select>
 
     <select id="countCategories">
-        select count(id)
-        from article_categories
+        SELECT count(id)
+        FROM article_categories
     </select>
 
 </mapper>

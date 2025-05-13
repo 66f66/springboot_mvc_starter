@@ -3,7 +3,7 @@ package f66.springboot_mvc_starter.util;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import f66.springboot_mvc_starter.dto.CloudinaryUploadResult;
+import f66.springboot_mvc_starter.dto.CloudinaryUploadResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,10 +23,10 @@ public class CloudinaryUtil {
      * @param options <a href="https://cloudinary.com/documentation/image_upload_api_reference#upload">참고</a>
      * @return <a href="https://cloudinary.com/documentation/java_image_and_video_upload">참고</a>
      */
-    public CloudinaryUploadResult uploadMultipartFile(MultipartFile file, Map<String, String> options) throws IOException {
+    public CloudinaryUploadResponse uploadMultipartFile(MultipartFile file, Map<String, String> options) throws IOException {
 
         return objectMapper
-                .convertValue(cloudinary.uploader().upload(file.getBytes(), options), CloudinaryUploadResult.class);
+                .convertValue(cloudinary.uploader().upload(file.getBytes(), options), CloudinaryUploadResponse.class);
     }
 
     /**

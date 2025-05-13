@@ -2,7 +2,6 @@ package f66.springboot_mvc_starter.service;
 
 import f66.springboot_mvc_starter.dto.ArticleDTO;
 import f66.springboot_mvc_starter.dto.CommentDTO;
-import f66.springboot_mvc_starter.exception.ResourceNotFoundException;
 import f66.springboot_mvc_starter.repository.ArticleCategoryRepository;
 import f66.springboot_mvc_starter.repository.ArticleRepository;
 import f66.springboot_mvc_starter.repository.CommentRepository;
@@ -22,7 +21,7 @@ public class AdminService {
     public void deleteArticle(Long id) {
 
         ArticleDTO articleDTO = articleRepository.selectArticleByIdForUpdate(id)
-                .orElseThrow(ResourceNotFoundException::new);
+                .orElseThrow();
 
         articleRepository.updateIsDeleted(id, true);
 
@@ -33,7 +32,7 @@ public class AdminService {
     public void deleteComment(Long id) {
 
         CommentDTO commentDTO = commentRepository.selectCommentById(id)
-                .orElseThrow(ResourceNotFoundException::new);
+                .orElseThrow();
 
         commentRepository.updateIsDeleted(id, true);
 

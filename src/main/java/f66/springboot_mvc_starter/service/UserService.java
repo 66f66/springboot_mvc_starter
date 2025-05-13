@@ -1,16 +1,12 @@
 package f66.springboot_mvc_starter.service;
 
-import f66.springboot_mvc_starter.dto.CloudinaryUploadResult;
-import f66.springboot_mvc_starter.dto.UserDTO;
-import f66.springboot_mvc_starter.dto.UserImageDTO;
-import f66.springboot_mvc_starter.dto.UserRoleDTO;
-import f66.springboot_mvc_starter.exception.ResourceNotFoundException;
+import f66.springboot_mvc_starter.dto.*;
 import f66.springboot_mvc_starter.exception.UniqueConstraintException;
 import f66.springboot_mvc_starter.exception.UserBadInputException;
 import f66.springboot_mvc_starter.exception.WrongUsernameOrPasswordException;
+import f66.springboot_mvc_starter.repository.RoleRepository;
 import f66.springboot_mvc_starter.repository.UserImageRepository;
 import f66.springboot_mvc_starter.repository.UserRepository;
-import f66.springboot_mvc_starter.repository.UserRoleRepository;
 import f66.springboot_mvc_starter.util.CloudinaryUtil;
 import f66.springboot_mvc_starter.util.FileUtil;
 import lombok.RequiredArgsConstructor;
@@ -30,12 +26,12 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final UserImageRepository userImageRepository;
-    private final UserRoleRepository userRoleRepository;
+    private final RoleRepository roleRepository;
     private final FileUtil fileUtil;
     private final CloudinaryUtil cloudinaryUtil;
 
     @Transactional
-    public void createUser(UserDTO userDTO) {
+    public void createUser(UserDTO userDTO, RoleType roleType) {
 
         if (!userDTO.getPassword().equals(userDTO.getPasswordCheck()))
             throw new UserBadInputException("비밀번호 확인이 일치하지 않습니다.");
@@ -46,11 +42,6 @@ public class UserService {
 
         if (exists) throw new UniqueConstraintException("이미 사용중인 아이디입니다.");
 
-        UserRoleDTO userRoleDTO = userRoleRepository.selectRoleByName("ROLE_USER")
-                .orElseThrow(ResourceNotFoundException::new);
-
-        userDTO.setRoleId(userRoleDTO.getId());
-
         try {
 
             userRepository.insertUser(userDTO);
@@ -60,6 +51,11 @@ public class UserService {
 
             if (message.contains("username")) throw new UniqueConstraintException("이미 사용중인 아이디입니다.");
         }
+
+        RoleDTO roleDTO = roleRepository.selectByRoleType(roleType)
+                .orElseThrow();
+
+        userRepository.insertUserRole(userDTO.getId(), roleDTO.getId());
 
         UserImageDTO userImageDTO = UserImageDTO.builder()
                 .userId(userDTO.getId())
@@ -90,7 +86,7 @@ public class UserService {
 
         return userRepository
                 .selectUserWithRelationsById(id)
-                .orElseThrow(ResourceNotFoundException::new);
+                .orElseThrow();
     }
 
     @Transactional
@@ -98,7 +94,7 @@ public class UserService {
 
         UserDTO oldUser = userRepository
                 .selectUserWithRelationsById(userDTO.getId())
-                .orElseThrow(ResourceNotFoundException::new);
+                .orElseThrow();
 
         if (oldUser.getNickname().equals(userDTO.getNickname())) userDTO.setNickname(null);
 
@@ -114,7 +110,7 @@ public class UserService {
 
         return userRepository
                 .selectUserWithRelationsById(userDTO.getId())
-                .orElseThrow(ResourceNotFoundException::new);
+                .orElseThrow();
     }
 
     @Transactional
@@ -130,7 +126,7 @@ public class UserService {
 
         final String FOLDER_NAME = "user_profile";
 
-        CloudinaryUploadResult result = cloudinaryUtil
+        CloudinaryUploadResponse result = cloudinaryUtil
                 .uploadMultipartFile(file, Map.of("folder", FOLDER_NAME));
 
         userImageDTO.setPublicId(result.getPublicId());
@@ -139,7 +135,7 @@ public class UserService {
 
         UserImageDTO oldImageDTO = userImageRepository
                 .selectImageByUserId(userId)
-                .orElseThrow(ResourceNotFoundException::new);
+                .orElseThrow();
 
         userImageDTO.setId(oldImageDTO.getId());
 

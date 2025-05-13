@@ -13,9 +13,11 @@
                 <result property="url" column="user_image_url"/>
             </association>
 
-            <association property="role" javaType="UserRoleDTO">
-                <result property="name" column="user_role_name"/>
-            </association>
+            <collection property="roles" ofType="RoleDTO">
+                <id property="id" column="role_id"/>
+                <result property="roleType" column="role_type"/>
+                <result property="displayName" column="role_displayName"/>
+            </collection>
         </association>
 
         <association property="category" javaType="ArticleCategoryDTO">
@@ -80,7 +82,9 @@
         u.*,
         ui.id as "user_image_id",
         ui.url as "user_image_url",
-        ur.name as "user_role_name",
+        r.id as "rold_id",
+        r.role_type as "role_type",
+        r.display_name as "role_displayName",
         ac.id as "category_id",
         ac.name as "category_name",
         <if test="currentUserId != null">
@@ -93,7 +97,8 @@
         FROM articles a
         JOIN users u ON a.user_id = u.id
         JOIN user_images ui ON a.user_id = ui.user_id
-        JOIN user_roles ur ON u.role_id = ur.id
+        JOIN users_roles ur ON u.id = ur.user_id
+        JOIN roles r ON r.id = ur.role_id
         JOIN article_categories ac ON a.category_id = ac.id
         <if test="currentUserId != null">
             LEFT JOIN article_votes av ON a.id = av.article_id AND av.user_id = #{currentUserId}
@@ -109,13 +114,16 @@
         u.*,
         ui.id as "user_image_id",
         ui.url as "user_image_url",
-        ur.name as "user_role_name",
+        r.id as "rold_id",
+        r.role_type as "role_type",
+        r.display_name as "role_displayName",
         ac.id as "category_id",
         ac.name as "category_name"
         FROM articles a
         JOIN users u ON a.user_id = u.id
         JOIN user_images ui ON a.user_id = ui.user_id
-        JOIN user_roles ur ON u.role_id = ur.id
+        JOIN users_roles ur ON u.id = ur.user_id
+        JOIN roles r ON r.id = ur.role_id
         JOIN article_categories ac ON a.category_id = ac.id
         <include refid="articlePageConditions"/>
         ORDER BY

@@ -1,10 +1,10 @@
-package f66.springboot_mvc_starter.controller;
+package f66.springboot_mvc_starter.config;
 
 import f66.springboot_mvc_starter.exception.ForbiddenException;
-import f66.springboot_mvc_starter.exception.ResourceNotFoundException;
 import f66.springboot_mvc_starter.exception.UserBadInputException;
 import f66.springboot_mvc_starter.util.AuthUtil;
 import f66.springboot_mvc_starter.util.HttpUtil;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -12,19 +12,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.MyBatisSystemException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.server.MethodNotAllowedException;
 
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +32,7 @@ public class GlobalExceptionHandler {
     private final HttpUtil httpUtil;
     private final AuthUtil authUtil;
 
-    @ExceptionHandler({ResourceNotFoundException.class})
+    @ExceptionHandler(EntityNotFoundException.class)
     public Object handleNotFoundException(Exception ex,
                                           HttpServletRequest request,
                                           HttpServletResponse response) throws IOException {
@@ -50,25 +46,6 @@ public class GlobalExceptionHandler {
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
-    }
-
-    @ExceptionHandler({MethodNotAllowedException.class,
-            HttpRequestMethodNotSupportedException.class,
-            UnsupportedOperationException.class
-    })
-    public Object handleMethodNotAllowed(Exception ex,
-                                         HttpServletRequest request,
-                                         HttpServletResponse response) throws IOException {
-
-        boolean isJsonRequest = httpUtil.isJsonRequest(request);
-
-        if (!isJsonRequest) {
-
-            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-            response.sendRedirect("/error/400");
-        }
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
     }
 
     @ExceptionHandler(UserBadInputException.class)
@@ -132,7 +109,7 @@ public class GlobalExceptionHandler {
                 .body(Map.of("message", ex.getMessage()));
     }
 
-    @ExceptionHandler({ForbiddenException.class, AccessDeniedException.class, AuthenticationException.class})
+    @ExceptionHandler(ForbiddenException.class)
     public Object handleAuthorizationDeniedException(Exception ignoredE,
                                                      HttpServletRequest request,
                                                      HttpServletResponse response) throws IOException {
@@ -162,5 +139,31 @@ public class GlobalExceptionHandler {
         }
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @ExceptionHandler(Exception.class)
+    public Object handleException(Exception e,
+                                  HttpServletRequest request,
+                                  HttpServletResponse response) throws IOException {
+
+        boolean isJsonRequest = httpUtil.isJsonRequest(request);
+
+        System.out.println("Hit5");
+
+        log.error(e.getMessage());
+
+        if (!isJsonRequest) {
+
+            System.out.println("Hit6");
+
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.sendRedirect("/error/500");
+
+            return null;
+        }
+
+        System.out.println("Hit7");
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }

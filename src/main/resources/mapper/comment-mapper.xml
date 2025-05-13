@@ -14,9 +14,11 @@
                 <result property="url" column="user_image_url"/>
             </association>
 
-            <association property="role" javaType="UserRoleDTO">
-                <result property="name" column="user_role_name"/>
-            </association>
+            <collection property="roles" ofType="RoleDTO">
+                <id property="id" column="role_id"/>
+                <result property="roleType" column="role_type"/>
+                <result property="displayName" column="role_displayName"/>
+            </collection>
         </association>
 
         <association property="parentComment" javaType="CommentDTO">
@@ -81,16 +83,19 @@
             comment_tree AS (
                 -- 최상위 댓글
                 SELECT c.*,
-                       u.nickname    as "user_nickname",
-                       ui.id         as "user_image_id",
-                       ui.url        as "user_image_url",
-                       ur.name       as "user_role_name",
-                       NULL::varchar as "parent_comment_user_nickname",
-                       ARRAY [c.id]  AS path
+                       u.nickname     as "user_nickname",
+                       ui.id          as "user_image_id",
+                       ui.url         as "user_image_url",
+                       r.id           as "role_id",
+                       r.role_type    as "role_type",
+                       r.display_name as "role_displayName",
+                       NULL::varchar  as "parent_comment_user_nickname",
+                       ARRAY [c.id]   AS path
                 FROM comments c
                          JOIN users u ON c.user_id = u.id
                          JOIN user_images ui ON u.id = ui.user_id
-                         JOIN user_roles ur ON u.role_id = ur.id
+                         JOIN users_roles ur on u.id = ur.user_id
+                         JOIN roles r on r.id = ur.role_id
                 WHERE c.parent_comment_id IS NULL
                   AND c.article_id = #{articleId}
 
@@ -101,14 +106,17 @@
                        u.nickname        as "user_nickname",
                        ui.id             as "user_image_id",
                        ui.url            as "user_image_url",
-                       ur.name           as "user_role_name",
+                       r.id              as "role_id",
+                       r.role_type       as "role_type",
+                       r.display_name    as "role_displayName",
                        parent_u.nickname as "parent_comment_user_nickname",
                        ct.path || c.id
                 FROM comments c
                          JOIN comment_tree ct ON c.parent_comment_id = ct.id
                          JOIN users u ON c.user_id = u.id
                          JOIN user_images ui ON u.id = ui.user_id
-                         JOIN user_roles ur ON u.role_id = ur.id
+                         JOIN users_roles ur on u.id = ur.user_id
+                         JOIN roles r on r.id = ur.role_id
                          JOIN users parent_u ON ct.user_id = parent_u.id),
             filtered_comments
                 AS (SELECT ct.*,

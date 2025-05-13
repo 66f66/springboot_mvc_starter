@@ -147,7 +147,7 @@
 								   th:text="${article.user.nickname}">
 								</a>
 								<th:block
-										th:replace="~{fragments/admin_badge :: roleBadge(${article.user.role.name})}">
+										th:replace="~{fragments/admin_badge :: roleBadge(${article.user})}">
 								</th:block>
 							</div>
 							
@@ -168,7 +168,7 @@
 						   th:text="${article.user.nickname}">
 						</a>
 						<th:block
-								th:replace="~{fragments/admin_badge :: roleBadge(${article.user.role.name})}">
+								th:replace="~{fragments/admin_badge :: roleBadge(${article.user})}">
 						</th:block>
 					</div>
 					

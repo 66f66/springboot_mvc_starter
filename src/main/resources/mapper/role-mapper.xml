@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="f66.springboot_mvc_starter.repository.UserRoleRepository">
+<mapper namespace="f66.springboot_mvc_starter.repository.RoleRepository">
 
     <insert id="insertRoles"
             parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
-        insert into user_roles (name, display_name)
+        insert into roles (role_type, display_name)
         values
-        <foreach collection="list" item="UserRoleDTO" separator=",">
-            (#{UserRoleDTO.name}, #{UserRoleDTO.displayName})
+        <foreach collection="list" item="RoleDTO" separator=",">
+            (#{RoleDTO.roleType}, #{RoleDTO.displayName})
         </foreach>
     </insert>
 
-    <select id="selectRoleByName"
-            resultType="UserRoleDTO" parameterType="String">
+    <select id="selectByRoleType"
+            resultType="RoleDTO" parameterType="RoleType">
         select *
-        from user_roles
-        where name = #{name}
+        from roles
+        where role_type = #{roleType}
     </select>
 
     <select id="countRoles"
             resultType="long">
         select count(id)
-        from user_roles
+        from roles
     </select>
 </mapper>

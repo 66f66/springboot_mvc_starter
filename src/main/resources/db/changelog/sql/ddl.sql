@@ -1,12 +1,3 @@
-create table user_roles
-(
-    id           integer generated always as identity
-        constraint user_roles_pk
-            primary key,
-    name         varchar(25) default 'ROLE_USER'::character varying not null,
-    display_name varchar(25) default '사용자'::character varying       not null
-);
-
 create table users
 (
     id         bigint generated always as identity
@@ -18,11 +9,28 @@ create table users
     nickname   varchar(25)                            not null,
     password   varchar(100)                           not null,
     created_at timestamp with time zone default now() not null,
-    updated_at timestamp with time zone,
-    role_id    integer
-        constraint users_user_roles_id_fk
-            references user_roles
-            on delete cascade
+    updated_at timestamp with time zone
+);
+
+create table roles
+(
+    id           integer generated always as identity
+        constraint roles_pk
+            primary key,
+    role_type    varchar(255) not null,
+    display_name varchar(255) not null
+);
+
+create table users_roles
+(
+    user_id bigint  not null
+        constraint users_roles_users_fk
+            references users,
+    role_id integer not null
+        constraint users_roles_roles_fk
+            references roles,
+    constraint users_roles_pk
+        primary key (role_id, user_id)
 );
 
 create table user_images

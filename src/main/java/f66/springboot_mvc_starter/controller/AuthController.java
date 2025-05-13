@@ -1,5 +1,6 @@
 package f66.springboot_mvc_starter.controller;
 
+import f66.springboot_mvc_starter.dto.RoleType;
 import f66.springboot_mvc_starter.dto.UserDTO;
 import f66.springboot_mvc_starter.dto.ValidationGroups;
 import f66.springboot_mvc_starter.exception.UniqueConstraintException;
@@ -25,6 +26,13 @@ public class AuthController {
     private final UserService userService;
 
     @PreAuthorize("isAnonymous()")
+    @GetMapping("/exists-by-username")
+    public ResponseEntity<Map<String, Boolean>> existsByUsername(@RequestParam String username) {
+
+        return ResponseEntity.ok(Map.of("existsByUsername", userService.existsByUsername(username)));
+    }
+
+    @PreAuthorize("isAnonymous()")
     @GetMapping("/sign-up")
     public String signUp(UserDTO userDTO,
                          Model model) {
@@ -40,7 +48,7 @@ public class AuthController {
 
         try {
 
-            userService.createUser(userDTO);
+            userService.createUser(userDTO, RoleType.ROLE_USER);
         } catch (UserBadInputException | UniqueConstraintException e) {
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -49,13 +57,6 @@ public class AuthController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Map.of("message", "회원 가입 되었습니다"));
-    }
-
-    @PreAuthorize("isAnonymous()")
-    @GetMapping("/exists-by-username")
-    public ResponseEntity<Map<String, Boolean>> existsByUsername(@RequestParam String username) {
-
-        return ResponseEntity.ok(Map.of("existsByUsername", userService.existsByUsername(username)));
     }
 
     @PreAuthorize("isAnonymous()")
